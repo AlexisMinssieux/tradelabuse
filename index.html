@@ -19,7 +19,7 @@
       --mono:'Space Mono',monospace;--serif:'Cinzel',serif;--body:'Inter',sans-serif;
     }
     body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px}
- 
+
     .hd{background:linear-gradient(180deg,#100608 0%,#0c0d12 100%);border-bottom:2px solid rgba(180,20,20,0.35);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
     .hd::before{content:'';position:absolute;left:0;top:0;width:100%;height:100%;background:radial-gradient(ellipse 400px 80px at 220px 50%,rgba(180,20,20,0.08) 0%,transparent 70%);pointer-events:none}
     .logo-wrap{display:flex;align-items:center;gap:16px}
@@ -37,12 +37,12 @@
     .live-row{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--red)}
     .live{width:6px;height:6px;border-radius:50%;background:var(--red);animation:blink 1.4s infinite}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
- 
+
     .navrow{background:var(--bg2);border-bottom:1px solid var(--bord);display:flex;padding:0 24px}
     .tab{padding:10px 16px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;font-family:var(--body);background:none;border-top:none;border-left:none;border-right:none;letter-spacing:.5px}
     .tab:hover{color:var(--text)}
     .tab.on{color:var(--red2);border-bottom-color:var(--red)}
- 
+
     .pg{display:none;padding:16px 24px}.pg.on{display:block}
     .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
     .g2x{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-bottom:14px}
@@ -130,7 +130,7 @@
     .etab:hover{color:var(--text)}
     .etab.on{background:rgba(180,20,20,.1);color:var(--red2);border-color:var(--red)}
     .edu-content{display:none}.edu-content.on{display:block}
- 
+
     @media(max-width:768px){
       .g4{grid-template-columns:1fr 1fr}
       .g2x{grid-template-columns:1fr}
@@ -140,7 +140,7 @@
   </style>
 </head>
 <body>
- 
+
 <!-- HEADER -->
 <header class="hd">
   <div class="logo-wrap">
@@ -217,7 +217,7 @@
     <div class="live-row"><div class="live"></div><span style="font-family:var(--mono);font-size:10px" id="clk"></span><span style="font-size:9px;color:var(--muted);margin-left:4px">Marché ouvert</span></div>
   </div>
 </header>
- 
+
 <!-- NAVIGATION -->
 <nav class="navrow">
   <button class="tab on" onclick="goPage('news',this)">Actualités</button>
@@ -226,9 +226,9 @@
   <button class="tab" onclick="goPage('dec',this)">Aide à la décision</button>
   <button class="tab" onclick="goPage('edu',this)">Comprendre l'AT</button>
 </nav>
- 
+
 <main>
- 
+
 <!-- ══════════════════════════════════════════ -->
 <!-- PAGE ACTUALITÉS -->
 <!-- ══════════════════════════════════════════ -->
@@ -257,7 +257,7 @@
     </div>
   </div>
 </section>
- 
+
 <!-- ══════════════════════════════════════════ -->
 <!-- PAGE PLACEMENTS -->
 <!-- ══════════════════════════════════════════ -->
@@ -307,7 +307,7 @@
     </div>
   </div>
 </section>
- 
+
 <!-- ══════════════════════════════════════════ -->
 <!-- PAGE ANALYSE TECHNIQUE -->
 <!-- ══════════════════════════════════════════ -->
@@ -345,7 +345,7 @@
     </div>
   </div>
 </section>
- 
+
 <!-- ══════════════════════════════════════════ -->
 <!-- PAGE AIDE À LA DÉCISION -->
 <!-- ══════════════════════════════════════════ -->
@@ -372,7 +372,7 @@
     </div>
   </div>
 </section>
- 
+
 <!-- ══════════════════════════════════════════ -->
 <!-- PAGE ÉDUCATION -->
 <!-- ══════════════════════════════════════════ -->
@@ -387,7 +387,7 @@
     <button class="etab" onclick="goEdu('sup',this)">Supports / résistances</button>
     <button class="etab" onclick="goEdu('stoch',this)">Stochastique</button>
   </div>
- 
+
   <div class="edu-content on" id="edu-rsi">
     <div class="g2x">
       <div class="card">
@@ -409,42 +409,42 @@
       </div>
     </div>
   </div>
- 
+
   <div class="edu-content" id="edu-macd">
     <div class="g2x">
       <div class="card"><div class="stitle">MACD — Moving Average Convergence Divergence</div><p style="font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:10px">Mesure la convergence/divergence entre deux MME. Révèle direction, force et durée d'une tendance.</p><div style="background:var(--bg3);border-radius:7px;padding:12px;margin-bottom:10px"><div style="font-size:11px;font-weight:600;color:var(--red2);margin-bottom:8px">FORMULE</div><div style="font-family:var(--mono);font-size:11px;color:var(--text)">MACD = MME(12) - MME(26)</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px">Signal = MME(9) · Histogramme = MACD - Signal</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div style="background:rgba(64,200,128,.08);border-radius:6px;padding:10px"><div style="font-size:10px;color:var(--green);font-weight:600;margin-bottom:5px">SIGNAL HAUSSIER</div><p style="font-size:11px;color:var(--muted);line-height:1.8">MACD croise Signal à la hausse — histogramme positif</p></div><div style="background:rgba(220,28,28,.08);border-radius:6px;padding:10px"><div style="font-size:10px;color:var(--red2);font-weight:600;margin-bottom:5px">SIGNAL BAISSIER</div><p style="font-size:11px;color:var(--muted);line-height:1.8">MACD croise Signal à la baisse — histogramme négatif</p></div></div></div>
       <div class="card"><div class="stitle">Exemple MACD</div><div style="position:relative;height:180px"><canvas id="macdEdu"></canvas></div></div>
     </div>
   </div>
- 
+
   <div class="edu-content" id="edu-boll">
     <div class="g2x">
       <div class="card"><div class="stitle">Bandes de Bollinger</div><p style="font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:10px">Mesurent la volatilité. S'élargissent en marché agité, se resserrent en période calme.</p><div style="background:var(--bg3);border-radius:7px;padding:12px;margin-bottom:10px"><div style="font-size:11px;font-weight:600;color:var(--red2);margin-bottom:8px">CONSTRUCTION</div><div style="font-family:var(--mono);font-size:10px;color:var(--text);line-height:1.9">Centrale = MM20<br>Haute = MM20 + (2 × écart-type)<br>Basse = MM20 - (2 × écart-type)</div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px"><div style="background:rgba(220,28,28,.1);border-radius:6px;padding:8px;text-align:center"><div style="font-size:10px;color:var(--red2);font-weight:600">Touche haute</div><div style="font-size:10px;color:var(--muted);margin-top:3px">Surachat</div></div><div style="background:rgba(196,160,80,.1);border-radius:6px;padding:8px;text-align:center"><div style="font-size:10px;color:var(--gold);font-weight:600">Squeeze</div><div style="font-size:10px;color:var(--muted);margin-top:3px">Explosion proche</div></div><div style="background:rgba(64,200,128,.1);border-radius:6px;padding:8px;text-align:center"><div style="font-size:10px;color:var(--green);font-weight:600">Touche basse</div><div style="font-size:10px;color:var(--muted);margin-top:3px">Survente</div></div></div></div>
       <div class="card"><div class="stitle">Visualisation Bollinger</div><div style="position:relative;height:180px"><canvas id="bollEdu"></canvas></div></div>
     </div>
   </div>
- 
+
   <div class="edu-content" id="edu-fib">
     <div class="g2x">
       <div class="card"><div class="stitle">Retracements de Fibonacci</div><p style="font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:10px">Niveaux identifiant des zones de support/résistance lors des corrections de tendance.</p><div style="background:var(--bg3);border-radius:7px;padding:12px;margin-bottom:10px"><div style="font-size:11px;font-weight:600;color:var(--red2);margin-bottom:8px">NIVEAUX CLÉS</div><div id="fibLvl"></div></div><div style="padding:10px;background:var(--bg3);border-radius:7px"><div style="font-size:11px;color:var(--red2);font-weight:600;margin-bottom:6px">COMMENT TRADER FIBONACCI</div><ul style="font-size:11px;color:var(--muted);line-height:1.9;padding-left:14px"><li>Tracer du plus bas au plus haut</li><li>38,2% et 61,8% sont les plus fiables</li><li>Combiner avec RSI et supports statiques</li></ul></div></div>
       <div class="card"><div class="stitle">Visualisation Fibonacci</div><div style="position:relative;height:200px"><canvas id="fibEdu"></canvas></div></div>
     </div>
   </div>
- 
+
   <div class="edu-content" id="edu-mm">
     <div class="g2x">
       <div class="card"><div class="stitle">Moyennes mobiles (MM)</div><p style="font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:10px">Lissent le bruit du marché et révèlent la tendance.</p><div style="background:rgba(64,200,128,.08);border-radius:6px;padding:10px;margin-bottom:8px;border-left:3px solid var(--green)"><div style="font-size:11px;color:var(--green);font-weight:600;margin-bottom:4px">GOLDEN CROSS — Signal achat</div><p style="font-size:11px;color:var(--muted);line-height:1.7">MM50 croise MM200 à la hausse — début probable d'une tendance longue haussière.</p></div><div style="background:rgba(220,28,28,.08);border-radius:6px;padding:10px;border-left:3px solid var(--red)"><div style="font-size:11px;color:var(--red2);font-weight:600;margin-bottom:4px">DEATH CROSS — Signal vente</div><p style="font-size:11px;color:var(--muted);line-height:1.7">MM50 croise MM200 à la baisse — potentiel début de bear market.</p></div></div>
       <div class="card"><div class="stitle">MM et croisements</div><div style="position:relative;height:200px"><canvas id="mmEdu"></canvas></div><div style="margin-top:10px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px"><div style="text-align:center;padding:8px;background:var(--bg3);border-radius:6px"><div style="font-size:9px;color:var(--muted)">MM 20</div><div style="font-size:11px;color:var(--gold);font-family:var(--mono)">Court terme</div></div><div style="text-align:center;padding:8px;background:var(--bg3);border-radius:6px"><div style="font-size:9px;color:var(--muted)">MM 50</div><div style="font-size:11px;color:var(--blue);font-family:var(--mono)">Moyen terme</div></div><div style="text-align:center;padding:8px;background:var(--bg3);border-radius:6px"><div style="font-size:9px;color:var(--muted)">MM 200</div><div style="font-size:11px;color:var(--purple);font-family:var(--mono)">Long terme</div></div></div></div>
     </div>
   </div>
- 
+
   <div class="edu-content" id="edu-sup">
     <div class="g2x">
       <div class="card"><div class="stitle">Supports et résistances</div><p style="font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:10px">Zones de prix où l'offre et la demande s'équilibrent de façon répétée.</p><div style="background:rgba(64,200,128,.08);border-radius:6px;padding:10px;margin-bottom:8px;border-left:3px solid var(--green)"><div style="font-size:11px;color:var(--green);font-weight:600;margin-bottom:4px">SUPPORT</div><p style="font-size:11px;color:var(--muted);line-height:1.7">Zone où les acheteurs stoppent une baisse. Plus testé = plus significatif.</p></div><div style="background:rgba(220,28,28,.08);border-radius:6px;padding:10px;margin-bottom:8px;border-left:3px solid var(--red)"><div style="font-size:11px;color:var(--red2);font-weight:600;margin-bottom:4px">RÉSISTANCE</div><p style="font-size:11px;color:var(--muted);line-height:1.7">Zone où les vendeurs dominent et stoppent une hausse.</p></div><div style="background:rgba(196,160,80,.08);border-radius:6px;padding:10px;border-left:3px solid var(--gold)"><div style="font-size:11px;color:var(--gold);font-weight:600;margin-bottom:4px">INVERSION DES RÔLES</div><p style="font-size:11px;color:var(--muted);line-height:1.7">Après cassure, support → résistance et vice versa.</p></div></div>
       <div class="card"><div class="stitle">Visualisation</div><div style="position:relative;height:200px"><canvas id="supEdu"></canvas></div></div>
     </div>
   </div>
- 
+
   <div class="edu-content" id="edu-stoch">
     <div class="g2x">
       <div class="card"><div class="stitle">Stochastique %K / %D</div><p style="font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:10px">Compare le cours de clôture à la plage de prix sur une période.</p><div style="background:var(--bg3);border-radius:7px;padding:12px;margin-bottom:10px"><div style="font-size:11px;font-weight:600;color:var(--red2);margin-bottom:8px">FORMULE</div><div style="font-family:var(--mono);font-size:10px;color:var(--text);line-height:1.9">%K = (C - L14) / (H14 - L14) × 100<br>%D = MM3 de %K (ligne signal)</div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px"><div style="background:rgba(220,28,28,.1);border-radius:6px;padding:8px;text-align:center"><div style="font-size:10px;color:var(--red2);font-weight:600">SURACHAT</div><div style="font-family:var(--mono);font-size:14px;color:var(--red2);font-weight:700">&gt;80</div></div><div style="background:rgba(196,160,80,.1);border-radius:6px;padding:8px;text-align:center"><div style="font-size:10px;color:var(--gold);font-weight:600">NEUTRE</div><div style="font-family:var(--mono);font-size:14px;color:var(--gold);font-weight:700">20–80</div></div><div style="background:rgba(64,200,128,.1);border-radius:6px;padding:8px;text-align:center"><div style="font-size:10px;color:var(--green);font-weight:600">SURVENTE</div><div style="font-family:var(--mono);font-size:14px;color:var(--green);font-weight:700">&lt;20</div></div></div></div>
@@ -452,9 +452,9 @@
     </div>
   </div>
 </section>
- 
+
 </main>
- 
+
 <!-- ══════════════════════════════════════════ -->
 <!-- SCRIPTS -->
 <!-- ══════════════════════════════════════════ -->
@@ -463,7 +463,7 @@
 // Horloge
 setInterval(()=>{document.getElementById('clk').textContent=new Date().toLocaleTimeString('fr-FR');},1000);
 document.getElementById('clk').textContent=new Date().toLocaleTimeString('fr-FR');
- 
+
 // Navigation
 function goPage(id,el){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
@@ -477,7 +477,7 @@ function goEdu(id,el){
   document.getElementById('edu-'+id).classList.add('on');
   el.classList.add('on');
 }
- 
+
 // Données actifs
 const AD={
   CAC40:{p:[7980,8020,8100,8050,8080,8150,8200,8180,8210,8170,8230,8290,8280,8310,8350,8320,8380,8400,8370,8410,8440,8420,8390,8430,8450,8410,8260,8200,8240,8247],rsi:64,macd:72,stoch:68,boll:65,s1:8050,s2:7900,r1:8500,r2:8650,mm20:8280,mm50:8120,mm200:7850,sig:'ACHAT',sc:'#40c880'},
@@ -488,16 +488,16 @@ const AD={
   BTC:{p:[82000,84000,86000,88000,87000,89000,91000,90000,92000,91000,93000,94000,93000,95000,96000,95000,94000,93000,94000,95000,96000,95000,94000,95000,96000,95000,94500,94800,94700,94820],rsi:68,macd:70,stoch:65,boll:70,s1:88000,s2:82000,r1:98000,r2:105000,mm20:93500,mm50:89000,mm200:75000,sig:'ACHAT',sc:'#40c880'},
   GOLD:{p:[2980,2990,3000,3010,3020,3030,3040,3050,3060,3070,3080,3090,3100,3110,3120,3130,3140,3150,3160,3170,3180,3200,3220,3240,3260,3280,3300,3310,3318,3318],rsi:76,macd:80,stoch:88,boll:90,s1:3100,s2:2980,r1:3400,r2:3500,mm20:3150,mm50:3050,mm200:2900,sig:'SURACHAT',sc:'#dc1c1c'}
 };
- 
+
 let pCI=null;
 function fmt(v,k){return k==='BTC'||k==='GOLD'?v.toLocaleString('fr-FR')+'$':v.toLocaleString('fr-FR')+'€';}
- 
+
 function selA(k,el){
   document.querySelectorAll('.asbtn').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');
   renderTech(k);
 }
- 
+
 function renderTech(k){
   const d=AD[k];
   document.getElementById('chLbl').textContent=k+' — Prix & niveaux clés (30 jours)';
@@ -516,20 +516,20 @@ function renderTech(k){
     ]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,backgroundColor:'#0f1016',borderColor:'rgba(220,28,28,0.3)',borderWidth:1,titleColor:'#606880',bodyColor:'#d0d5e8'}},scales:{x:{ticks:{color:'#606880',font:{size:9},maxTicksLimit:8},grid:{color:'rgba(220,28,28,0.06)'}},y:{min:Math.min(...d.p)*0.985,max:Math.max(...d.p)*1.015,ticks:{color:'#606880',font:{family:'Space Mono',size:9}},grid:{color:'rgba(220,28,28,0.06)'}}}}
   });
- 
+
   const lo=Math.min(...d.p),hi=Math.max(...d.p);
   document.getElementById('fibS').innerHTML='<div style="font-size:10px;color:var(--muted);margin-bottom:8px">'+fmt(lo,k)+' → '+fmt(hi,k)+'</div>'+
     [{pct:'23,6%',l:.236},{pct:'38,2%',l:.382},{pct:'50,0%',l:.5},{pct:'61,8%',l:.618},{pct:'78,6%',l:.786}].map(f=>
       '<div class="fibrow"><span class="fibpct">'+f.pct+'</span><span style="font-family:var(--mono);font-size:10px;color:var(--text)">'+fmt(Math.round(hi-(hi-lo)*f.l),k)+'</span></div>'+
       '<div style="height:4px;background:rgba(255,255,255,.06);border-radius:2px;margin-bottom:4px;overflow:hidden"><div style="height:100%;width:'+Math.round((1-f.l)*100)+'%;background:rgba(220,28,28,.5);border-radius:2px"></div></div>'
     ).join('');
- 
+
   document.getElementById('zonesB').innerHTML=
     '<div class="zone sup"><div class="zt">Support 1</div><div class="zp" style="color:var(--green)">'+fmt(d.s1,k)+'</div></div>'+
     '<div class="zone res"><div class="zt">Résistance 1</div><div class="zp" style="color:var(--red2)">'+fmt(d.r1,k)+'</div></div>'+
     '<div class="zone sup"><div class="zt">Support 2</div><div class="zp" style="color:var(--green)">'+fmt(d.s2,k)+'</div></div>'+
     '<div class="zone res"><div class="zt">Résistance 2</div><div class="zp" style="color:var(--red2)">'+fmt(d.r2,k)+'</div></div>';
- 
+
   const rC=d.rsi>70?'#ff3a3a':d.rsi<30?'#40c880':'#c4a050';
   document.getElementById('rsiV').textContent=d.rsi; document.getElementById('rsiV').style.color=rC;
   document.getElementById('rsiFl').style.cssText='width:'+d.rsi+'%;background:'+rC;
@@ -544,13 +544,13 @@ function renderTech(k){
   const bT=d.boll>80?'Borne haute':d.boll<20?'Borne basse':'Central';
   document.getElementById('bollV').textContent=bT; document.getElementById('bollV').style.color=bC;
   document.getElementById('bollFl').style.cssText='width:'+d.boll+'%;background:'+bC;
- 
+
   const cur=d.p[d.p.length-1];
   document.getElementById('mmB').innerHTML=[
     {l:'MM 20',v:fmt(d.mm20,k),up:cur>d.mm20},{l:'MM 50',v:fmt(d.mm50,k),up:cur>d.mm50},
     {l:'MM 200',v:fmt(d.mm200,k),up:cur>d.mm200},{l:'Prix actuel',v:fmt(cur,k),up:true}
   ].map(m=>'<div class="mmitem"><div class="mmlbl">'+m.l+'</div><div class="mmval" style="color:'+(m.up?'#40c880':'#ff3a3a')+'">'+m.v+'</div></div>').join('');
- 
+
   document.getElementById('sigR').innerHTML=[
     {l:'RSI',v:d.rsi>70?'Surachat':d.rsi<30?'Survente':'Neutre',c:rC},
     {l:'MACD',v:mT,c:mC},{l:'Bollinger',v:bT,c:bC},
@@ -558,13 +558,13 @@ function renderTech(k){
     {l:'MM croisée',v:cur>d.mm50?'Haussier':'Baissier',c:cur>d.mm50?'#40c880':'#ff3a3a'},
     {l:'Tendance',v:cur>d.mm200?'Haussière':'Baissière',c:cur>d.mm200?'#40c880':'#ff3a3a'}
   ].map(s=>'<div class="sigitem"><div class="silbl">'+s.l+'</div><div class="sival" style="color:'+s.c+'">'+s.v+'</div></div>').join('');
- 
+
   const subs={ACHAT:'Signal haussier confirmé — positionner à l\'achat',NEUTRE:'Attendre confirmation',SURACHAT:'Zone de surachat — correction probable',SURVENTE:'Zone de survente — rebond probable',VENTE:'Signal baissier'};
   const sc=document.getElementById('sigC');
   sc.innerHTML='<div style="font-size:28px;color:'+d.sc+';margin-bottom:6px">'+(d.sig==='ACHAT'?'↑':d.sig==='SURACHAT'?'⚠':d.sig==='SURVENTE'?'↓':'—')+'</div><div style="font-size:15px;font-weight:700;color:'+d.sc+';margin-bottom:4px">'+d.sig+'</div><div style="font-size:11px;color:var(--muted)">'+subs[d.sig]+'</div>';
   sc.style.borderColor=d.sc+'55';
 }
- 
+
 function renderDec(){
   const k=document.getElementById('decA').value;
   const risk=document.getElementById('decR').value;
@@ -581,7 +581,7 @@ function renderDec(){
   const msgs={buy:['SIGNAL D\'ACHAT','Indicateurs convergent positivement. Stop sous '+fmt(d.s1,k)+'.'],sell:['SIGNAL DE VENTE','Pression baissière. Stop au-dessus de '+fmt(d.r1,k)+'.'],wait:['ATTENTE','Signal mixte. Attendre cassure de '+fmt(d.s1,k)+' ou '+fmt(d.r1,k)+'.']};
   document.getElementById('concD').innerHTML='<div class="conc '+cls+'"><div class="conc-ttl">'+msgs[cls][0]+'</div><div class="conc-body">'+msgs[cls][1]+'</div></div>';
 }
- 
+
 function renderComp(){
   const m=parseInt(document.getElementById('mont').value);
   document.getElementById('montV').textContent=m.toLocaleString('fr-FR')+'€';
@@ -593,7 +593,7 @@ function renderComp(){
       return '<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="color:var(--muted)">'+o.n+'</span><span style="font-family:var(--mono);color:'+c+'">+'+gain.toLocaleString('fr-FR')+'€ ('+o.r+'%)</span></div><div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+Math.round(o.r/20*100)+'%;background:'+c+'"></div></div></div>';
     }).join('');
 }
- 
+
 function updRsi(){
   const v=parseInt(document.getElementById('rsiSim').value);
   document.getElementById('rsiSV').textContent=v;
@@ -603,7 +603,7 @@ function updRsi(){
   document.getElementById('rsiSTx').textContent=t[0]; document.getElementById('rsiSTx').style.color=c;
   document.getElementById('rsiSSb').textContent=t[1];
 }
- 
+
 function initCharts(){
   // Top/Flop
   new Chart(document.getElementById('topChart'),{type:'bar',data:{labels:['Safran','Schneider','Airbus','Sanofi','Orange','LVMH','Renault','Engie'],datasets:[{data:[3.8,2.4,1.9,1.2,-0.8,-1.4,-2.1,-2.9],backgroundColor:['rgba(64,200,128,.75)','rgba(64,200,128,.6)','rgba(64,200,128,.5)','rgba(64,200,128,.35)','rgba(220,28,28,.3)','rgba(220,28,28,.5)','rgba(220,28,28,.65)','rgba(220,28,28,.8)'],borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(220,28,28,.06)'},ticks:{color:'#606880',font:{size:9},callback:v=>v+'%'}},y:{grid:{display:false},ticks:{color:'#d0d5e8',font:{size:10}}}}}});
@@ -611,7 +611,7 @@ function initCharts(){
   new Chart(document.getElementById('secChart'),{type:'bar',data:{labels:['Défense','Industrie','Santé','Banques','Énergie','Luxe','Télécom'],datasets:[{data:[2.8,1.6,0.9,0.4,-0.2,-0.9,-1.3],backgroundColor:['rgba(64,200,128,.7)','rgba(64,200,128,.55)','rgba(64,200,128,.4)','rgba(196,160,80,.45)','rgba(220,28,28,.3)','rgba(220,28,28,.5)','rgba(220,28,28,.7)'],borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#d0d5e8',font:{size:9}}},y:{grid:{color:'rgba(220,28,28,.06)'},ticks:{color:'#606880',font:{size:9},callback:v=>v+'%'}}}}});
   // Radar risque
   new Chart(document.getElementById('riskC'),{type:'radar',data:{labels:['Rendement','Liquidité','Sécurité','Fiscalité','Accessibilité'],datasets:[{data:[90,60,40,85,65],borderColor:'#dc1c1c',backgroundColor:'rgba(220,28,28,.1)',borderWidth:1.5,pointRadius:2},{data:[30,100,100,90,100],borderColor:'#9070e0',backgroundColor:'rgba(144,112,224,.1)',borderWidth:1.5,pointRadius:2},{data:[55,50,80,70,75],borderColor:'#c4a050',backgroundColor:'rgba(196,160,80,.1)',borderWidth:1.5,pointRadius:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{r:{ticks:{display:false},grid:{color:'rgba(220,28,28,.1)'},pointLabels:{color:'#606880',font:{size:10}},angleLines:{color:'rgba(220,28,28,.1)'},suggestedMin:0,suggestedMax:100}}}});
- 
+
   const gO=(a,b)=>({responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{min:a,max:b,grid:{color:'rgba(220,28,28,.08)'},ticks:{color:'#606880',font:{size:9}}}}});
   const d20=Array.from({length:20},(_,i)=>i+1);
   const mL=d20.map(i=>Math.sin(i*.4)*15+i*.3), sL=d20.map(i=>Math.sin(i*.4-.3)*12+i*.25);
@@ -632,14 +632,14 @@ function initCharts(){
   // Stochastique edu
   const sK=d20.map(i=>50+Math.sin(i*.6)*35), sD=d20.map(i=>50+Math.sin((i-.5)*.6)*30);
   new Chart(document.getElementById('stochEdu'),{type:'line',data:{labels:d20,datasets:[{data:sK,borderColor:'#dc1c1c',borderWidth:2,pointRadius:0,fill:false,tension:.3},{data:sD,borderColor:'#9070e0',borderWidth:1.5,borderDash:[4,2],pointRadius:0,fill:false,tension:.3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{min:0,max:100,grid:{color:'rgba(220,28,28,.08)'},ticks:{color:'#606880',font:{size:9}}}}}});
- 
+
   // Fibonacci niveaux
   document.getElementById('fibLvl').innerHTML=[
     {pct:'23,6%',d:'Correction légère'},{pct:'38,2%',d:'Retracement modéré'},
     {pct:'50,0%',d:'Mi-chemin (psycho)'},{pct:'61,8%',d:'Retracement doré'},{pct:'78,6%',d:'Retracement profond'}
   ].map(f=>'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(220,28,28,.1)"><span style="font-family:var(--mono);font-size:11px;color:var(--red2)">'+f.pct+'</span><span style="font-size:11px;color:var(--muted)">'+f.d+'</span></div>').join('');
 }
- 
+
 // Initialisation
 renderTech('CAC40');
 renderDec();
