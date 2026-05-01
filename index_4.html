@@ -408,13 +408,13 @@
 // ════════════════════════════════════
 const FB = {
   indices:[
-    {n:'CAC 40',sym:'^FCHI',flag:'🇫🇷',p:7842,c:-0.34,open:true},
-    {n:'S&P 500',sym:'^GSPC',flag:'🇺🇸',p:5569,c:0.58,open:true},
-    {n:'NASDAQ',sym:'^IXIC',flag:'🇺🇸',p:17482,c:0.72,open:true},
-    {n:'DAX',sym:'^GDAXI',flag:'🇩🇪',p:22891,c:0.41,open:true},
-    {n:'FTSE 100',sym:'^FTSE',flag:'🇬🇧',p:8562,c:0.18,open:false},
-    {n:'Nikkei 225',sym:'^N225',flag:'🇯🇵',p:35842,c:-0.62,open:false},
-    {n:'Hang Seng',sym:'^HSI',flag:'🇭🇰',p:22450,c:0.84,open:false},
+    {n:'CAC 40',sym:'EWQ',flag:'🇫🇷',p:8102,c:-0.34,open:true},
+    {n:'S&P 500',sym:'SPY',flag:'🇺🇸',p:5569,c:0.58,open:true},
+    {n:'NASDAQ',sym:'QQQ',flag:'🇺🇸',p:17482,c:0.93,open:true},
+    {n:'DAX',sym:'EWG',flag:'🇩🇪',p:22891,c:0.41,open:true},
+    {n:'FTSE 100',sym:'EWU',flag:'🇬🇧',p:8562,c:0.18,open:false},
+    {n:'Nikkei 225',sym:'EWJ',flag:'🇯🇵',p:35842,c:-0.62,open:false},
+    {n:'Hang Seng',sym:'EWH',flag:'🇭🇰',p:22450,c:0.84,open:false},
     {n:'Shanghai',sym:'000001.SS',flag:'🇨🇳',p:3342,c:0.31,open:false}
   ],
   actions_fr:[
@@ -639,13 +639,12 @@ renderMatieres(FB.matieres,false);
 // ════════════════════════════════════
 async function loadIndices(){
   const data = await fetchIndicesAPI();
-  if(!data?.length) return;
-  // FMP format: {symbol, price, changesPercentage, ...}
-  const flagMap={'^FCHI':'🇫🇷','^GSPC':'🇺🇸','^IXIC':'🇺🇸','^GDAXI':'🇩🇪','^FTSE':'🇬🇧','^N225':'🇯🇵','^HSI':'🇭🇰'};
+  if(!data?.length){ renderIndices(FB.indices,false); return; }
+  // Fusionner AV avec fallback — AV retourne price=0 si limite atteinte
   const merged = FB.indices.map(d=>{
-    const r = data.find(x=>x.symbol===d.sym);
-    if(!r) return d;
-    return{...d, p:r.price||d.p, c:r.changesPercentage||d.c, open:r.isActivelyTrading!==false};
+    const r = data.find(x=>x.symbol===d.sym || x.sym===d.sym);
+    if(!r || !r.price || r.price===0) return d; // garder fallback si AV KO
+    return{...d, p:r.price, c:r.changesPercentage||d.c};
   });
   renderIndices(merged,true);
   buildTicker({indices:merged,crypto:FB.crypto,forex:FB.forex});
