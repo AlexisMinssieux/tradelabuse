@@ -495,34 +495,52 @@ function goPage(id,el){
 }
 
 // ════════════════════════════════════
-// FETCH MULTI-PROXY (3 tentatives)
+// API — CLOUDFLARE WORKER TRADELABUSE
+// https://tradelabuse-api.alexisminssieux.workers.dev
 // ════════════════════════════════════
-const PROXIES = [
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-  url => `https://cors-anywhere.herokuapp.com/${url}`
-];
-const YAHOO_BASE = 'https://query1.finance.yahoo.com/v7/finance/quote?symbols=';
+const API = 'https://tradelabuse-api.alexisminssieux.workers.dev';
 
-async function fetchWithProxy(url, proxyIdx=0){
-  if(proxyIdx >= PROXIES.length) return null;
+async function apiFetch(path, timeout=8000){
   try{
-    const proxyUrl = PROXIES[proxyIdx](url);
-    const r = await fetch(proxyUrl, {signal: AbortSignal.timeout(6000)});
+    const r = await fetch(API+path, {signal: AbortSignal.timeout(timeout)});
     if(!r.ok) throw new Error('HTTP '+r.status);
     return await r.json();
   }catch(e){
-    console.warn(`Proxy ${proxyIdx} failed:`, e.message);
-    return fetchWithProxy(url, proxyIdx+1);
+    console.warn('API error ['+path+']:', e.message);
+    return null;
   }
 }
 
-async function yahooFetch(symbols){
-  try{
-    const syms = Array.isArray(symbols)?symbols.join(','):symbols;
-    const data = await fetchWithProxy(YAHOO_BASE+syms);
-    return data?.quoteResponse?.result || [];
-  }catch(e){return [];}
+// FMP retourne un tableau direct [{symbol, price, changesPercentage, ...}]
+async function fmpFetch(symbols){
+  const syms = Array.isArray(symbols)?symbols.join(','):symbols;
+  const data = await apiFetch('/quotes?symbols='+encodeURIComponent(syms));
+  return Array.isArray(data) ? data : [];
+}
+
+async function fetchCryptoAPI(){
+  const data = await apiFetch('/crypto');
+  return Array.isArray(data) ? data : null;
+}
+
+async function fetchForexAPI(){
+  return await apiFetch('/forex');
+}
+
+async function fetchIndicesAPI(){
+  return await apiFetch('/indices');
+}
+
+async function fetchMatieresAPI(){
+  return await apiFetch('/matieres');
+}
+
+async function fetchNewsAPI(){
+  return await apiFetch('/news');
+}
+
+async function fetchFearGreedAPI(){
+  return await apiFetch('/feargreed');
 }
 
 // ════════════════════════════════════
@@ -620,59 +638,78 @@ renderMatieres(FB.matieres,false);
 // CHARGEMENT APIs LIVE
 // ════════════════════════════════════
 async function loadIndices(){
-  const syms=FB.indices.map(d=>d.sym);
-  const q=await yahooFetch(syms);
-  if(!q.length)return;
-  const merged=FB.indices.map(d=>{
-    const r=q.find(x=>x.symbol===d.sym);if(!r)return d;
-    return{...d,p:r.regularMarketPrice||d.p,c:r.regularMarketChangePercent||d.c,open:r.marketState==='REGULAR'};
+  const data = await fetchIndicesAPI();
+  if(!data?.length) return;
+  // FMP format: {symbol, price, changesPercentage, ...}
+  const flagMap={'^FCHI':'🇫🇷','^GSPC':'🇺🇸','^IXIC':'🇺🇸','^GDAXI':'🇩🇪','^FTSE':'🇬🇧','^N225':'🇯🇵','^HSI':'🇭🇰'};
+  const merged = FB.indices.map(d=>{
+    const r = data.find(x=>x.symbol===d.sym);
+    if(!r) return d;
+    return{...d, p:r.price||d.p, c:r.changesPercentage||d.c, open:r.isActivelyTrading!==false};
   });
   renderIndices(merged,true);
   buildTicker({indices:merged,crypto:FB.crypto,forex:FB.forex});
 }
 
 async function loadActions(m='fr'){
-  const data=m==='us'?FB.actions_us:FB.actions_fr;
-  const cur=m==='us'?'$':'€';
-  const syms=data.map(d=>d.sym);
-  const q=await yahooFetch(syms);
-  if(!q.length)return;
-  const merged=data.map(d=>{
-    const r=q.find(x=>x.symbol===d.sym);if(!r)return d;
-    return{...d,p:r.regularMarketPrice||d.p,c:r.regularMarketChangePercent||d.c,vol:r.regularMarketVolume?fmtK(r.regularMarketVolume):d.vol};
+  const fbData = m==='us'?FB.actions_us:FB.actions_fr;
+  const cur = m==='us'?'$':'€';
+  const syms = fbData.map(d=>d.sym).join(',');
+  const data = await fmpFetch(syms);
+  if(!data?.length) return;
+  const merged = fbData.map(d=>{
+    const r = data.find(x=>x.symbol===d.sym);
+    if(!r) return d;
+    return{...d, p:r.price||d.p, c:r.changesPercentage||d.c, vol:r.volume?fmtK(r.volume):d.vol};
   });
   renderActions(merged,cur,true);
 }
 
 async function loadForex(){
-  const syms=FB.forex.map(d=>d.sym||'');
-  // construire les symboles Yahoo
-  const yahooSyms=['EURUSD=X','EURGBP=X','EURJPY=X','USDCHF=X','GBPUSD=X','USDJPY=X','AUDUSD=X','USDCAD=X'];
-  const q=await yahooFetch(yahooSyms);
-  if(!q.length)return;
-  const merged=FB.forex.map((d,i)=>{
-    const r=q[i]||q.find(x=>x.symbol===yahooSyms[i]);if(!r)return d;
-    return{...d,p:r.regularMarketPrice||d.p,c:r.regularMarketChangePercent||d.c,h:r.regularMarketDayHigh||d.h,l:r.regularMarketDayLow||d.l};
+  const data = await fetchForexAPI();
+  if(!data?.eur) return;
+  // Frankfurter retourne les taux vs EUR — reconstruire les paires
+  const eur = data.eur;
+  const merged = FB.forex.map(d=>{
+    let price = d.p;
+    if(d.pair==='EUR/USD' && eur.USD) price = eur.USD;
+    else if(d.pair==='EUR/GBP' && eur.GBP) price = eur.GBP;
+    else if(d.pair==='EUR/JPY' && eur.JPY) price = eur.JPY;
+    else if(d.pair==='GBP/USD' && data.gbp?.USD) price = data.gbp.USD;
+    else if(d.pair==='USD/CHF' && data.usd?.CHF) price = data.usd.CHF;
+    else if(d.pair==='USD/JPY' && data.usd?.JPY) price = data.usd.JPY;
+    else if(d.pair==='AUD/USD' && eur.AUD && eur.USD) price = eur.USD/eur.AUD;
+    else if(d.pair==='USD/CAD' && data.usd?.CAD) price = data.usd.CAD;
+    return{...d, p:+price.toFixed(d.dp), c:0};
   });
   renderForex(merged,true);
 }
 
+async function loadMatieres(){
+  const data = await fetchMatieresAPI();
+  if(!data) return;
+  const merged = FB.matieres.map(d=>{
+    let live = null;
+    if(d.id==='gold' && data.gold) live = data.gold;
+    else if(d.id==='silver' && data.silver) live = data.silver;
+    else if(d.id==='oil' && data.oil) live = data.oil;
+    else if(d.id==='gas' && data.gas) live = data.gas;
+    if(!live) return d;
+    return{...d, p:live.price||d.p, c:live.change||d.c};
+  });
+  renderMatieres(merged,true);
+}
+
 async function loadCrypto(){
-  try{
-    const r=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1',{signal:AbortSignal.timeout(8000)});
-    if(!r.ok)throw new Error('CoinGecko '+r.status);
-    const coins=await r.json();
-    if(!coins?.length)throw new Error('empty');
-    const merged=FB.crypto.map(d=>{
-      const coin=coins.find(c=>c.symbol?.toLowerCase()===d.sym.toLowerCase());if(!coin)return d;
-      return{...d,p:coin.current_price||d.p,c:coin.price_change_percentage_24h||d.c,cap:fmtK(coin.market_cap)||d.cap};
-    });
-    // ajouter les coins pas dans FB
-    const extra=coins.slice(FB.crypto.length).map((c,i)=>({rank:FB.crypto.length+i+1,n:c.name,sym:c.symbol?.toUpperCase(),id:null,p:c.current_price,c:c.price_change_percentage_24h||0,cap:fmtK(c.market_cap)}));
-    renderCrypto([...merged,...extra],true);
-    // doughnut
-    buildCryptoDom(coins);
-  }catch(e){console.warn('CoinGecko:',e);}
+  const coins = await fetchCryptoAPI();
+  if(!coins?.length){ console.warn('Crypto API KO'); loadFearGreed(); return; }
+  const merged=FB.crypto.map(d=>{
+    const coin=coins.find(c=>c.symbol?.toLowerCase()===d.sym.toLowerCase());if(!coin)return d;
+    return{...d,p:coin.current_price||d.p,c:coin.price_change_percentage_24h||d.c,cap:fmtK(coin.market_cap)||d.cap};
+  });
+  const extra=coins.slice(FB.crypto.length).map((c,i)=>({rank:FB.crypto.length+i+1,n:c.name,sym:c.symbol?.toUpperCase(),id:null,p:c.current_price,c:c.price_change_percentage_24h||0,cap:fmtK(c.market_cap)}));
+  renderCrypto([...merged,...extra],true);
+  buildCryptoDom(coins);
   loadFearGreed();
 }
 
@@ -681,16 +718,67 @@ function buildCryptoDom(coins){
   const top5=coins.slice(0,5);
   const others=100-top5.reduce((s,c)=>s+((c.market_cap/tot)*100),0);
   if(window._domChart)window._domChart.destroy();
-  window._domChart=new Chart($('crDom'),{type:'doughnut',data:{labels:[...top5.map(c=>c.symbol.toUpperCase()),'Autres'],datasets:[{data:[...top5.map(c=>+((c.market_cap/tot)*100).toFixed(1)),+others.toFixed(1)],backgroundColor:['#f7931a','#627eea','#f3ba2f','#9945ff','#346aa9','#606880'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'right',labels:{color:'#606880',font:{size:8},padding:4,boxWidth:8}}}}});
+  window._domChart=new Chart($('crDom'),{type:'doughnut',data:{labels:[...top5.map(c=>c.symbol.toUpperCase()),'Autres'],datasets:[{data:[...top5.map(c=>+((c.market_cap/tot)*100).toFixed(1)),+others.toFixed(1)],backgroundColor:['#f7931a','#627eea','#f3ba2f','#9945ff','#346aa9','#aaa090'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'right',labels:{color:'#7a7068',font:{size:8},padding:4,boxWidth:8}}}}});
 }
 
 async function loadFearGreed(){
   try{
-    const r=await fetch('https://api.alternative.me/fng/',{signal:AbortSignal.timeout(5000)});
-    const d=await r.json();const v=parseInt(d?.data?.[0]?.value||62);const l=d?.data?.[0]?.value_classification||'Avidité';
+    const d = await fetchFearGreedAPI();
+    const v=parseInt(d?.data?.[0]?.value||62);const l=d?.data?.[0]?.value_classification||'Avidité';
     $('fgVal').textContent=v;$('fgVal').style.color=v>60?'var(--green)':v>40?'var(--gold)':'var(--red2)';
     $('fgLabel').textContent=l;$('fgMarker').style.left=v+'%';
   }catch{$('fgVal').textContent='62';$('fgLabel').textContent='Avidité';$('fgMarker').style.left='62%';}
+}
+
+// ════════════════════════════════════
+// ACTUALITÉS EN TEMPS RÉEL (Reuters RSS)
+// ════════════════════════════════════
+function relTime(dateStr){
+  if(!dateStr)return'';
+  try{
+    const diff=Math.floor((Date.now()-new Date(dateStr).getTime())/60000);
+    if(diff<1)return'À l\'instant';if(diff<60)return`Il y a ${diff} min`;
+    if(diff<1440)return`Il y a ${Math.floor(diff/60)}h`;
+    return`Il y a ${Math.floor(diff/1440)}j`;
+  }catch{return'';}
+}
+function newsColor(title){
+  const t=title.toLowerCase();
+  if(/\b(fall|drop|decline|crash|loss|down|slump|tariff|war|sanction|recession|inflation)\b/.test(t))return'var(--red2)';
+  if(/\b(rise|gain|surge|record|high|up|growth|rally|profit|beat)\b/.test(t))return'var(--green)';
+  return'var(--gold)';
+}
+function newsTag(title){
+  const t=title.toLowerCase();
+  if(/bitcoin|crypto|ethereum|btc/.test(t))return{l:'Crypto',cls:'p'};
+  if(/fed|powell|rate|fomc|interest/.test(t))return{l:'Fed',cls:'u'};
+  if(/ecb|bce|lagarde|euro/.test(t))return{l:'BCE',cls:'u'};
+  if(/oil|opec|energy|brent|wti/.test(t))return{l:'Énergie',cls:'n'};
+  if(/gold|silver|metal/.test(t))return{l:'Métal',cls:'p'};
+  if(/nvidia|apple|microsoft|amazon|meta|alphabet|tesla/.test(t))return{l:'Tech',cls:'p'};
+  if(/cac|lvmh|airbus|safran|totalenergies/.test(t))return{l:'CAC40',cls:'u'};
+  if(/china|tariff|trade/.test(t))return{l:'Géopol.',cls:'n'};
+  return{l:'Marchés',cls:'u'};
+}
+
+async function loadNews(){
+  const items = await fetchNewsAPI();
+  if(!items?.length){ console.warn('News API KO'); return; }
+  const feed=$('newsFeed');
+  if(!feed)return;
+  feed.innerHTML=items.slice(0,10).map(item=>{
+    const col=newsColor(item.title);
+    const tag=newsTag(item.title);
+    const t=relTime(item.pubDate);
+    return`<div class="newsc">
+      <div class="ndot" style="background:${col};flex-shrink:0;margin-top:4px"></div>
+      <div style="flex:1">
+        <div class="ntit"><a href="${item.link}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${item.title}</a></div>
+        ${item.desc?`<div style="font-size:10px;color:var(--muted);margin:2px 0;line-height:1.4">${item.desc}...</div>`:''}
+        <div class="nmet"><span class="ntag ${tag.cls}">${tag.l}</span>${item.source}${t?' · '+t:''}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 async function loadMatieres(){
@@ -894,7 +982,8 @@ async function loadAll(){
       loadForex(),
       loadCrypto(),
       loadMatieres(),
-      loadActions('fr')
+      loadActions('fr'),
+      loadNews()
     ]);
     setStatus('✅ '+new Date().toLocaleTimeString('fr-FR')+' · ↺ auto dans 60s');
   }catch(e){
