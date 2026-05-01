@@ -296,6 +296,20 @@
     <button class="cat-tab" onclick="selPlac('av-uc',this)">AV Unités de Compte</button>
     <button class="cat-tab" onclick="selPlac('livrets',this)">Livrets</button>
   </div>
+
+  <!-- FENÊTRE EXPLICATIVE -->
+  <div id="placExplainer" style="margin-bottom:12px;border-radius:10px;border:1px solid rgba(196,26,26,.18);background:#fff8f5;padding:14px 18px;display:flex;gap:14px;align-items:flex-start">
+    <div id="placIcon" style="font-size:28px;flex-shrink:0;margin-top:2px">📊</div>
+    <div style="flex:1">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <div id="placExTitle" style="font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:#1a1612"></div>
+        <div id="placExBadges" style="display:flex;gap:4px"></div>
+      </div>
+      <p id="placExDesc" style="font-size:11px;color:#4a4038;line-height:1.8;margin-bottom:8px"></p>
+      <div id="placExItems" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:6px"></div>
+    </div>
+  </div>
+
   <div class="g2x">
     <div>
       <div class="stitle" id="placTitle">PEA — Meilleurs ETF éligibles</div>
@@ -394,64 +408,64 @@
 // ════════════════════════════════════
 const FB = {
   indices:[
-    {n:'CAC 40',sym:'^FCHI',flag:'🇫🇷',p:8247,c:0.64,open:true},
-    {n:'S&P 500',sym:'^GSPC',flag:'🇺🇸',p:5658,c:0.91,open:true},
-    {n:'NASDAQ',sym:'^IXIC',flag:'🇺🇸',p:17841,c:1.12,open:true},
-    {n:'DAX',sym:'^GDAXI',flag:'🇩🇪',p:18412,c:0.38,open:true},
-    {n:'FTSE 100',sym:'^FTSE',flag:'🇬🇧',p:8124,c:-0.21,open:false},
-    {n:'Nikkei 225',sym:'^N225',flag:'🇯🇵',p:38120,c:1.43,open:false},
-    {n:'Hang Seng',sym:'^HSI',flag:'🇭🇰',p:21890,c:-0.54,open:false},
-    {n:'Shanghai',sym:'000001.SS',flag:'🇨🇳',p:3298,c:0.22,open:false}
+    {n:'CAC 40',sym:'^FCHI',flag:'🇫🇷',p:7842,c:-0.34,open:true},
+    {n:'S&P 500',sym:'^GSPC',flag:'🇺🇸',p:5569,c:0.58,open:true},
+    {n:'NASDAQ',sym:'^IXIC',flag:'🇺🇸',p:17482,c:0.72,open:true},
+    {n:'DAX',sym:'^GDAXI',flag:'🇩🇪',p:22891,c:0.41,open:true},
+    {n:'FTSE 100',sym:'^FTSE',flag:'🇬🇧',p:8562,c:0.18,open:false},
+    {n:'Nikkei 225',sym:'^N225',flag:'🇯🇵',p:35842,c:-0.62,open:false},
+    {n:'Hang Seng',sym:'^HSI',flag:'🇭🇰',p:22450,c:0.84,open:false},
+    {n:'Shanghai',sym:'000001.SS',flag:'🇨🇳',p:3342,c:0.31,open:false}
   ],
   actions_fr:[
-    {n:'Safran',sym:'SAF.PA',p:218.40,c:3.8,vol:'2.1M',sec:'Défense'},
-    {n:'Schneider',sym:'SU.PA',p:242.75,c:2.4,vol:'1.8M',sec:'Industrie'},
-    {n:'Airbus',sym:'AIR.PA',p:172.30,c:1.9,vol:'3.2M',sec:'Aéro'},
-    {n:'Hermès',sym:'RMS.PA',p:2110,c:1.4,vol:'0.3M',sec:'Luxe'},
-    {n:'TotalEnergies',sym:'TTE.PA',p:61.40,c:0.8,vol:'5.1M',sec:'Énergie'},
-    {n:'BNP Paribas',sym:'BNP.PA',p:74.20,c:0.5,vol:'4.2M',sec:'Finance'},
-    {n:'LVMH',sym:'MC.PA',p:554,c:-1.4,vol:'0.8M',sec:'Luxe'},
-    {n:'Sanofi',sym:'SAN.PA',p:92.30,c:-0.6,vol:'2.1M',sec:'Santé'}
+    {n:'Safran',sym:'SAF.PA',p:264.50,c:1.2,vol:'1.8M',sec:'Défense'},
+    {n:'Schneider',sym:'SU.PA',p:258.40,c:0.8,vol:'1.4M',sec:'Industrie'},
+    {n:'Airbus',sym:'AIR.PA',p:188.64,c:0.5,vol:'2.1M',sec:'Aéro'},
+    {n:'Hermès',sym:'RMS.PA',p:2248,c:0.9,vol:'0.2M',sec:'Luxe'},
+    {n:'TotalEnergies',sym:'TTE.PA',p:58.20,c:-0.6,vol:'4.8M',sec:'Énergie'},
+    {n:'BNP Paribas',sym:'BNP.PA',p:72.80,c:-0.3,vol:'3.9M',sec:'Finance'},
+    {n:'LVMH',sym:'MC.PA',p:486,c:-1.8,vol:'0.6M',sec:'Luxe'},
+    {n:'Sanofi',sym:'SAN.PA',p:98.40,c:0.4,vol:'1.9M',sec:'Santé'}
   ],
   actions_us:[
-    {n:'Apple',sym:'AAPL',p:189.30,c:1.2,vol:'58M',sec:'Tech'},
-    {n:'Microsoft',sym:'MSFT',p:421.80,c:0.8,vol:'22M',sec:'Tech'},
-    {n:'NVIDIA',sym:'NVDA',p:875.40,c:3.1,vol:'41M',sec:'Semi.'},
-    {n:'Amazon',sym:'AMZN',p:182.60,c:1.5,vol:'34M',sec:'E-com'},
-    {n:'Alphabet',sym:'GOOGL',p:168.90,c:0.9,vol:'28M',sec:'Tech'},
-    {n:'Tesla',sym:'TSLA',p:248.70,c:-0.8,vol:'112M',sec:'EV'},
-    {n:'Meta',sym:'META',p:512.30,c:2.1,vol:'19M',sec:'Tech'},
-    {n:'JPMorgan',sym:'JPM',p:208.40,c:0.4,vol:'8M',sec:'Finance'}
+    {n:'Apple',sym:'AAPL',p:207.50,c:0.6,vol:'52M',sec:'Tech'},
+    {n:'Microsoft',sym:'MSFT',p:448.20,c:1.1,vol:'20M',sec:'Tech'},
+    {n:'NVIDIA',sym:'NVDA',p:1092,c:2.4,vol:'38M',sec:'Semi.'},
+    {n:'Amazon',sym:'AMZN',p:196.80,c:0.9,vol:'31M',sec:'E-com'},
+    {n:'Alphabet',sym:'GOOGL',p:162.40,c:0.5,vol:'25M',sec:'Tech'},
+    {n:'Tesla',sym:'TSLA',p:278.90,c:-1.2,vol:'98M',sec:'EV'},
+    {n:'Meta',sym:'META',p:548.60,c:1.4,vol:'17M',sec:'Tech'},
+    {n:'JPMorgan',sym:'JPM',p:244.10,c:0.3,vol:'7M',sec:'Finance'}
   ],
   forex:[
-    {pair:'EUR/USD',id:'eurusd',p:1.0872,c:-0.12,h:1.0924,l:1.0841,dp:4},
-    {pair:'EUR/GBP',id:'eurgbp',p:0.8564,c:0.08,h:0.8601,l:0.8531,dp:4},
-    {pair:'EUR/JPY',id:'eurjpy',p:162.84,c:0.31,h:163.42,l:162.10,dp:2},
-    {pair:'USD/CHF',id:'usdchf',p:0.9012,c:0.15,h:0.9048,l:0.8981,dp:4},
-    {pair:'GBP/USD',id:null,p:1.2694,c:-0.19,h:1.2748,l:1.2661,dp:4},
-    {pair:'USD/JPY',id:null,p:149.72,c:0.42,h:150.18,l:149.21,dp:2},
-    {pair:'AUD/USD',id:null,p:0.6524,c:-0.34,h:0.6568,l:0.6501,dp:4},
-    {pair:'USD/CAD',id:null,p:1.3628,c:0.21,h:1.3654,l:1.3588,dp:4}
+    {pair:'EUR/USD',id:'eurusd',p:1.1312,c:0.18,h:1.1380,l:1.1265,dp:4},
+    {pair:'EUR/GBP',id:'eurgbp',p:0.8598,c:-0.08,h:0.8640,l:0.8572,dp:4},
+    {pair:'EUR/JPY',id:'eurjpy',p:162.48,c:0.24,h:163.10,l:161.90,dp:2},
+    {pair:'USD/CHF',id:'usdchf',p:0.8242,c:-0.14,h:0.8290,l:0.8218,dp:4},
+    {pair:'GBP/USD',id:null,p:1.3158,c:0.22,h:1.3210,l:1.3102,dp:4},
+    {pair:'USD/JPY',id:null,p:143.64,c:0.08,h:144.20,l:143.10,dp:2},
+    {pair:'AUD/USD',id:null,p:0.6428,c:-0.18,h:0.6480,l:0.6400,dp:4},
+    {pair:'USD/CAD',id:null,p:1.3842,c:0.12,h:1.3880,l:1.3810,dp:4}
   ],
   crypto:[
-    {rank:1,n:'Bitcoin',sym:'BTC',id:'btc',p:94820,c:1.42,cap:'1.87T'},
-    {rank:2,n:'Ethereum',sym:'ETH',id:'eth',p:3248,c:2.18,cap:'390B'},
-    {rank:3,n:'BNB',sym:'BNB',id:'bnb',p:612,c:0.84,cap:'89B'},
-    {rank:4,n:'Solana',sym:'SOL',id:'sol',p:182,c:3.21,cap:'86B'},
-    {rank:5,n:'XRP',sym:'XRP',id:null,p:0.624,c:-0.52,cap:'35B'},
-    {rank:6,n:'Dogecoin',sym:'DOGE',id:null,p:0.182,c:1.95,cap:'26B'},
-    {rank:7,n:'Cardano',sym:'ADA',id:null,p:0.512,c:0.78,cap:'18B'},
-    {rank:8,n:'Avalanche',sym:'AVAX',id:null,p:42.10,c:4.12,cap:'18B'},
-    {rank:9,n:'Chainlink',sym:'LINK',id:null,p:18.40,c:2.34,cap:'11B'},
-    {rank:10,n:'Polkadot',sym:'DOT',id:null,p:8.92,c:1.56,cap:'12B'}
+    {rank:1,n:'Bitcoin',sym:'BTC',id:'btc',p:96420,c:0.84,cap:'1.91T'},
+    {rank:2,n:'Ethereum',sym:'ETH',id:'eth',p:1842,c:1.24,cap:'222B'},
+    {rank:3,n:'BNB',sym:'BNB',id:'bnb',p:598,c:0.42,cap:'86B'},
+    {rank:4,n:'Solana',sym:'SOL',id:'sol',p:148,c:2.18,cap:'70B'},
+    {rank:5,n:'XRP',sym:'XRP',id:null,p:2.24,c:-0.38,cap:'128B'},
+    {rank:6,n:'Dogecoin',sym:'DOGE',id:null,p:0.198,c:1.12,cap:'29B'},
+    {rank:7,n:'Cardano',sym:'ADA',id:null,p:0.724,c:0.56,cap:'26B'},
+    {rank:8,n:'Avalanche',sym:'AVAX',id:null,p:22.40,c:1.84,cap:'9B'},
+    {rank:9,n:'Chainlink',sym:'LINK',id:null,p:14.80,c:1.92,cap:'9B'},
+    {rank:10,n:'Sui',sym:'SUI',id:null,p:3.82,c:3.14,cap:'12B'}
   ],
   matieres:[
-    {n:'Or',unit:'$/oz',id:'gold',sym:'GC=F',p:3318,c:0.28},
-    {n:'Pétrole WTI',unit:'$/baril',id:'oil',sym:'CL=F',p:68.42,c:-1.24},
-    {n:'Argent',unit:'$/oz',id:'silver',sym:'SI=F',p:32.84,c:1.12},
-    {n:'Gaz Naturel',unit:'$/MMBtu',id:'gas',sym:'NG=F',p:2.84,c:2.18},
-    {n:'Cuivre',unit:'$/lb',id:null,sym:'HG=F',p:4.82,c:0.64},
-    {n:'Blé',unit:'¢/boisseau',id:null,sym:'ZW=F',p:582,c:-0.42}
+    {n:'Or',unit:'$/oz',id:'gold',sym:'GC=F',p:3284,c:0.42},
+    {n:'Pétrole WTI',unit:'$/baril',id:'oil',sym:'CL=F',p:58.84,c:-1.42},
+    {n:'Argent',unit:'$/oz',id:'silver',sym:'SI=F',p:32.18,c:0.64},
+    {n:'Gaz Naturel',unit:'$/MMBtu',id:'gas',sym:'NG=F',p:3.24,c:1.82},
+    {n:'Cuivre',unit:'$/lb',id:null,sym:'HG=F',p:4.62,c:0.28},
+    {n:'Blé',unit:'¢/boisseau',id:null,sym:'ZW=F',p:538,c:-0.82}
   ]
 };
 
@@ -708,16 +722,88 @@ function selActions(m,el){
 // ════════════════════════════════════
 // PLACEMENTS
 // ════════════════════════════════════
+// ════════════════════════════════════
+// PLACEMENTS — FICHES EXPLICATIVES
+// ════════════════════════════════════
+const EXPLAINERS = {
+  pea:{
+    icon:'📈',
+    title:'Plan d\'Épargne en Actions (PEA)',
+    badges:[{t:'Fiscalité avantageuse',c:'#1e8a4a'},{t:'Actions & ETF',c:'#2a68b8'},{t:'Plafond 150 000€',c:'#9a7830'}],
+    desc:'Le PEA est une enveloppe fiscale permettant d\'investir en actions européennes et ETF éligibles. Le capital n\'est pas garanti mais les gains accumulés bénéficient d\'une exonération d\'impôt sur le revenu après 5 ans de détention (hors prélèvements sociaux de 17,2%). Tout retrait avant 5 ans entraîne la clôture du plan.',
+    items:[
+      {label:'🕐 Horizon recommandé',val:'5 ans minimum'},
+      {label:'💰 Plafond versements',val:'150 000€ (PEA) + 225 000€ (PEA-PME)'},
+      {label:'📊 Fiscalité < 5 ans',val:'PFU 30% (flat tax)'},
+      {label:'✅ Fiscalité > 5 ans',val:'Exonéré IR + 17,2% PS'},
+      {label:'🔓 Retrait',val:'Possible à tout moment (clôture < 5 ans)'},
+      {label:'⚠️ Risque',val:'Perte en capital possible'}
+    ]
+  },
+  'av-euro':{
+    icon:'🛡️',
+    title:'Assurance Vie — Fonds en Euros',
+    badges:[{t:'Capital garanti',c:'#1e8a4a'},{t:'Disponible à tout moment',c:'#2a68b8'},{t:'Fiscalité 8 ans',c:'#9a7830'}],
+    desc:'Le fonds en euros est le placement sécurisé de l\'assurance vie. Le capital versé est garanti par l\'assureur et produit des intérêts crédités chaque année (effet cliquet). Les fonds restent disponibles à tout moment, mais la fiscalité devient très avantageuse après 8 ans de détention du contrat.',
+    items:[
+      {label:'🕐 Horizon recommandé',val:'8 ans pour fiscalité optimale'},
+      {label:'💰 Plafond',val:'Aucun (abattement 4 600€/an après 8 ans)'},
+      {label:'📊 Fiscalité < 8 ans',val:'PFU 30% sur les plus-values'},
+      {label:'✅ Fiscalité > 8 ans',val:'7,5% IR + 17,2% PS (après abattement)'},
+      {label:'🔓 Retrait (rachat)',val:'Possible à tout moment, sous 72h'},
+      {label:'⚠️ Risque',val:'Capital garanti, taux variable'}
+    ]
+  },
+  'av-uc':{
+    icon:'🚀',
+    title:'Assurance Vie — Unités de Compte (UC)',
+    badges:[{t:'Potentiel élevé',c:'#c41a1a'},{t:'Capital non garanti',c:'#9a7830'},{t:'Fiscalité 8 ans',c:'#2a68b8'}],
+    desc:'Les unités de compte sont des supports d\'investissement logés dans une assurance vie (actions, ETF, SCPI, obligations...). Contrairement au fonds euro, le capital n\'est pas garanti et fluctue selon les marchés. En contrepartie, le potentiel de performance est bien supérieur sur le long terme. La fiscalité est identique au fonds euro.',
+    items:[
+      {label:'🕐 Horizon recommandé',val:'8 à 15 ans minimum'},
+      {label:'💰 Plafond',val:'Aucun plafond de versement'},
+      {label:'📊 Fiscalité < 8 ans',val:'PFU 30% sur les gains'},
+      {label:'✅ Fiscalité > 8 ans',val:'7,5% IR + 17,2% PS (après abattement)'},
+      {label:'🔓 Retrait',val:'Possible à tout moment (valeur liquidative)'},
+      {label:'⚠️ Risque',val:'Perte en capital possible (risque 1-7)'}
+    ]
+  },
+  livrets:{
+    icon:'💳',
+    title:'Livrets Réglementés & Livrets Bancaires',
+    badges:[{t:'Capital garanti',c:'#1e8a4a'},{t:'Disponible immédiatement',c:'#2a68b8'},{t:'Taux fixé',c:'#9a7830'}],
+    desc:'Les livrets sont des produits d\'épargne liquides et sécurisés. Le Livret A, LDDS et LEP sont réglementés par l\'État (taux fixé tous les 6 mois, exonérés d\'impôt). Les livrets bancaires offrent des taux plus élevés mais soumis à la flat tax de 30%. Idéal pour l\'épargne de précaution (3 à 6 mois de salaire).',
+    items:[
+      {label:'🕐 Horizon recommandé',val:'Court terme / épargne de précaution'},
+      {label:'💰 Livret A',val:'22 950€ — 2,40% — Exonéré'},
+      {label:'💰 LEP (sous cond.)',val:'10 000€ — 3,50% — Exonéré'},
+      {label:'📊 Livrets bancaires',val:'PFU 30% sur les intérêts'},
+      {label:'🔓 Retrait',val:'Immédiat (24-48h pour les livrets bancaires)'},
+      {label:'⚠️ Risque',val:'Aucun — Capital garanti par l\'État'}
+    ]
+  }
+};
+
+function renderExplainer(type){
+  const e=EXPLAINERS[type];if(!e)return;
+  $('placIcon').textContent=e.icon;
+  $('placExTitle').textContent=e.title;
+  $('placExBadges').innerHTML=e.badges.map(b=>`<span style="background:${b.c}18;color:${b.c};border:1px solid ${b.c}44;padding:2px 7px;border-radius:10px;font-size:9px;font-weight:600">${b.t}</span>`).join('');
+  $('placExDesc').textContent=e.desc;
+  $('placExItems').innerHTML=e.items.map(it=>`<div style="background:#f0ebe4;border-radius:6px;padding:7px 10px;border:1px solid rgba(180,20,20,.1)"><div style="font-size:9px;color:#7a7068;margin-bottom:2px">${it.label}</div><div style="font-size:11px;font-weight:600;color:#1a1612">${it.val}</div></div>`).join('');
+}
+
 const PL={
   pea:{title:'PEA — Meilleurs ETF éligibles',head:'<tr><th>Fonds</th><th>ISIN</th><th>Perf. 1an</th><th>Frais</th><th>Encours</th></tr>',rows:[['Amundi MSCI World','LU1681043599','+18,4%','0.12%','12,4 Mrd€'],['Lyxor CAC 40 DR','FR0007052782','+14,1%','0.25%','3,8 Mrd€'],['BNP Nasdaq-100','FR0011871110','+13,7%','0.30%','2,1 Mrd€'],['Amundi Euro Stoxx 50','FR0010654360','+11,2%','0.15%','5,2 Mrd€'],['iShares MSCI EM PEA','FR0013412020','+9,4%','0.25%','1,8 Mrd€'],['Amundi MSCI Europe','FR0010655696','+8,1%','0.15%','2,9 Mrd€']]},
   'av-euro':{title:'Assurance Vie — Fonds euros 2024',head:'<tr><th>Assureur</th><th>Contrat</th><th>Taux 2024</th><th>Garantie</th><th>Min.</th></tr>',rows:[['Garance Épargne','Garance Vie','4,60%','Oui','500€'],['Suravenir','Avenir Opportunités','4,10%','Oui','1 000€'],['Boursorama','Euro Exclusif','3,80%','Oui','300€'],['Linxea','Avenir 2','3,60%','Oui','500€'],['Lucya Cardif','BNP Cardif','3,50%','Oui','1 000€'],['Générali','Himalia','3,40%','Oui','1 000€']]},
   'av-uc':{title:'Assurance Vie — Unités de Compte',head:'<tr><th>Fonds UC</th><th>Catégorie</th><th>Perf. 1an</th><th>Risque</th><th>Éligible</th></tr>',rows:[['Amundi MSCI World UC','Actions monde','+18,4%','5/7','Linxea, Boursorama'],['Invesco NASDAQ-100','Tech US','+22,1%','6/7','Linxea Spirit'],['iShares Core S&P500','Actions US','+19,8%','5/7','Lucya Cardif'],['Lazard Small Caps EU','Small caps','+12,4%','6/7','Générali'],['Carmignac Patrimoine','Multi-actifs','+8,2%','4/7','La plupart'],['Fidelity World','Actions monde','+16,8%','5/7','Avenir 2'],['AB International Tech','Tech mondiale','+24,3%','6/7','Spirit 2'],['R-co Valor','Flexible','+9,1%','4/7','Plusieurs']]},
-  livrets:{title:'Livrets — Meilleurs taux',head:'<tr><th>Produit</th><th>Établissement</th><th>Taux brut</th><th>Plafond</th><th>Fiscalité</th></tr>',rows:[['LEP','La Poste / CE','6,10%','10 000€','Exonéré'],['Distingo','PSA Banque','4,50%','50 000€','Imposable'],['Zesto','RCI Banque','4,10%','Illimité','Imposable'],['Bienvenü','Monabanq','3,50%','150 000€','Imposable'],['Livret A','Toutes banques','3,00%','22 950€','Exonéré'],['LDDS','Toutes banques','3,00%','12 000€','Exonéré']]}
+  livrets:{title:'Livrets — Meilleurs taux (mis à jour mai 2026)',head:'<tr><th>Produit</th><th>Établissement</th><th>Taux brut</th><th>Plafond</th><th>Fiscalité</th></tr>',rows:[['LEP','La Poste / CE / CA','3,50%','10 000€','Exonéré'],['Livret Jeune','Toutes banques','≥ 2,40%','1 600€','Exonéré'],['Distingo','PSA Banque','3,20% (promo)','50 000€','Imposable PFU 30%'],['Zesto','RCI Banque','3,00% (promo)','Illimité','Imposable PFU 30%'],['Livret A','Toutes banques','2,40%','22 950€','Exonéré'],['LDDS','Toutes banques','2,40%','12 000€','Exonéré']]}
 };
 function selPlac(type,el){
   document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');
   const p=PL[type];$('placTitle').textContent=p.title;$('placHead').innerHTML=p.head;
   $('placBody').innerHTML=p.rows.map(r=>`<tr>${r.map((c,i)=>`<td style="${i===2?'font-family:var(--mono);font-size:10px;color:'+(c.startsWith('+')?'var(--green)':'var(--red2)'):'font-size:11px'}">${c}</td>`).join('')}</tr>`).join('');
+  renderExplainer(type);
 }
 selPlac('pea',document.querySelector('.cat-tab'));
 
@@ -823,5 +909,13 @@ initCharts();
 loadAll();
 setInterval(loadAll, 60000);
 </script>
+
+<footer style="background:linear-gradient(180deg,#1a0606,#2a0a0a);border-top:1px solid rgba(180,20,20,0.35);padding:18px 20px;text-align:center;margin-top:20px">
+  <div style="font-size:9px;color:#6a3a3a;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Tradelabuse © 2025 — Pillage des marchés</div>
+  <div style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:#c09090">
+    Créé par&nbsp;<strong style="color:#fff;letter-spacing:3px">Alexis MINSSIEUX</strong>
+  </div>
+</footer>
+
 </body>
 </html>
