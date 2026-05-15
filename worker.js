@@ -14,19 +14,40 @@ const INDEX_META = {
   '^HSI':   { name: 'Hang Seng',  flag: '🇭🇰' },
 };
 
-async function yahooFetch(symbols) {
-  const urls = [
-    `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&lang=fr-FR&region=FR`,
-    `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&lang=fr-FR&region=FR`,
-  ];
-  const hdrs = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept': 'application/json,text/plain,*/*', 'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8', 'Origin': 'https://finance.yahoo.com', 'Referer': 'https://finance.yahoo.com/' };
-  for (const url of urls) {
-    try {
-      const r = await fetch(url, { headers: hdrs });
-      if (r.ok) return r.json();
-    } catch(e) {}
-  }
-  throw new Error('Yahoo Finance inaccessible');
+const STOOQ_MAP = {
+  '^FCHI':'^fchi','^GSPC':'^spx','^IXIC':'^ndq','^GDAXI':'^dax',
+  '^FTSE':'^ftse','^N225':'^nk225','^HSI':'^hsi',
+  'SAF.PA':'saf.fr','SU.PA':'su.fr','AIR.PA':'air.fr','RMS.PA':'rms.fr',
+  'TTE.PA':'tte.fr','BNP.PA':'bnp.fr','MC.PA':'mc.fr','SAN.PA':'san.fr',
+  'AAPL':'aapl.us','MSFT':'msft.us','NVDA':'nvda.us','AMZN':'amzn.us',
+  'GOOGL':'googl.us','TSLA':'tsla.us','META':'meta.us','JPM':'jpm.us',
+  'GC=F':'gc.f','CL=F':'cl.f','SI=F':'si.f','NG=F':'ng.f',
+};
+
+function toStooq(sym) {
+  if (STOOQ_MAP[sym]) return STOOQ_MAP[sym];
+  if (sym.endsWith('.PA')) return sym.replace('.PA','.fr').toLowerCase();
+  if (sym.startsWith('^')) return sym.toLowerCase();
+  return sym.toLowerCase()+'.us';
+}
+
+async function stooqOne(sym) {
+  try {
+    const r = await fetch(`https://stooq.com/q/l/?s=${encodeURIComponent(sym)}&f=sd2t2ohlcv&h&e=json`,
+      { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    const d = await r.json();
+    return d?.symbols?.[0] || null;
+  } catch { return null; }
+}
+
+async function fetchSymbols(yahooSymsList) {
+  const results = await Promise.all(yahooSymsList.map(async sym => {
+    const q = await stooqOne(toStooq(sym));
+    if (!q || !q.close || q.close === 'N/D') return null;
+    const chg = q.open ? ((+q.close - +q.open) / +q.open) * 100 : 0;
+    return { symbol: sym, price: +q.close, changesPercentage: +chg.toFixed(2), volume: +q.volume || 0 };
+  }));
+  return results.filter(Boolean);
 }
 
 export default {
@@ -39,21 +60,18 @@ export default {
     try {
 
       if (path === '/indices') {
-        const syms = Object.keys(INDEX_META).join(',');
-        const data = await yahooFetch(syms);
-        const quotes = data?.quoteResponse?.result || [];
-        const results = Object.keys(INDEX_META).map(sym => {
+        const syms = Object.keys(INDEX_META);
+        const quotes = await fetchSymbols(syms);
+        const results = syms.map(sym => {
           const q = quotes.find(x => x.symbol === sym);
-          return { sym, symbol: sym, ...INDEX_META[sym], price: q?.regularMarketPrice || 0, changesPercentage: q?.regularMarketChangePercent || 0, open: q?.marketState === 'REGULAR' };
+          return { sym, symbol: sym, ...INDEX_META[sym], price: q?.price || 0, changesPercentage: q?.changesPercentage || 0, open: true };
         });
         return new Response(JSON.stringify(results), { headers: CORS });
       }
 
       if (path === '/quotes') {
-        const symbols = url.searchParams.get('symbols') || '';
-        const data = await yahooFetch(symbols);
-        const quotes = data?.quoteResponse?.result || [];
-        const results = quotes.map(q => ({ symbol: q.symbol, price: q.regularMarketPrice || 0, changesPercentage: q.regularMarketChangePercent || 0, volume: q.regularMarketVolume || 0 }));
+        const syms = (url.searchParams.get('symbols') || '').split(',').filter(Boolean);
+        const results = await fetchSymbols(syms);
         return new Response(JSON.stringify(results), { headers: CORS });
       }
 
@@ -68,10 +86,9 @@ export default {
       }
 
       if (path === '/matieres') {
-        const data = await yahooFetch('GC=F,CL=F,SI=F,NG=F');
-        const quotes = data?.quoteResponse?.result || [];
+        const quotes = await fetchSymbols(['GC=F','SI=F','CL=F','NG=F']);
         const find = sym => quotes.find(q => q.symbol === sym);
-        const toItem = (q, fb) => q ? { price: q.regularMarketPrice, change: q.regularMarketChangePercent } : fb;
+        const toItem = (q, fb) => q ? { price: q.price, change: q.changesPercentage } : fb;
         return new Response(JSON.stringify({
           gold:   toItem(find('GC=F'),  { price: 3284,  change: 0 }),
           silver: toItem(find('SI=F'),  { price: 32.18, change: 0 }),
