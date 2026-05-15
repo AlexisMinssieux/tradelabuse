@@ -1,25 +1,14 @@
-const INDICES = [
-  { sym: '^FCHI',  stooq: '^fchi',  name: 'CAC 40',     flag: '🇫🇷' },
-  { sym: '^GSPC',  stooq: '^spx',   name: 'S&P 500',    flag: '🇺🇸' },
-  { sym: '^IXIC',  stooq: '^ndq',   name: 'NASDAQ',     flag: '🇺🇸' },
-  { sym: '^GDAXI', stooq: '^dax',   name: 'DAX',        flag: '🇩🇪' },
-  { sym: '^FTSE',  stooq: '^ftse',  name: 'FTSE 100',   flag: '🇬🇧' },
-  { sym: '^N225',  stooq: '^nk225', name: 'Nikkei 225', flag: '🇯🇵' },
-  { sym: '^HSI',   stooq: '^hsi',   name: 'Hang Seng',  flag: '🇭🇰' },
-];
+const FMP_KEY = 'YxH36l0GjVhE7kBl3I2zEWgUBp3yhSJL';
 
-async function stooqFetch(sym) {
-  try {
-    const r = await fetch(
-      `https://stooq.com/q/l/?s=${encodeURIComponent(sym)}&f=sd2t2ohlcv&h&e=json`,
-      { headers: { 'User-Agent': 'Mozilla/5.0' } }
-    );
-    const data = await r.json();
-    return data?.symbols?.[0] || null;
-  } catch {
-    return null;
-  }
-}
+const INDICES = [
+  { sym: '^FCHI',  name: 'CAC 40',     flag: '🇫🇷' },
+  { sym: '^GSPC',  name: 'S&P 500',    flag: '🇺🇸' },
+  { sym: '^IXIC',  name: 'NASDAQ',     flag: '🇺🇸' },
+  { sym: '^GDAXI', name: 'DAX',        flag: '🇩🇪' },
+  { sym: '^FTSE',  name: 'FTSE 100',   flag: '🇬🇧' },
+  { sym: '^N225',  name: 'Nikkei 225', flag: '🇯🇵' },
+  { sym: '^HSI',   name: 'Hang Seng',  flag: '🇭🇰' },
+];
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -27,13 +16,22 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const quotes = await Promise.all(INDICES.map(idx => stooqFetch(idx.stooq)));
+    const symbols = INDICES.map(i => i.sym).join(',');
+    const r = await fetch(
+      `https://financialmodelingprep.com/api/v3/quote/${encodeURIComponent(symbols)}?apikey=${FMP_KEY}`
+    );
+    if (!r.ok) throw new Error('FMP HTTP ' + r.status);
+    const quotes = await r.json();
 
-    const results = INDICES.map((idx, i) => {
-      const q = quotes[i];
-      const price = (q && q.close && q.close !== 'N/D') ? +q.close : 0;
-      const chg = (q && q.open && price) ? ((price - +q.open) / +q.open) * 100 : 0;
-      return { ...idx, symbol: idx.sym, price, changesPercentage: +chg.toFixed(2), open: true };
+    const results = INDICES.map(idx => {
+      const q = quotes.find(x => x.symbol === idx.sym);
+      return {
+        ...idx,
+        symbol: idx.sym,
+        price: q?.price || 0,
+        changesPercentage: q?.changesPercentage || 0,
+        open: true
+      };
     });
 
     res.json(results);

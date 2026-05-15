@@ -1,9 +1,4 @@
-const COMMODITIES = [
-  { key: 'gold',   stooq: 'gc.f' },
-  { key: 'silver', stooq: 'si.f' },
-  { key: 'oil',    stooq: 'cl.f' },
-  { key: 'gas',    stooq: 'ng.f' },
-];
+const FMP_KEY = 'YxH36l0GjVhE7kBl3I2zEWgUBp3yhSJL';
 
 const FALLBACK = {
   gold:   { price: 3284,  change: 0 },
@@ -12,40 +7,27 @@ const FALLBACK = {
   gas:    { price: 3.24,  change: 0 },
 };
 
-async function stooqFetch(sym) {
-  try {
-    const r = await fetch(
-      `https://stooq.com/q/l/?s=${encodeURIComponent(sym)}&f=sd2t2ohlcv&h&e=json`,
-      { headers: { 'User-Agent': 'Mozilla/5.0' } }
-    );
-    const data = await r.json();
-    return data?.symbols?.[0] || null;
-  } catch {
-    return null;
-  }
-}
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const quotes = await Promise.all(COMMODITIES.map(c => stooqFetch(c.stooq)));
+    const r = await fetch(
+      `https://financialmodelingprep.com/api/v3/quote/GCUSD,SIUSD,CLUSD,NGUSD?apikey=${FMP_KEY}`
+    );
+    if (!r.ok) throw new Error('FMP HTTP ' + r.status);
+    const data = await r.json();
 
-    const result = {};
-    COMMODITIES.forEach((c, i) => {
-      const q = quotes[i];
-      if (q && q.close && q.close !== 'N/D') {
-        const price = +q.close;
-        const chg = q.open ? ((price - +q.open) / +q.open) * 100 : 0;
-        result[c.key] = { price, change: +chg.toFixed(2) };
-      } else {
-        result[c.key] = FALLBACK[c.key];
-      }
+    const find = sym => data.find(x => x.symbol === sym);
+    const toItem = (q, fb) => q ? { price: q.price, change: q.changesPercentage } : fb;
+
+    res.json({
+      gold:   toItem(find('GCUSD'),  FALLBACK.gold),
+      silver: toItem(find('SIUSD'),  FALLBACK.silver),
+      oil:    toItem(find('CLUSD'),  FALLBACK.oil),
+      gas:    toItem(find('NGUSD'),  FALLBACK.gas),
     });
-
-    res.json(result);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
