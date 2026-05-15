@@ -61,22 +61,33 @@ export default {
 
       if (path === '/indices') {
         const TD_KEY = '5faedc1fa2eb4ad1859d39fc2baaeb95';
-        // Twelve Data symbol → Yahoo symbol mapping
         const TD_SYMS = { 'CAC40': '^FCHI', 'FTSE100': '^FTSE', 'N225': '^N225', 'HSI': '^HSI' };
         const syms = Object.keys(INDEX_META);
 
         // stooq pour S&P, NASDAQ, DAX
         const stooqQuotes = await fetchSymbols(['^GSPC', '^IXIC', '^GDAXI']);
 
-        // Twelve Data pour CAC 40, FTSE, Nikkei, Hang Seng (ne pas encoder les virgules)
-        const tdSymStr = Object.keys(TD_SYMS).join(',');
-        const tdR = await fetch(`https://api.twelvedata.com/quote?symbol=${tdSymStr}&apikey=${TD_KEY}`);
-        const tdData = tdR.ok ? await tdR.json() : {};
+        // Twelve Data avec cache 5 min pour économiser les crédits
+        const cache = caches.default;
+        const tdCacheKey = new Request('https://cache.internal/td-indices-v1');
+        let tdData = {};
+        const cached = await cache.match(tdCacheKey);
+        if (cached) {
+          tdData = await cached.json();
+        } else {
+          const tdR = await fetch(`https://api.twelvedata.com/quote?symbol=CAC40,FTSE100,N225,HSI&apikey=${TD_KEY}`);
+          if (tdR.ok) {
+            tdData = await tdR.json();
+            if (!tdData.code) { // pas d'erreur
+              const cacheResp = new Response(JSON.stringify(tdData), { headers: { 'Cache-Control': 'max-age=300', 'Content-Type': 'application/json' } });
+              await cache.put(tdCacheKey, cacheResp);
+            }
+          }
+        }
 
         const results = syms.map(sym => {
           const stooqQ = stooqQuotes.find(x => x.symbol === sym);
           if (stooqQ) return { sym, symbol: sym, ...INDEX_META[sym], price: stooqQ.price, changesPercentage: stooqQ.changesPercentage, open: true };
-          // Find matching TD key for this Yahoo symbol
           const tdKey = Object.keys(TD_SYMS).find(k => TD_SYMS[k] === sym);
           const tdQ = tdKey ? tdData[tdKey] : null;
           return { sym, symbol: sym, ...INDEX_META[sym], price: tdQ?.close ? +tdQ.close : 0, changesPercentage: tdQ?.percent_change ? +tdQ.percent_change : 0, open: true };
@@ -148,6 +159,13 @@ export default {
         }
         results.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
         return new Response(JSON.stringify(results.slice(0, 12)), { headers: CORS });
+      }
+
+      if (path === '/debug-td') {
+        const TD_KEY = '5faedc1fa2eb4ad1859d39fc2baaeb95';
+        const r = await fetch(`https://api.twelvedata.com/quote?symbol=CAC40,FTSE100,N225,HSI&apikey=${TD_KEY}`);
+        const text = await r.text();
+        return new Response(text, { headers: CORS });
       }
 
       return new Response(JSON.stringify({ error: 'Route inconnue' }), { status: 404, headers: CORS });
