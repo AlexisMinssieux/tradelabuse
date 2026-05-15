@@ -61,22 +61,24 @@ export default {
 
       if (path === '/indices') {
         const TD_KEY = '5faedc1fa2eb4ad1859d39fc2baaeb95';
-        const TD_SYMS = { '^FCHI': 'CAC40:XPAR', '^FTSE': 'FTSE100', '^N225': 'N225', '^HSI': 'HSI' };
+        // Twelve Data symbol → Yahoo symbol mapping
+        const TD_SYMS = { 'CAC40': '^FCHI', 'FTSE100': '^FTSE', 'N225': '^N225', 'HSI': '^HSI' };
         const syms = Object.keys(INDEX_META);
 
         // stooq pour S&P, NASDAQ, DAX
         const stooqQuotes = await fetchSymbols(['^GSPC', '^IXIC', '^GDAXI']);
 
-        // Twelve Data pour CAC 40, FTSE, Nikkei, Hang Seng
-        const tdSymStr = Object.values(TD_SYMS).join(',');
-        const tdR = await fetch(`https://api.twelvedata.com/quote?symbol=${encodeURIComponent(tdSymStr)}&apikey=${TD_KEY}`);
+        // Twelve Data pour CAC 40, FTSE, Nikkei, Hang Seng (ne pas encoder les virgules)
+        const tdSymStr = Object.keys(TD_SYMS).join(',');
+        const tdR = await fetch(`https://api.twelvedata.com/quote?symbol=${tdSymStr}&apikey=${TD_KEY}`);
         const tdData = tdR.ok ? await tdR.json() : {};
 
         const results = syms.map(sym => {
           const stooqQ = stooqQuotes.find(x => x.symbol === sym);
           if (stooqQ) return { sym, symbol: sym, ...INDEX_META[sym], price: stooqQ.price, changesPercentage: stooqQ.changesPercentage, open: true };
-          const tdKey = TD_SYMS[sym];
-          const tdQ = tdData[tdKey];
+          // Find matching TD key for this Yahoo symbol
+          const tdKey = Object.keys(TD_SYMS).find(k => TD_SYMS[k] === sym);
+          const tdQ = tdKey ? tdData[tdKey] : null;
           return { sym, symbol: sym, ...INDEX_META[sym], price: tdQ?.close ? +tdQ.close : 0, changesPercentage: tdQ?.percent_change ? +tdQ.percent_change : 0, open: true };
         });
         return new Response(JSON.stringify(results), { headers: CORS });
