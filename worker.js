@@ -15,12 +15,18 @@ const INDEX_META = {
 };
 
 async function yahooFetch(symbols) {
-  const r = await fetch(
+  const urls = [
     `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&lang=fr-FR&region=FR`,
-    { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36', 'Accept': 'application/json', 'Origin': 'https://finance.yahoo.com', 'Referer': 'https://finance.yahoo.com' } }
-  );
-  if (!r.ok) throw new Error('Yahoo HTTP ' + r.status);
-  return r.json();
+    `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&lang=fr-FR&region=FR`,
+  ];
+  const hdrs = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept': 'application/json,text/plain,*/*', 'Accept-Language': 'fr-FR,fr;q=0.9,en;q=0.8', 'Origin': 'https://finance.yahoo.com', 'Referer': 'https://finance.yahoo.com/' };
+  for (const url of urls) {
+    try {
+      const r = await fetch(url, { headers: hdrs });
+      if (r.ok) return r.json();
+    } catch(e) {}
+  }
+  throw new Error('Yahoo Finance inaccessible');
 }
 
 export default {
