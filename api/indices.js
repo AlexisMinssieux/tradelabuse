@@ -1,11 +1,11 @@
 const INDICES = [
-  { sym: '^FCHI',  name: 'CAC 40',     flag: '🇫🇷' },
-  { sym: '^GSPC',  name: 'S&P 500',    flag: '🇺🇸' },
-  { sym: '^IXIC',  name: 'NASDAQ',     flag: '🇺🇸' },
-  { sym: '^GDAXI', name: 'DAX',        flag: '🇩🇪' },
-  { sym: '^FTSE',  name: 'FTSE 100',   flag: '🇬🇧' },
-  { sym: '^N225',  name: 'Nikkei 225', flag: '🇯🇵' },
-  { sym: '^HSI',   name: 'Hang Seng',  flag: '🇭🇰' },
+  { sym: '^FCHI',  stooq: '^fchi',  name: 'CAC 40',     flag: '🇫🇷' },
+  { sym: '^GSPC',  stooq: '^spx',   name: 'S&P 500',    flag: '🇺🇸' },
+  { sym: '^IXIC',  stooq: '^ndq',   name: 'NASDAQ',     flag: '🇺🇸' },
+  { sym: '^GDAXI', stooq: '^dax',   name: 'DAX',        flag: '🇩🇪' },
+  { sym: '^FTSE',  stooq: '^ftse',  name: 'FTSE 100',   flag: '🇬🇧' },
+  { sym: '^N225',  stooq: '^nk225', name: 'Nikkei 225', flag: '🇯🇵' },
+  { sym: '^HSI',   stooq: '^hsi',   name: 'Hang Seng',  flag: '🇭🇰' },
 ];
 
 export default async function handler(req, res) {
@@ -14,24 +14,28 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const symbols = INDICES.map(i => i.sym).join(',');
+    const stooqSyms = INDICES.map(i => i.stooq).join(',');
     const r = await fetch(
-      `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&lang=fr-FR&region=FR`,
-      { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36', 'Accept': 'application/json', 'Origin': 'https://finance.yahoo.com', 'Referer': 'https://finance.yahoo.com' } }
+      `https://stooq.com/q/l/?s=${encodeURIComponent(stooqSyms)}&f=sd2t2ohlcv&h&e=json`,
+      { headers: { 'User-Agent': 'Mozilla/5.0' } }
     );
-    if (!r.ok) throw new Error('Yahoo HTTP ' + r.status);
+    if (!r.ok) throw new Error('stooq HTTP ' + r.status);
     const data = await r.json();
-    const quotes = data?.quoteResponse?.result || [];
-    const results = INDICES.map(idx => {
-      const q = quotes.find(x => x.symbol === idx.sym);
+    const quotes = data?.symbols || [];
+
+    const results = INDICES.map((idx, i) => {
+      const q = quotes[i];
+      const price = (q && q.close !== 'N/D') ? q.close : 0;
+      const chg = (q && q.open && price) ? ((price - q.open) / q.open) * 100 : 0;
       return {
         ...idx,
         symbol: idx.sym,
-        price: q?.regularMarketPrice || 0,
-        changesPercentage: q?.regularMarketChangePercent || 0,
-        open: q?.marketState === 'REGULAR'
+        price,
+        changesPercentage: +chg.toFixed(2),
+        open: true
       };
     });
+
     res.json(results);
   } catch (e) {
     res.status(500).json({ error: e.message });
