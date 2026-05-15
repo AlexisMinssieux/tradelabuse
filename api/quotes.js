@@ -18,6 +18,19 @@ function toStooq(sym) {
   return sym.toLowerCase() + '.us';
 }
 
+async function stooqFetch(stooqSym) {
+  try {
+    const r = await fetch(
+      `https://stooq.com/q/l/?s=${encodeURIComponent(stooqSym)}&f=sd2t2ohlcv&h&e=json`,
+      { headers: { 'User-Agent': 'Mozilla/5.0' } }
+    );
+    const data = await r.json();
+    return data?.symbols?.[0] || null;
+  } catch {
+    return null;
+  }
+}
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -27,26 +40,14 @@ export default async function handler(req, res) {
   if (!yahooSyms.length) return res.json([]);
 
   try {
-    const stooqSyms = yahooSyms.map(s => encodeURIComponent(toStooq(s))).join(',');
-    const r = await fetch(
-      `https://stooq.com/q/l/?s=${stooqSyms}&f=sd2t2ohlcv&h&e=json`,
-      { headers: { 'User-Agent': 'Mozilla/5.0' } }
-    );
-    const data = await r.json();
-    const quotes = data?.symbols || [];
+    const quotes = await Promise.all(yahooSyms.map(sym => stooqFetch(toStooq(sym))));
 
     const results = yahooSyms.map((yahooSym, i) => {
       const q = quotes[i];
       if (!q || !q.close || q.close === 'N/D') return null;
-      const chg = q.open ? ((q.close - q.open) / q.open) * 100 : 0;
-      return {
-        symbol: yahooSym,
-        price: q.close,
-        changesPercentage: +chg.toFixed(2),
-        volume: q.volume || 0,
-        high: q.high,
-        low: q.low
-      };
+      const price = +q.close;
+      const chg = q.open ? ((price - +q.open) / +q.open) * 100 : 0;
+      return { symbol: yahooSym, price, changesPercentage: +chg.toFixed(2), volume: q.volume || 0, high: q.high, low: q.low };
     }).filter(Boolean);
 
     res.json(results);
