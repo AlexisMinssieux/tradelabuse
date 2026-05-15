@@ -1,4 +1,4 @@
-const FMP_KEY = 'YxH36l0GjVhE7kBl3I2zEWgUBp3yhSJL';
+const TD_KEY = '5faedc1fa2eb4ad1859d39fc2baaeb95';
 
 const FALLBACK = {
   gold:   { price: 3284,  change: 0 },
@@ -14,19 +14,20 @@ export default async function handler(req, res) {
 
   try {
     const r = await fetch(
-      `https://financialmodelingprep.com/api/v3/quote/GCUSD,SIUSD,CLUSD,NGUSD?apikey=${FMP_KEY}`
+      `https://api.twelvedata.com/quote?symbol=XAU/USD,XAG/USD,WTI/USD,NATGAS/USD&apikey=${TD_KEY}`
     );
-    if (!r.ok) throw new Error('FMP HTTP ' + r.status);
+    if (!r.ok) throw new Error('TwelveData HTTP ' + r.status);
     const data = await r.json();
 
-    const find = sym => data.find(x => x.symbol === sym);
-    const toItem = (q, fb) => q ? { price: q.price, change: q.changesPercentage } : fb;
+    const toItem = (q, fb) => (q && q.close && q.status !== 'error')
+      ? { price: +q.close, change: +q.percent_change }
+      : fb;
 
     res.json({
-      gold:   toItem(find('GCUSD'),  FALLBACK.gold),
-      silver: toItem(find('SIUSD'),  FALLBACK.silver),
-      oil:    toItem(find('CLUSD'),  FALLBACK.oil),
-      gas:    toItem(find('NGUSD'),  FALLBACK.gas),
+      gold:   toItem(data['XAU/USD'],    FALLBACK.gold),
+      silver: toItem(data['XAG/USD'],    FALLBACK.silver),
+      oil:    toItem(data['WTI/USD'],    FALLBACK.oil),
+      gas:    toItem(data['NATGAS/USD'], FALLBACK.gas),
     });
   } catch (e) {
     res.status(500).json({ error: e.message });

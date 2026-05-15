@@ -1,13 +1,13 @@
-const FMP_KEY = 'YxH36l0GjVhE7kBl3I2zEWgUBp3yhSJL';
+const TD_KEY = '5faedc1fa2eb4ad1859d39fc2baaeb95';
 
 const INDICES = [
-  { sym: '^FCHI',  name: 'CAC 40',     flag: '🇫🇷' },
-  { sym: '^GSPC',  name: 'S&P 500',    flag: '🇺🇸' },
-  { sym: '^IXIC',  name: 'NASDAQ',     flag: '🇺🇸' },
-  { sym: '^GDAXI', name: 'DAX',        flag: '🇩🇪' },
-  { sym: '^FTSE',  name: 'FTSE 100',   flag: '🇬🇧' },
-  { sym: '^N225',  name: 'Nikkei 225', flag: '🇯🇵' },
-  { sym: '^HSI',   name: 'Hang Seng',  flag: '🇭🇰' },
+  { sym: '^FCHI',  td: 'CAC40:XPAR', name: 'CAC 40',     flag: '🇫🇷' },
+  { sym: '^GSPC',  td: 'SPX',        name: 'S&P 500',    flag: '🇺🇸' },
+  { sym: '^IXIC',  td: 'IXIC',       name: 'NASDAQ',     flag: '🇺🇸' },
+  { sym: '^GDAXI', td: 'DAX',        name: 'DAX',        flag: '🇩🇪' },
+  { sym: '^FTSE',  td: 'FTSE100',    name: 'FTSE 100',   flag: '🇬🇧' },
+  { sym: '^N225',  td: 'N225',       name: 'Nikkei 225', flag: '🇯🇵' },
+  { sym: '^HSI',   td: 'HSI',        name: 'Hang Seng',  flag: '🇭🇰' },
 ];
 
 export default async function handler(req, res) {
@@ -16,21 +16,21 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const symbols = INDICES.map(i => i.sym).join(',');
+    const tdSyms = INDICES.map(i => i.td).join(',');
     const r = await fetch(
-      `https://financialmodelingprep.com/api/v3/quote/${encodeURIComponent(symbols)}?apikey=${FMP_KEY}`
+      `https://api.twelvedata.com/quote?symbol=${encodeURIComponent(tdSyms)}&apikey=${TD_KEY}`
     );
-    if (!r.ok) throw new Error('FMP HTTP ' + r.status);
-    const quotes = await r.json();
+    if (!r.ok) throw new Error('TwelveData HTTP ' + r.status);
+    const data = await r.json();
 
     const results = INDICES.map(idx => {
-      const q = quotes.find(x => x.symbol === idx.sym);
+      const q = data[idx.td] || data[idx.td.split(':')[0]];
       return {
         ...idx,
         symbol: idx.sym,
-        price: q?.price || 0,
-        changesPercentage: q?.changesPercentage || 0,
-        open: true
+        price: q?.close ? +q.close : 0,
+        changesPercentage: q?.percent_change ? +q.percent_change : 0,
+        open: q?.is_market_open ?? true
       };
     });
 
