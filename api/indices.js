@@ -14,9 +14,9 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const stooqSyms = INDICES.map(i => i.stooq).join(',');
+    const stooqSyms = INDICES.map(i => encodeURIComponent(i.stooq)).join(',');
     const r = await fetch(
-      `https://stooq.com/q/l/?s=${encodeURIComponent(stooqSyms)}&f=sd2t2ohlcv&h&e=json`,
+      `https://stooq.com/q/l/?s=${stooqSyms}&f=sd2t2ohlcv&h&e=json`,
       { headers: { 'User-Agent': 'Mozilla/5.0' } }
     );
     if (!r.ok) throw new Error('stooq HTTP ' + r.status);

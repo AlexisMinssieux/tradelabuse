@@ -27,9 +27,9 @@ export default async function handler(req, res) {
   if (!yahooSyms.length) return res.json([]);
 
   try {
-    const stooqSyms = yahooSyms.map(toStooq).join(',');
+    const stooqSyms = yahooSyms.map(s => encodeURIComponent(toStooq(s))).join(',');
     const r = await fetch(
-      `https://stooq.com/q/l/?s=${encodeURIComponent(stooqSyms)}&f=sd2t2ohlcv&h&e=json`,
+      `https://stooq.com/q/l/?s=${stooqSyms}&f=sd2t2ohlcv&h&e=json`,
       { headers: { 'User-Agent': 'Mozilla/5.0' } }
     );
     const data = await r.json();
