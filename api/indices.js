@@ -1,26 +1,11 @@
-const AV_KEY = 'VMUI7Z1E2674ZJUE';
-
-async function avQuote(symbol) {
-  const r = await fetch(
-    `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(symbol)}&apikey=${AV_KEY}`
-  );
-  const d = await r.json();
-  const q = d['Global Quote'];
-  if (!q || !q['05. price']) return null;
-  return {
-    price: parseFloat(q['05. price']),
-    changesPercentage: parseFloat(q['10. change percent']?.replace('%','') || 0)
-  };
-}
-
 const INDICES = [
-  { sym: 'SPY',  name: 'S&P 500',    flag: 'ðŸ‡ºðŸ‡¸' },
-  { sym: 'QQQ',  name: 'NASDAQ',     flag: 'ðŸ‡ºðŸ‡¸' },
-  { sym: 'EWQ',  name: 'CAC 40',     flag: 'ðŸ‡«ðŸ‡·' },
-  { sym: 'EWG',  name: 'DAX',        flag: 'ðŸ‡©ðŸ‡ª' },
-  { sym: 'EWU',  name: 'FTSE 100',   flag: 'ðŸ‡¬ðŸ‡§' },
-  { sym: 'EWJ',  name: 'Nikkei 225', flag: 'ðŸ‡¯ðŸ‡µ' },
-  { sym: 'EWH',  name: 'Hang Seng',  flag: 'ðŸ‡­ðŸ‡°' },
+  { sym: '^FCHI',  name: 'CAC 40',     flag: '🇫🇷' },
+  { sym: '^GSPC',  name: 'S&P 500',    flag: '🇺🇸' },
+  { sym: '^IXIC',  name: 'NASDAQ',     flag: '🇺🇸' },
+  { sym: '^GDAXI', name: 'DAX',        flag: '🇩🇪' },
+  { sym: '^FTSE',  name: 'FTSE 100',   flag: '🇬🇧' },
+  { sym: '^N225',  name: 'Nikkei 225', flag: '🇯🇵' },
+  { sym: '^HSI',   name: 'Hang Seng',  flag: '🇭🇰' },
 ];
 
 export default async function handler(req, res) {
@@ -29,12 +14,26 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const results = await Promise.all(INDICES.map(async idx => {
-      const data = await avQuote(idx.sym);
-      return { ...idx, symbol: idx.sym, price: data?.price || 0, changesPercentage: data?.changesPercentage || 0 };
-    }));
+    const symbols = INDICES.map(i => i.sym).join(',');
+    const r = await fetch(
+      `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&lang=fr-FR&region=FR`,
+      { headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36', 'Accept': 'application/json', 'Origin': 'https://finance.yahoo.com', 'Referer': 'https://finance.yahoo.com' } }
+    );
+    if (!r.ok) throw new Error('Yahoo HTTP ' + r.status);
+    const data = await r.json();
+    const quotes = data?.quoteResponse?.result || [];
+    const results = INDICES.map(idx => {
+      const q = quotes.find(x => x.symbol === idx.sym);
+      return {
+        ...idx,
+        symbol: idx.sym,
+        price: q?.regularMarketPrice || 0,
+        changesPercentage: q?.regularMarketChangePercent || 0,
+        open: q?.marketState === 'REGULAR'
+      };
+    });
     res.json(results);
-  } catch(e) {
+  } catch (e) {
     res.status(500).json({ error: e.message });
   }
 }
