@@ -368,10 +368,16 @@
 <!-- PLACEMENTS -->
 <section class="pg" id="pg-placements">
   <div class="cat-tabs">
-    <button class="cat-tab on" onclick="selPlac('pea',this)">PEA — ETF</button>
-    <button class="cat-tab" onclick="selPlac('av-euro',this)">AV Fonds €</button>
-    <button class="cat-tab" onclick="selPlac('av-uc',this)">AV Unités de Compte</button>
-    <button class="cat-tab" onclick="selPlac('livrets',this)">Livrets</button>
+    <button class="cat-tab on" onclick="selPlac('pea',this)">📊 PEA — ETF</button>
+    <button class="cat-tab" onclick="selPlac('cto',this)">🌐 CTO</button>
+    <button class="cat-tab" onclick="selPlac('av-euro',this)">🛡️ AV Fonds €</button>
+    <button class="cat-tab" onclick="selPlac('av-uc',this)">🚀 AV UC</button>
+    <button class="cat-tab" onclick="selPlac('per',this)">🏛️ PER</button>
+    <button class="cat-tab" onclick="selPlac('livrets',this)">💳 Livrets</button>
+    <button class="cat-tab" onclick="selPlac('scpi',this)">🏢 SCPI</button>
+    <button class="cat-tab" onclick="selPlac('obligations',this)">📜 Obligations</button>
+    <button class="cat-tab" onclick="selPlac('crowdfunding',this)">🤝 Crowdfunding</button>
+    <button class="cat-tab" onclick="selPlac('crypto-earn',this)">₿ Crypto Earn</button>
   </div>
 
   <!-- FENÊTRE EXPLICATIVE -->
@@ -911,62 +917,46 @@ function selActions(m,el){
 // PLACEMENTS — FICHES EXPLICATIVES
 // ════════════════════════════════════
 const EXPLAINERS = {
-  pea:{
-    icon:'📈',
-    title:'Plan d\'Épargne en Actions (PEA)',
-    badges:[{t:'Fiscalité avantageuse',c:'#1e8a4a'},{t:'Actions & ETF',c:'#2a68b8'},{t:'Plafond 150 000€',c:'#9a7830'}],
-    desc:'Le PEA est une enveloppe fiscale permettant d\'investir en actions européennes et ETF éligibles. Le capital n\'est pas garanti mais les gains accumulés bénéficient d\'une exonération d\'impôt sur le revenu après 5 ans de détention (hors prélèvements sociaux de 17,2%). Tout retrait avant 5 ans entraîne la clôture du plan.',
-    items:[
-      {label:'🕐 Horizon recommandé',val:'5 ans minimum'},
-      {label:'💰 Plafond versements',val:'150 000€ (PEA) + 225 000€ (PEA-PME)'},
-      {label:'📊 Fiscalité < 5 ans',val:'PFU 30% (flat tax)'},
-      {label:'✅ Fiscalité > 5 ans',val:'Exonéré IR + 17,2% PS'},
-      {label:'🔓 Retrait',val:'Possible à tout moment (clôture < 5 ans)'},
-      {label:'⚠️ Risque',val:'Perte en capital possible'}
-    ]
-  },
-  'av-euro':{
-    icon:'🛡️',
-    title:'Assurance Vie — Fonds en Euros',
-    badges:[{t:'Capital garanti',c:'#1e8a4a'},{t:'Disponible à tout moment',c:'#2a68b8'},{t:'Fiscalité 8 ans',c:'#9a7830'}],
-    desc:'Le fonds en euros est le placement sécurisé de l\'assurance vie. Le capital versé est garanti par l\'assureur et produit des intérêts crédités chaque année (effet cliquet). Les fonds restent disponibles à tout moment, mais la fiscalité devient très avantageuse après 8 ans de détention du contrat.',
-    items:[
-      {label:'🕐 Horizon recommandé',val:'8 ans pour fiscalité optimale'},
-      {label:'💰 Plafond',val:'Aucun (abattement 4 600€/an après 8 ans)'},
-      {label:'📊 Fiscalité < 8 ans',val:'PFU 30% sur les plus-values'},
-      {label:'✅ Fiscalité > 8 ans',val:'7,5% IR + 17,2% PS (après abattement)'},
-      {label:'🔓 Retrait (rachat)',val:'Possible à tout moment, sous 72h'},
-      {label:'⚠️ Risque',val:'Capital garanti, taux variable'}
-    ]
-  },
-  'av-uc':{
-    icon:'🚀',
-    title:'Assurance Vie — Unités de Compte (UC)',
-    badges:[{t:'Potentiel élevé',c:'#c41a1a'},{t:'Capital non garanti',c:'#9a7830'},{t:'Fiscalité 8 ans',c:'#2a68b8'}],
-    desc:'Les unités de compte sont des supports d\'investissement logés dans une assurance vie (actions, ETF, SCPI, obligations...). Contrairement au fonds euro, le capital n\'est pas garanti et fluctue selon les marchés. En contrepartie, le potentiel de performance est bien supérieur sur le long terme. La fiscalité est identique au fonds euro.',
-    items:[
-      {label:'🕐 Horizon recommandé',val:'8 à 15 ans minimum'},
-      {label:'💰 Plafond',val:'Aucun plafond de versement'},
-      {label:'📊 Fiscalité < 8 ans',val:'PFU 30% sur les gains'},
-      {label:'✅ Fiscalité > 8 ans',val:'7,5% IR + 17,2% PS (après abattement)'},
-      {label:'🔓 Retrait',val:'Possible à tout moment (valeur liquidative)'},
-      {label:'⚠️ Risque',val:'Perte en capital possible (risque 1-7)'}
-    ]
-  },
-  livrets:{
-    icon:'💳',
-    title:'Livrets Réglementés & Livrets Bancaires',
-    badges:[{t:'Capital garanti',c:'#1e8a4a'},{t:'Disponible immédiatement',c:'#2a68b8'},{t:'Taux fixé',c:'#9a7830'}],
-    desc:'Les livrets sont des produits d\'épargne liquides et sécurisés. Le Livret A, LDDS et LEP sont réglementés par l\'État (taux fixé tous les 6 mois, exonérés d\'impôt). Les livrets bancaires offrent des taux plus élevés mais soumis à la flat tax de 30%. Idéal pour l\'épargne de précaution (3 à 6 mois de salaire).',
-    items:[
-      {label:'🕐 Horizon recommandé',val:'Court terme / épargne de précaution'},
-      {label:'💰 Livret A',val:'22 950€ — 2,40% — Exonéré'},
-      {label:'💰 LEP (sous cond.)',val:'10 000€ — 3,50% — Exonéré'},
-      {label:'📊 Livrets bancaires',val:'PFU 30% sur les intérêts'},
-      {label:'🔓 Retrait',val:'Immédiat (24-48h pour les livrets bancaires)'},
-      {label:'⚠️ Risque',val:'Aucun — Capital garanti par l\'État'}
-    ]
-  }
+  pea:{icon:'📊',title:"Plan d'Épargne en Actions (PEA)",
+    badges:[{t:'Exonéré IR après 5 ans',c:'#1e8a4a'},{t:'Actions & ETF éligibles',c:'#2a68b8'},{t:'Plafond 150 000€',c:'#9a7830'}],
+    desc:"Le PEA permet d'investir en actions européennes et ETF éligibles avec une fiscalité très avantageuse après 5 ans (exonération IR, seuls les 17,2% de prélèvements sociaux s'appliquent). C'est l'enveloppe idéale pour les ETF World ou S&P 500 synthétiques éligibles. Tout retrait avant 5 ans entraîne la clôture du plan.",
+    items:[{label:'🕐 Horizon',val:'5 ans minimum (10+ recommandé)'},{label:'💰 Plafond',val:'150 000€ (PEA) + 225 000€ (PEA-PME)'},{label:'📊 Fiscalité < 5 ans',val:'PFU 30% + clôture obligatoire'},{label:'✅ Fiscalité > 5 ans',val:'Exonéré IR + 17,2% PS seulement'},{label:'🔓 Retrait',val:'Possible à tout moment'},{label:'⚠️ Risque',val:'Perte en capital possible'}]},
+  cto:{icon:'🌐',title:"Compte-Titres Ordinaire (CTO)",
+    badges:[{t:'Accès mondial',c:'#2a68b8'},{t:'Sans plafond',c:'#9a7830'},{t:'PFU 30%',c:'#c41a1a'}],
+    desc:"Le CTO donne accès à tous les marchés mondiaux sans restriction ni plafond : actions, ETF, obligations, warrants, options, cryptos tokenisées... Contrairement au PEA, il n'y a pas d'avantage fiscal particulier (PFU 30% sur les gains), mais la liberté est totale. Indispensable pour les marchés non-éligibles PEA (USA, Asie...).",
+    items:[{label:'🕐 Horizon',val:'Tous horizons'},{label:'💰 Plafond',val:'Aucun'},{label:'📊 Fiscalité',val:'PFU 30% (IR + PS) sur dividendes et plus-values'},{label:'✅ Marchés',val:'Monde entier : US, Asie, Europe, ETF CTO...'},{label:'🔓 Retrait',val:'Immédiat (J+2 règlement)'},{label:'⚠️ Risque',val:'Perte en capital possible'}]},
+  'av-euro':{icon:'🛡️',title:"Assurance Vie — Fonds en Euros",
+    badges:[{t:'Capital garanti',c:'#1e8a4a'},{t:'Effet cliquet',c:'#2a68b8'},{t:'Fiscalité avantageuse 8 ans',c:'#9a7830'}],
+    desc:"Le fonds en euros est le placement sécurisé de l'assurance vie. Le capital est garanti et les intérêts crédités annuellement sont définitivement acquis (effet cliquet). La fiscalité devient très avantageuse après 8 ans (abattement 4 600€/an célibataire, 9 200€/couple). Idéal pour sécuriser une épargne moyen-long terme.",
+    items:[{label:'🕐 Horizon',val:'8 ans minimum pour fiscalité optimale'},{label:'💰 Plafond',val:'Illimité (abattement 4 600€/an après 8 ans)'},{label:'📊 Fiscalité < 8 ans',val:'PFU 30% sur les plus-values'},{label:'✅ Fiscalité > 8 ans',val:'7,5% IR + 17,2% PS après abattement'},{label:'🔓 Rachat',val:'Possible à tout moment (72h)'},{label:'⚠️ Risque',val:'Capital garanti — taux variable annuellement'}]},
+  'av-uc':{icon:'🚀',title:"Assurance Vie — Unités de Compte (UC)",
+    badges:[{t:'Potentiel élevé',c:'#c41a1a'},{t:'Capital non garanti',c:'#e07828'},{t:'Fiscalité 8 ans',c:'#2a68b8'}],
+    desc:"Les UC permettent d'investir dans des ETF, fonds actions, SCPI ou obligations au sein d'une enveloppe AV. Le capital fluctue selon les marchés mais le potentiel de rendement est nettement supérieur au fonds euro sur le long terme. La fiscalité est identique au fonds euro, faisant de l'AV UC une alternative au PEA pour les non-éligibles.",
+    items:[{label:'🕐 Horizon',val:'8 à 15 ans minimum'},{label:'💰 Plafond',val:'Illimité'},{label:'📊 Fiscalité < 8 ans',val:'PFU 30% sur les gains'},{label:'✅ Fiscalité > 8 ans',val:'7,5% IR + 17,2% PS après abattement'},{label:'🔓 Rachat',val:'Possible à tout moment (valeur liquidative)'},{label:'⚠️ Risque',val:'Perte en capital possible (SRRI 1 à 7)'}]},
+  per:{icon:'🏛️',title:"Plan d'Épargne Retraite (PER)",
+    badges:[{t:'Déduction fiscale à l\'entrée',c:'#1e8a4a'},{t:'Bloqué jusqu\'à la retraite',c:'#c41a1a'},{t:'Sortie capital ou rente',c:'#2a68b8'}],
+    desc:"Le PER individuel permet de déduire les versements de son revenu imposable (dans la limite de 10% des revenus, plafond 35 194€ en 2024). L'épargne est bloquée jusqu'à la retraite sauf cas exceptionnels (achat résidence principale, invalidité, décès conjoint...). À la sortie, choix entre capital et rente, avec fiscalité sur les gains.",
+    items:[{label:'🕐 Horizon',val:'Jusqu\'à la retraite (blocage sauf exceptions)'},{label:'💰 Déduction',val:'Jusqu\'à 10% revenus N-1 (max 35 194€/an)'},{label:'📊 Fiscalité entrée',val:'Versements déductibles du revenu imposable'},{label:'✅ Fiscalité sortie',val:'IR sur capital + PS 17,2% sur plus-values'},{label:'🔓 Déblocage anticipé',val:'Achat RP, invalidité, décès conjoint, surendettement'},{label:'⚠️ Risque',val:'Fonds € garanti / UC non garantis'}]},
+  livrets:{icon:'💳',title:"Livrets Réglementés & Bancaires",
+    badges:[{t:'Capital garanti',c:'#1e8a4a'},{t:'Disponibilité immédiate',c:'#2a68b8'},{t:'Taux réglementé',c:'#9a7830'}],
+    desc:"Les livrets réglementés (Livret A, LDDS, LEP) sont garantis par l'État et totalement exonérés d'impôt. Les livrets bancaires promotionnels offrent des taux plus élevés sur quelques mois, mais soumis à la flat tax 30%. Réservez 3 à 6 mois de dépenses sur ces supports avant tout investissement — c'est votre matelas de sécurité.",
+    items:[{label:'🕐 Horizon',val:'Court terme — épargne de précaution'},{label:'💰 Livret A / LDDS',val:'2,40% — exonéré — Plafond 22 950€ / 12 000€'},{label:'💰 LEP (sous conditions)',val:'3,50% — exonéré — Plafond 10 000€'},{label:'📊 Livrets bancaires',val:'PFU 30% sur intérêts'},{label:'🔓 Retrait',val:'Immédiat (J+1 à J+2)'},{label:'⚠️ Risque',val:'Aucun — Garanti par l\'État jusqu\'à 100 000€'}]},
+  scpi:{icon:'🏢',title:"SCPI — Pierre-Papier",
+    badges:[{t:'Revenus réguliers',c:'#1e8a4a'},{t:'Immobilier mutualisé',c:'#2a68b8'},{t:'Faible liquidité',c:'#e07828'}],
+    desc:"Les SCPI (Sociétés Civiles de Placement Immobilier) permettent d'investir dans l'immobilier locatif professionnel sans gestion directe. Les loyers sont redistribués trimestriellement sous forme de dividendes. Les taux de distribution 2024 oscillent entre 4,5% et 7%+. Attention : la liquidité est faible et les parts peuvent se revendre avec un délai de plusieurs mois.",
+    items:[{label:'🕐 Horizon',val:'8 à 15 ans minimum'},{label:'💰 Mise de départ',val:'À partir de 1 000€ (selon la SCPI)'},{label:'📊 Fiscalité',val:'Revenus fonciers ou IS selon structure'},{label:'✅ Rendement 2024',val:'4,5% à 7,5% (taux de distribution)'},{label:'🔓 Liquidité',val:'Faible — revente sous 1 à 6 mois'},{label:'⚠️ Risque',val:'Perte en capital possible, revenus non garantis'}]},
+  obligations:{icon:'📜',title:"Obligations & OAT",
+    badges:[{t:'Revenus fixes',c:'#1e8a4a'},{t:'Moins risqué que les actions',c:'#2a68b8'},{t:'Sensibilité aux taux',c:'#9a7830'}],
+    desc:"Les obligations sont des titres de dette émis par des États (OAT françaises, Bunds allemands, T-Notes US) ou des entreprises (obligations corporate). Elles versent un coupon fixe périodique et remboursent le nominal à maturité. En période de taux élevés, c'est une alternative intéressante pour sécuriser des rendements attractifs à moyen terme.",
+    items:[{label:'🕐 Horizon',val:'2 à 10 ans selon la maturité choisie'},{label:'💰 Mise de départ',val:'100€ (ETF oblig.) ou 1 000€ (titres vifs)'},{label:'📊 Fiscalité',val:'PFU 30% sur coupons et plus-values'},{label:'✅ Rendement actuel',val:'2,8% à 4,5% selon émetteur et durée'},{label:'🔓 Liquidité',val:'Bonne (ETF) / Limitée (titres vifs)'},{label:'⚠️ Risque',val:'Risque de taux, risque crédit selon émetteur'}]},
+  crowdfunding:{icon:'🤝',title:"Crowdfunding & Crowdlending",
+    badges:[{t:'Rendements élevés',c:'#1e8a4a'},{t:'Capital non garanti',c:'#c41a1a'},{t:'Durée courte',c:'#2a68b8'}],
+    desc:"Le crowdfunding immobilier finance des opérations de promotion ou rénovation immobilière sur 12 à 36 mois avec des rendements annuels de 8% à 12%. Le crowdlending finance des PME/TPE. Ces placements sont risqués (défaut de l'emprunteur, retard de livraison) et illiquides pendant toute la durée. Réservez-les à moins de 5% de votre portefeuille.",
+    items:[{label:'🕐 Horizon',val:'12 à 36 mois (illiquide)'},{label:'💰 Mise de départ',val:'100€ à 1 000€ selon plateforme'},{label:'📊 Fiscalité',val:'PFU 30% sur les intérêts perçus'},{label:'✅ Rendement',val:'7% à 12% annuel (selon risque projet)'},{label:'🔓 Liquidité',val:'Nulle avant terme du projet'},{label:'⚠️ Risque',val:'Perte totale possible en cas de défaut'}]},
+  'crypto-earn':{icon:'₿',title:"Crypto Earn & Staking",
+    badges:[{t:'Rendements attractifs',c:'#1e8a4a'},{t:'Risque élevé',c:'#c41a1a'},{t:'Fiscalité complexe',c:'#e07828'}],
+    desc:"Le staking et les produits Crypto Earn permettent de générer des revenus passifs sur vos cryptomonnaies en les mettant à contribution (validation de transactions, liquidité...). Les rendements peuvent dépasser 10% sur certains actifs, mais le risque sous-jacent reste celui de la crypto elle-même. La réglementation fiscale française impose la déclaration de chaque revenu.",
+    items:[{label:'🕐 Horizon',val:'Variable — certains produits illiquides'},{label:'💰 Mise de départ',val:'Très variable (de 10€ à ∞)'},{label:'📊 Fiscalité',val:'BNC si professionnel / revenus divers sinon + PFU 30% sur cession'},{label:'✅ Rendement',val:'1% (BTC) à 15%+ (altcoins)'},{label:'🔓 Liquidité',val:'Dépend du lock-up (flexible à 90 jours)'},{label:'⚠️ Risque',val:'Très élevé — perte totale possible'}]}
 };
 
 function renderExplainer(type){
@@ -979,15 +969,192 @@ function renderExplainer(type){
 }
 
 const PL={
-  pea:{title:'PEA — Meilleurs ETF éligibles',head:'<tr><th>Fonds</th><th>ISIN</th><th>Perf. 1an</th><th>Frais</th><th>Encours</th></tr>',rows:[['Amundi MSCI World','LU1681043599','+18,4%','0.12%','12,4 Mrd€'],['Lyxor CAC 40 DR','FR0007052782','+14,1%','0.25%','3,8 Mrd€'],['BNP Nasdaq-100','FR0011871110','+13,7%','0.30%','2,1 Mrd€'],['Amundi Euro Stoxx 50','FR0010654360','+11,2%','0.15%','5,2 Mrd€'],['iShares MSCI EM PEA','FR0013412020','+9,4%','0.25%','1,8 Mrd€'],['Amundi MSCI Europe','FR0010655696','+8,1%','0.15%','2,9 Mrd€']]},
-  'av-euro':{title:'Assurance Vie — Fonds euros 2024',head:'<tr><th>Assureur</th><th>Contrat</th><th>Taux 2024</th><th>Garantie</th><th>Min.</th></tr>',rows:[['Garance Épargne','Garance Vie','4,60%','Oui','500€'],['Suravenir','Avenir Opportunités','4,10%','Oui','1 000€'],['Boursorama','Euro Exclusif','3,80%','Oui','300€'],['Linxea','Avenir 2','3,60%','Oui','500€'],['Lucya Cardif','BNP Cardif','3,50%','Oui','1 000€'],['Générali','Himalia','3,40%','Oui','1 000€']]},
-  'av-uc':{title:'Assurance Vie — Unités de Compte',head:'<tr><th>Fonds UC</th><th>Catégorie</th><th>Perf. 1an</th><th>Risque</th><th>Éligible</th></tr>',rows:[['Amundi MSCI World UC','Actions monde','+18,4%','5/7','Linxea, Boursorama'],['Invesco NASDAQ-100','Tech US','+22,1%','6/7','Linxea Spirit'],['iShares Core S&P500','Actions US','+19,8%','5/7','Lucya Cardif'],['Lazard Small Caps EU','Small caps','+12,4%','6/7','Générali'],['Carmignac Patrimoine','Multi-actifs','+8,2%','4/7','La plupart'],['Fidelity World','Actions monde','+16,8%','5/7','Avenir 2'],['AB International Tech','Tech mondiale','+24,3%','6/7','Spirit 2'],['R-co Valor','Flexible','+9,1%','4/7','Plusieurs']]},
-  livrets:{title:'Livrets — Meilleurs taux (mis à jour mai 2026)',head:'<tr><th>Produit</th><th>Établissement</th><th>Taux brut</th><th>Plafond</th><th>Fiscalité</th></tr>',rows:[['LEP','La Poste / CE / CA','3,50%','10 000€','Exonéré'],['Livret Jeune','Toutes banques','≥ 2,40%','1 600€','Exonéré'],['Distingo','PSA Banque','3,20% (promo)','50 000€','Imposable PFU 30%'],['Zesto','RCI Banque','3,00% (promo)','Illimité','Imposable PFU 30%'],['Livret A','Toutes banques','2,40%','22 950€','Exonéré'],['LDDS','Toutes banques','2,40%','12 000€','Exonéré']]}
+  pea:{
+    title:'PEA — ETF éligibles (mai 2026)', colorCol:2,
+    head:'<tr><th>Fonds</th><th>ISIN</th><th>Perf. 1 an</th><th>Frais/an</th><th>Encours</th></tr>',
+    rows:[
+      ['Amundi MSCI World (CW8)','LU1681043599','+19,2%','0,12%','14,8 Mrd€'],
+      ['Amundi S&P 500 (500)','LU1681048804','+21,4%','0,15%','8,3 Mrd€'],
+      ['BNP Nasdaq-100 (NASD)','FR0011871110','+24,7%','0,30%','2,6 Mrd€'],
+      ['Lyxor CAC 40 DR (CAC)','FR0007052782','+11,3%','0,25%','4,1 Mrd€'],
+      ['Amundi Euro Stoxx 50 (C50)','FR0010654360','+12,8%','0,15%','5,8 Mrd€'],
+      ['Amundi MSCI EM (PAEEM)','LU1681045370','+8,9%','0,20%','2,1 Mrd€'],
+      ['Amundi MSCI Europe (MEUR)','LU1681042599','+10,4%','0,15%','3,2 Mrd€'],
+      ['Lyxor MSCI World Small Cap','LU0392495023','+14,1%','0,45%','0,9 Mrd€'],
+      ['Amundi STOXX Europe 600','FR0010791004','+11,7%','0,19%','2,4 Mrd€'],
+      ['BNP Paribas MSCI USA ESG','FR0011869320','+18,6%','0,25%','1,2 Mrd€'],
+      ['Lyxor PEA Oblig. États Euro','FR0013346681','+3,1%','0,40%','0,7 Mrd€'],
+      ['Amundi MSCI USA Value','LU1681046592','+15,3%','0,25%','1,0 Mrd€'],
+    ]
+  },
+  cto:{
+    title:'CTO — Comparatif courtiers (mai 2026)', colorCol:-1,
+    head:'<tr><th>Courtier</th><th>Ordre Euronext</th><th>Ordre US</th><th>Frais inactivité</th><th>Point fort</th></tr>',
+    rows:[
+      ['Trade Republic','1 € fixe','1 € fixe','Aucun','Simplissime, ETF gratuits'],
+      ['Degiro','2,00€ + 0,038%','0,50€ + 0,05%','Aucun','Marchés mondiaux, pas chers'],
+      ['Interactive Brokers','0,05% min 1€','0,05% min 1$','Aucun','Pro, options, futures'],
+      ['Boursorama','0,99% min 1,99€','0,99% min 7,99€','Aucun','Interface simple, CB offerte'],
+      ['Bourse Direct','0,99€ fixe <1000€','5,00€ fixe','Aucun','Meilleur tarif <1000€'],
+      ['Fortuneo','1,95€ min <500€','8,00€ fixe','Aucun','CB Mastercard incluse'],
+      ['Saxo Banque','0,08% min 3€','0,08% min 3$','Aucun','Pro, analyse intégrée'],
+      ['Etoro','Gratuit (spread)','Gratuit (spread)','10$/mois si inactif','Copy trading'],
+      ['Bitpanda','1,49%','1,49%','Aucun','Actions fractionnées'],
+      ['BinckBank','3,50€ <1500€','5,75€ fixe','Aucun','Outils analyse avancés'],
+    ]
+  },
+  'av-euro':{
+    title:'Assurance Vie — Fonds euros 2024', colorCol:2,
+    head:'<tr><th>Assureur</th><th>Contrat</th><th>Taux 2024</th><th>Garanti</th><th>Versement min.</th></tr>',
+    rows:[
+      ['Garance Épargne','Garance Vie','4,60%','Oui','500€'],
+      ['Suravenir','Avenir Opportunités','4,10%','Oui','1 000€'],
+      ['Spirica','Linxea Spirit 2','3,90%','Oui','500€'],
+      ['Boursorama','Euro Exclusif','3,80%','Oui','300€'],
+      ['Linxea','Avenir 2 (Suravenir)','3,75%','Oui','500€'],
+      ['SwissLife','SwissLife Essentiel','3,60%','Oui','1 000€'],
+      ['Lucya Cardif','BNP Paribas Cardif','3,50%','Oui','1 000€'],
+      ['Générali','Himalia','3,40%','Oui','1 000€'],
+      ['Ag2r La Mondiale','TTWEB','3,30%','Oui','500€'],
+      ['MMA','MMA Multisupports','3,20%','Oui','1 500€'],
+      ['Aviva','Afer Multi-Supports','3,10%','Oui','1 500€'],
+      ['Allianz','Allianz Vie','2,90%','Oui','2 000€'],
+    ]
+  },
+  'av-uc':{
+    title:'Assurance Vie — Meilleures UC (mai 2026)', colorCol:2,
+    head:'<tr><th>Fonds UC</th><th>Catégorie</th><th>Perf. 1 an</th><th>Risque SRRI</th><th>Contrats éligibles</th></tr>',
+    rows:[
+      ['Amundi MSCI World UC','Actions monde','+19,2%','5/7','Linxea, Boursorama, Spirit'],
+      ['Invesco NASDAQ-100','Tech US','+24,7%','6/7','Linxea Spirit, Cardif'],
+      ['iShares Core S&P 500 UC','Actions US','+21,4%','5/7','Lucya Cardif, Boursorama'],
+      ['AB International Technology','Tech mondiale','+26,1%','6/7','Spirit 2, Avenir 2'],
+      ['Fidelity World Fund','Actions monde','+17,8%','5/7','Avenir 2, Générali'],
+      ['Lazard Small Caps Europe','Small caps EU','+13,4%','6/7','Générali, Spirica'],
+      ['Carmignac Patrimoine','Multi-actifs','+8,2%','4/7','La plupart'],
+      ['R-co Valor','Flexible','+9,6%','4/7','Plusieurs'],
+      ['Pictet-Digital','Tech mondiale','+28,4%','6/7','Spirica, Spirit 2'],
+      ['M&G (Lux) Income Allocation','Diversifié','+7,1%','3/7','Linxea, MMA'],
+      ['Tikehau International Cross Assets','Oblig/Actions','+6,8%','3/7','Générali, Aviva'],
+      ['SCPI Immorente UC','Immobilier','+5,4%','3/7','Linxea Vie, Cardif'],
+    ]
+  },
+  per:{
+    title:'PER Individuel — Comparatif (mai 2026)', colorCol:-1,
+    head:'<tr><th>Assureur / Courtier</th><th>Contrat</th><th>Frais gestion</th><th>Fonds €</th><th>Digital</th></tr>',
+    rows:[
+      ['Linxea','PER Linxea Spirit','0,50%/an','3,90% (2024)','⭐⭐⭐⭐⭐'],
+      ['Boursorama','PER Boursorama','0,75%/an','3,50% (2024)','⭐⭐⭐⭐⭐'],
+      ['Suravenir','PER Avenir','0,60%/an','4,10% (2024)','⭐⭐⭐⭐'],
+      ['Spirica','PER Spirit','0,50%/an','3,90% (2024)','⭐⭐⭐⭐'],
+      ['SwissLife','PER SwissLife','0,80%/an','3,60% (2024)','⭐⭐⭐⭐'],
+      ['Générali','PER Generali','0,85%/an','3,40% (2024)','⭐⭐⭐'],
+      ['BNP Cardif','PER BNP Paribas','0,90%/an','3,50% (2024)','⭐⭐⭐'],
+      ['Crédit Agricole','PERP CA','0,95%/an','3,20% (2024)','⭐⭐⭐'],
+      ['AXA','PER AXA Retraite','1,00%/an','3,10% (2024)','⭐⭐⭐'],
+      ['Préfon','Préfon-Retraite','Variable','3,00% (2024)','⭐⭐'],
+    ]
+  },
+  livrets:{
+    title:'Livrets — Meilleurs taux (mai 2026)', colorCol:2,
+    head:'<tr><th>Produit</th><th>Établissement</th><th>Taux brut</th><th>Plafond</th><th>Fiscalité</th></tr>',
+    rows:[
+      ['LEP (sous conditions)','La Poste / CE / CIC','3,50%','10 000€','Exonéré'],
+      ['Livret Jeune (12-25 ans)','Toutes banques','≥ 2,40%','1 600€','Exonéré'],
+      ['Livret Distingo','PSA Banque','3,20% (promo 3 mois)','50 000€','PFU 30%'],
+      ['Zesto','RCI Banque','3,00% (promo 3 mois)','Illimité','PFU 30%'],
+      ['Livret BforBank','BforBank','2,80% (promo 2 mois)','Illimité','PFU 30%'],
+      ['Super Livret Fortuneo','Fortuneo','2,70% (promo 4 mois)','Illimité','PFU 30%'],
+      ['Livret Hello+','Hello bank!','2,60%','50 000€','PFU 30%'],
+      ['Livret A','Toutes banques','2,40%','22 950€','Exonéré'],
+      ['LDDS','Toutes banques','2,40%','12 000€','Exonéré'],
+      ['Livret Orange ING','ING Direct','2,00%','Illimité','PFU 30%'],
+      ['Livret Boursorama','Boursorama','0,10%','Illimité','PFU 30%'],
+    ]
+  },
+  scpi:{
+    title:'SCPI — Taux de distribution 2024', colorCol:2,
+    head:'<tr><th>Nom SCPI</th><th>Société de gestion</th><th>Taux dist. 2024</th><th>Stratégie</th><th>Souscription min.</th></tr>',
+    rows:[
+      ['Remake Live','Remake AM','7,79%','Europe diversifié','1 part ~204€'],
+      ['Iroko Zen','Iroko','7,03%','Europe diversifié','1 part ~200€'],
+      ['Corum XL','Corum AM','6,90%','Hors zone euro','1 part ~189€'],
+      ['Corum Origin','Corum AM','6,60%','Zone euro diversifié','1 part ~1 135€'],
+      ['Épargne Pierre','Atland Voisin','6,41%','France diversifié','1 part ~205€'],
+      ['Coeur d\'Europe','Inter Gestion','6,12%','Europe diversifié','5 parts ~895€'],
+      ['Activimmo','Alderan','6,05%','Logistique France','1 part ~5 500€'],
+      ['PF Grand Paris','Perial AM','5,38%','Bureaux Île-de-France','1 part ~512€'],
+      ['Immorente','Sofidy','5,28%','Commerce / Bureaux','1 part ~336€'],
+      ['Novapierre Allemagne 2','Paref','4,80%','Commerce Allemagne','1 part ~210€'],
+      ['Primopierre','Primonial REIM','4,52%','Bureaux France','1 part ~208€'],
+      ['Atream Hôtels','Atream','4,35%','Hôtellerie Europe','1 part ~194€'],
+    ]
+  },
+  obligations:{
+    title:'Obligations & ETF Oblig. — Rendements mai 2026', colorCol:2,
+    head:'<tr><th>Instrument</th><th>Émetteur / Fonds</th><th>Rendement</th><th>Maturité / Duration</th><th>Risque</th></tr>',
+    rows:[
+      ['T-Note US 10 ans','Trésor américain','4,45%','10 ans','AAA'],
+      ['T-Bill US 3 mois','Trésor américain','4,80%','3 mois','AAA'],
+      ['OAT France 10 ans','État français','3,35%','10 ans','AA-'],
+      ['OAT France 2 ans','État français','3,10%','2 ans','AA-'],
+      ['Bund Allemand 10 ans','État allemand','2,85%','10 ans','AAA'],
+      ['BTP Italie 10 ans','État italien','3,95%','10 ans','BBB'],
+      ['iShares Core € Govt Bond (IEGA)','ETF – Oblig. états €','3,20%','Duration 7,4 ans','Diversifié'],
+      ['Amundi € Corporate Bond (AIGE)','ETF – Oblig. corporate €','3,80%','Duration 4,6 ans','Investment grade'],
+      ['Lyxor USD 10Y Bond ETF','ETF – T-Notes USD','4,40%','Duration 8,2 ans','AAA'],
+      ['Amundi Short Term Bond (ERNS)','ETF – Court terme €','3,40%','Duration 1,5 ans','Diversifié'],
+      ['LVMH 2,75% 2028','Obligation corporate','3,10%','2028','A+'],
+      ['Volkswagen 4,00% 2029','Obligation corporate','4,30%','2029','BBB+'],
+    ]
+  },
+  crowdfunding:{
+    title:'Crowdfunding — Meilleures plateformes (mai 2026)', colorCol:2,
+    head:'<tr><th>Plateforme</th><th>Spécialité</th><th>Rendement moyen</th><th>Durée moy.</th><th>Ticket min.</th></tr>',
+    rows:[
+      ['ClubFunding','Immobilier promo','10,5%','20 mois','1 000€'],
+      ['Homunity','Immobilier promo','9,8%','22 mois','1 000€'],
+      ['Anaxago','Immo + Private Equity','9,6%','24 mois','1 000€'],
+      ['Fundimmo','Immobilier promo','9,3%','19 mois','500€'],
+      ['Raizers','Immo + PME','9,1%','21 mois','1 000€'],
+      ['Wiseed','Immo + Startup','8,8%','26 mois','100€'],
+      ['Lendopolis','PME + Énergie verte','8,4%','36 mois','20€'],
+      ['Bolden','PME françaises','7,9%','30 mois','100€'],
+      ['October (Lendix)','PME européennes','7,2%','42 mois','20€'],
+      ['PretUp','PME françaises','7,0%','28 mois','20€'],
+    ]
+  },
+  'crypto-earn':{
+    title:'Crypto Earn & Staking — Rendements (mai 2026)', colorCol:2,
+    head:'<tr><th>Actif</th><th>Plateforme</th><th>APY estimé</th><th>Lock-up</th><th>Risque</th></tr>',
+    rows:[
+      ['ETH (staking natif)','Lido / Rocket Pool','3,8%','Flexible','Faible (smart contract)'],
+      ['USDC / USDT','Aave, Compound','4,5 – 6%','Flexible','Risque DeFi'],
+      ['Bitcoin (BTC)','Nexo, Bitpanda','2,0 – 3%','Flexible','Plateforme centralisée'],
+      ['Solana (SOL)','Solflare, Marinade','6,5 – 8%','Flexible','Slash risk'],
+      ['Polkadot (DOT)','Kraken, Binance','10 – 12%','28 jours lock','Liquidité faible'],
+      ['Cosmos (ATOM)','Keplr, Binance','15 – 18%','21 jours lock','Altcoin volatil'],
+      ['MATIC / Polygon','Binance Earn','4,0 – 5%','Flexible','Altcoin'],
+      ['ADA (Cardano)','Daedalus wallet','3,0 – 4%','Flexible','Faible'],
+      ['USDC (DeFi Yield)','Curve, Yearn','5 – 8%','Variable','Smart contract'],
+      ['BNB','Binance Earn','5,0 – 7%','15 – 30 jours','Centralisation'],
+    ]
+  },
 };
+
 function selPlac(type,el){
   document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');
-  const p=PL[type];$('placTitle').textContent=p.title;$('placHead').innerHTML=p.head;
-  $('placBody').innerHTML=p.rows.map(r=>`<tr>${r.map((c,i)=>`<td style="${i===2?'font-family:var(--mono);font-size:10px;color:'+(c.startsWith('+')?'var(--green)':'var(--red2)'):'font-size:11px'}">${c}</td>`).join('')}</tr>`).join('');
+  const p=PL[type];if(!p)return;
+  $('placTitle').textContent=p.title;
+  $('placHead').innerHTML=p.head;
+  $('placBody').innerHTML=p.rows.map(r=>`<tr>${r.map((c,i)=>{
+    let style='font-size:11px';
+    if(i===p.colorCol){
+      const isPos=c.startsWith('+')||parseFloat(c)>0;
+      style='font-family:var(--mono);font-size:10px;font-weight:700;color:'+(isPos?'var(--green)':'var(--red2)');
+    }
+    return`<td style="${style}">${c}</td>`;
+  }).join('')}</tr>`).join('');
   renderExplainer(type);
 }
 selPlac('pea',document.querySelector('.cat-tab'));
