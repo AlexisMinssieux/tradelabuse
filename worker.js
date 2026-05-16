@@ -135,11 +135,28 @@ export default {
         return new Response(JSON.stringify(data), { headers: CORS });
       }
 
+      if (path === '/debug-news') {
+        const feeds = [
+          'https://www.rfi.fr/fr/rss-economie',
+          'https://www.france24.com/fr/rss/economie',
+          'https://rss.dw.com/rdf/rss-fr-eco',
+          'https://feeds.reuters.com/reuters/frBusinessNews',
+        ];
+        const out = {};
+        for (const url of feeds) {
+          try {
+            const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+            out[url] = { status: r.status, preview: (await r.text()).substring(0, 200) };
+          } catch(e) { out[url] = { error: e.message }; }
+        }
+        return new Response(JSON.stringify(out, null, 2), { headers: CORS });
+      }
+
       if (path === '/news') {
         const feeds = [
-          { url: 'https://www.lemonde.fr/economie/rss_full.xml', source: 'Le Monde' },
-          { url: 'https://www.francetvinfo.fr/economie.rss', source: 'France Info' },
-          { url: 'https://www.lefigaro.fr/rss/figaro_economie.xml', source: 'Le Figaro' },
+          { url: 'https://www.rfi.fr/fr/rss-economie', source: 'RFI' },
+          { url: 'https://www.france24.com/fr/rss/economie', source: 'France 24' },
+          { url: 'https://rss.dw.com/rdf/rss-fr-eco', source: 'DW Français' },
         ];
         const results = [];
         for (const feed of feeds) {
