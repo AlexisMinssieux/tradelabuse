@@ -161,6 +161,39 @@ export default {
         return new Response(JSON.stringify(results.slice(0, 12)), { headers: CORS });
       }
 
+      if (path === '/debug-sources') {
+        const out = {};
+        // Yahoo Finance v8 (chart endpoint, different from v7 quote)
+        try {
+          const r = await fetch('https://query2.finance.yahoo.com/v8/finance/chart/%5EFCHI?interval=1d&range=1d',
+            { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' } });
+          out.yahooV8 = { status: r.status };
+          if (r.ok) { const d = await r.json(); out.yahooV8.price = d?.chart?.result?.[0]?.meta?.regularMarketPrice; }
+          else { out.yahooV8.body = await r.text(); }
+        } catch(e) { out.yahooV8 = { error: e.message }; }
+        // Stooq ^cac (alternative symbol)
+        try {
+          const r = await fetch('https://stooq.com/q/l/?s=%5Ecac&f=sd2t2ohlcv&h&e=json',
+            { headers: { 'User-Agent': 'Mozilla/5.0' } });
+          out.stooqCac = { status: r.status };
+          if (r.ok) { const d = await r.json(); out.stooqCac.data = d?.symbols?.[0]; }
+        } catch(e) { out.stooqCac = { error: e.message }; }
+        // Stooq ^fchi
+        try {
+          const r = await fetch('https://stooq.com/q/l/?s=%5Efchi&f=sd2t2ohlcv&h&e=json',
+            { headers: { 'User-Agent': 'Mozilla/5.0' } });
+          out.stooqFchi = { status: r.status };
+          if (r.ok) { const d = await r.json(); out.stooqFchi.data = d?.symbols?.[0]; }
+        } catch(e) { out.stooqFchi = { error: e.message }; }
+        // Alpha Vantage GLOBAL_QUOTE ^FCHI
+        try {
+          const r = await fetch('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%5EFCHI&apikey=demo');
+          out.alphaVantage = { status: r.status };
+          if (r.ok) { out.alphaVantage.data = await r.json(); }
+        } catch(e) { out.alphaVantage = { error: e.message }; }
+        return new Response(JSON.stringify(out, null, 2), { headers: CORS });
+      }
+
       if (path === '/debug-td') {
         const TD_KEY = '5faedc1fa2eb4ad1859d39fc2baaeb95';
         const r = await fetch(`https://api.twelvedata.com/quote?symbol=CAC40,FTSE100,N225,HSI&apikey=${TD_KEY}`);
