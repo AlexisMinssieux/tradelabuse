@@ -135,28 +135,10 @@ export default {
         return new Response(JSON.stringify(data), { headers: CORS });
       }
 
-      if (path === '/debug-news') {
-        const feeds = [
-          'https://www.rfi.fr/fr/rss-economie',
-          'https://www.france24.com/fr/rss/economie',
-          'https://rss.dw.com/rdf/rss-fr-eco',
-          'https://feeds.reuters.com/reuters/frBusinessNews',
-        ];
-        const out = {};
-        for (const url of feeds) {
-          try {
-            const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-            out[url] = { status: r.status, preview: (await r.text()).substring(0, 200) };
-          } catch(e) { out[url] = { error: e.message }; }
-        }
-        return new Response(JSON.stringify(out, null, 2), { headers: CORS });
-      }
-
       if (path === '/news') {
         const feeds = [
-          { url: 'https://www.rfi.fr/fr/rss-economie', source: 'RFI' },
-          { url: 'https://www.france24.com/fr/rss/economie', source: 'France 24' },
-          { url: 'https://rss.dw.com/rdf/rss-fr-eco', source: 'DW Français' },
+          { url: 'https://news.google.com/rss/search?q=bourse+CAC40+économie+france&hl=fr&gl=FR&ceid=FR:fr', source: 'Google News' },
+          { url: 'https://news.google.com/rss/search?q=marchés+financiers+france&hl=fr&gl=FR&ceid=FR:fr', source: 'Google News' },
         ];
         const results = [];
         for (const feed of feeds) {
