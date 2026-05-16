@@ -942,7 +942,7 @@ const EXPLAINERS = {
   livrets:{icon:'💳',title:"Livrets Réglementés & Bancaires",
     badges:[{t:'Capital garanti',c:'#1e8a4a'},{t:'Disponibilité immédiate',c:'#2a68b8'},{t:'Taux réglementé',c:'#9a7830'}],
     desc:"Les livrets réglementés (Livret A, LDDS, LEP) sont garantis par l'État et totalement exonérés d'impôt. Les livrets bancaires promotionnels offrent des taux plus élevés sur quelques mois, mais soumis à la flat tax 30%. Réservez 3 à 6 mois de dépenses sur ces supports avant tout investissement — c'est votre matelas de sécurité.",
-    items:[{label:'🕐 Horizon',val:'Court terme — épargne de précaution'},{label:'💰 Livret A / LDDS',val:'2,40% — exonéré — Plafond 22 950€ / 12 000€'},{label:'💰 LEP (sous conditions)',val:'3,50% — exonéré — Plafond 10 000€'},{label:'📊 Livrets bancaires',val:'PFU 30% sur intérêts'},{label:'🔓 Retrait',val:'Immédiat (J+1 à J+2)'},{label:'⚠️ Risque',val:'Aucun — Garanti par l\'État jusqu\'à 100 000€'}]},
+    items:[{label:'🕐 Horizon',val:'Court terme — épargne de précaution'},{label:'💰 Livret A / LDDS',val:'2,40% — exonéré — Plafond 22 950€ / 12 000€'},{label:'💰 LEP (sous conditions)',val:'2,90% — exonéré — Plafond 10 000€'},{label:'📊 Livrets bancaires',val:'PFU 30% sur intérêts'},{label:'🔓 Retrait',val:'Immédiat (J+1 à J+2)'},{label:'⚠️ Risque',val:'Aucun — Garanti par l\'État jusqu\'à 100 000€'}]},
   scpi:{icon:'🏢',title:"SCPI — Pierre-Papier",
     badges:[{t:'Revenus réguliers',c:'#1e8a4a'},{t:'Immobilier mutualisé',c:'#2a68b8'},{t:'Faible liquidité',c:'#e07828'}],
     desc:"Les SCPI (Sociétés Civiles de Placement Immobilier) permettent d'investir dans l'immobilier locatif professionnel sans gestion directe. Les loyers sont redistribués trimestriellement sous forme de dividendes. Les taux de distribution 2024 oscillent entre 4,5% et 7%+. Attention : la liquidité est faible et les parts peuvent se revendre avec un délai de plusieurs mois.",
@@ -1006,21 +1006,21 @@ const PL={
     ]
   },
   'av-euro':{
-    title:'Assurance Vie — Fonds euros 2024', colorCol:2,
-    head:'<tr><th>Assureur</th><th>Contrat</th><th>Taux 2024</th><th>Garanti</th><th>Versement min.</th></tr>',
+    title:'Assurance Vie — Fonds euros 2025', colorCol:2,
+    head:'<tr><th>Assureur</th><th>Contrat</th><th>Taux 2025</th><th>Garanti</th><th>Versement min.</th></tr>',
     rows:[
-      ['Garance Épargne','Garance Vie','4,60%','Oui','500€'],
-      ['Suravenir','Avenir Opportunités','4,10%','Oui','1 000€'],
-      ['Spirica','Linxea Spirit 2','3,90%','Oui','500€'],
-      ['Boursorama','Euro Exclusif','3,80%','Oui','300€'],
-      ['Linxea','Avenir 2 (Suravenir)','3,75%','Oui','500€'],
-      ['SwissLife','SwissLife Essentiel','3,60%','Oui','1 000€'],
-      ['Lucya Cardif','BNP Paribas Cardif','3,50%','Oui','1 000€'],
-      ['Générali','Himalia','3,40%','Oui','1 000€'],
-      ['Ag2r La Mondiale','TTWEB','3,30%','Oui','500€'],
-      ['MMA','MMA Multisupports','3,20%','Oui','1 500€'],
-      ['Aviva','Afer Multi-Supports','3,10%','Oui','1 500€'],
-      ['Allianz','Allianz Vie','2,90%','Oui','2 000€'],
+      ['Garance Épargne','Garance Vie','4,30%','Oui','500€'],
+      ['Suravenir','Avenir Opportunités','3,90%','Oui','1 000€'],
+      ['Spirica','Linxea Spirit 2','3,70%','Oui','500€'],
+      ['Boursorama','Euro Exclusif','3,60%','Oui','300€'],
+      ['Linxea','Avenir 2 (Suravenir)','3,55%','Oui','500€'],
+      ['SwissLife','SwissLife Essentiel','3,40%','Oui','1 000€'],
+      ['Lucya Cardif','BNP Paribas Cardif','3,30%','Oui','1 000€'],
+      ['Générali','Himalia','3,20%','Oui','1 000€'],
+      ['Ag2r La Mondiale','TTWEB','3,10%','Oui','500€'],
+      ['MMA','MMA Multisupports','3,00%','Oui','1 500€'],
+      ['Aviva','Afer Multi-Supports','2,90%','Oui','1 500€'],
+      ['Allianz','Allianz Vie','2,70%','Oui','2 000€'],
     ]
   },
   'av-uc':{
@@ -1045,23 +1045,23 @@ const PL={
     title:'PER Individuel — Comparatif (mai 2026)', colorCol:-1,
     head:'<tr><th>Assureur / Courtier</th><th>Contrat</th><th>Frais gestion</th><th>Fonds €</th><th>Digital</th></tr>',
     rows:[
-      ['Linxea','PER Linxea Spirit','0,50%/an','3,90% (2024)','⭐⭐⭐⭐⭐'],
-      ['Boursorama','PER Boursorama','0,75%/an','3,50% (2024)','⭐⭐⭐⭐⭐'],
-      ['Suravenir','PER Avenir','0,60%/an','4,10% (2024)','⭐⭐⭐⭐'],
-      ['Spirica','PER Spirit','0,50%/an','3,90% (2024)','⭐⭐⭐⭐'],
-      ['SwissLife','PER SwissLife','0,80%/an','3,60% (2024)','⭐⭐⭐⭐'],
-      ['Générali','PER Generali','0,85%/an','3,40% (2024)','⭐⭐⭐'],
-      ['BNP Cardif','PER BNP Paribas','0,90%/an','3,50% (2024)','⭐⭐⭐'],
-      ['Crédit Agricole','PERP CA','0,95%/an','3,20% (2024)','⭐⭐⭐'],
-      ['AXA','PER AXA Retraite','1,00%/an','3,10% (2024)','⭐⭐⭐'],
-      ['Préfon','Préfon-Retraite','Variable','3,00% (2024)','⭐⭐'],
+      ['Linxea','PER Linxea Spirit','0,50%/an','3,90% (2025)','⭐⭐⭐⭐⭐'],
+      ['Boursorama','PER Boursorama','0,75%/an','3,50% (2025)','⭐⭐⭐⭐⭐'],
+      ['Suravenir','PER Avenir','0,60%/an','4,10% (2025)','⭐⭐⭐⭐'],
+      ['Spirica','PER Spirit','0,50%/an','3,90% (2025)','⭐⭐⭐⭐'],
+      ['SwissLife','PER SwissLife','0,80%/an','3,60% (2025)','⭐⭐⭐⭐'],
+      ['Générali','PER Generali','0,85%/an','3,40% (2025)','⭐⭐⭐'],
+      ['BNP Cardif','PER BNP Paribas','0,90%/an','3,50% (2025)','⭐⭐⭐'],
+      ['Crédit Agricole','PERP CA','0,95%/an','3,20% (2025)','⭐⭐⭐'],
+      ['AXA','PER AXA Retraite','1,00%/an','3,10% (2025)','⭐⭐⭐'],
+      ['Préfon','Préfon-Retraite','Variable','3,00% (2025)','⭐⭐'],
     ]
   },
   livrets:{
     title:'Livrets — Meilleurs taux (mai 2026)', colorCol:2,
     head:'<tr><th>Produit</th><th>Établissement</th><th>Taux brut</th><th>Plafond</th><th>Fiscalité</th></tr>',
     rows:[
-      ['LEP (sous conditions)','La Poste / CE / CIC','3,50%','10 000€','Exonéré'],
+      ['LEP (sous conditions)','La Poste / CE / CIC','2,90%','10 000€','Exonéré'],
       ['Livret Jeune (12-25 ans)','Toutes banques','≥ 2,40%','1 600€','Exonéré'],
       ['Livret Distingo','PSA Banque','3,20% (promo 3 mois)','50 000€','PFU 30%'],
       ['Zesto','RCI Banque','3,00% (promo 3 mois)','Illimité','PFU 30%'],
@@ -1075,8 +1075,8 @@ const PL={
     ]
   },
   scpi:{
-    title:'SCPI — Taux de distribution 2024', colorCol:2,
-    head:'<tr><th>Nom SCPI</th><th>Société de gestion</th><th>Taux dist. 2024</th><th>Stratégie</th><th>Souscription min.</th></tr>',
+    title:'SCPI — Taux de distribution 2025', colorCol:2,
+    head:'<tr><th>Nom SCPI</th><th>Société de gestion</th><th>Taux dist. 2025</th><th>Stratégie</th><th>Souscription min.</th></tr>',
     rows:[
       ['Remake Live','Remake AM','7,79%','Europe diversifié','1 part ~204€'],
       ['Iroko Zen','Iroko','7,03%','Europe diversifié','1 part ~200€'],
@@ -1144,19 +1144,157 @@ const PL={
   },
 };
 
+const PLURL={
+  pea:[
+    'https://www.justetf.com/fr/etf-profile.html?isin=LU1681043599',
+    'https://www.justetf.com/fr/etf-profile.html?isin=LU1681048804',
+    'https://www.justetf.com/fr/etf-profile.html?isin=FR0011871110',
+    'https://www.justetf.com/fr/etf-profile.html?isin=FR0007052782',
+    'https://www.justetf.com/fr/etf-profile.html?isin=FR0010654360',
+    'https://www.justetf.com/fr/etf-profile.html?isin=LU1681045370',
+    'https://www.justetf.com/fr/etf-profile.html?isin=LU1681042599',
+    'https://www.justetf.com/fr/etf-profile.html?isin=LU0392495023',
+    'https://www.justetf.com/fr/etf-profile.html?isin=FR0010791004',
+    'https://www.justetf.com/fr/etf-profile.html?isin=FR0011869320',
+    'https://www.justetf.com/fr/etf-profile.html?isin=FR0013346681',
+    'https://www.justetf.com/fr/etf-profile.html?isin=LU1681046592',
+  ],
+  cto:[
+    'https://www.traderepublic.com/fr-fr',
+    'https://www.degiro.fr/',
+    'https://www.interactivebrokers.co.uk/fr/home.php',
+    'https://www.boursobank.com/',
+    'https://www.boursedirect.fr/',
+    'https://www.fortuneo.fr/',
+    'https://www.home.saxo/fr-fr',
+    'https://www.etoro.com/fr/',
+    'https://www.bitpanda.com/fr',
+    'https://www.home.saxo/fr-fr/accounts/openaccount',
+  ],
+  'av-euro':[
+    'https://www.garance.fr/',
+    'https://www.linxea.com/assurance-vie/avenir2/',
+    'https://www.linxea.com/assurance-vie/spirit2/',
+    'https://www.boursobank.com/assurance-vie',
+    'https://www.linxea.com/assurance-vie/avenir2/',
+    'https://www.swisslife.fr/particuliers/epargne/assurance-vie.html',
+    'https://lucya.bnpparibascardif.com/',
+    'https://www.generali.fr/',
+    'https://www.ag2rlamondiale.fr/',
+    'https://www.mma.fr/',
+    'https://www.afer.fr/',
+    'https://www.allianz.fr/',
+  ],
+  'av-uc':[
+    'https://www.linxea.com/assurance-vie/avenir2/',
+    'https://www.linxea.com/assurance-vie/spirit2/',
+    'https://lucya.bnpparibascardif.com/',
+    'https://www.linxea.com/assurance-vie/spirit2/',
+    'https://www.linxea.com/assurance-vie/avenir2/',
+    'https://www.generali.fr/',
+    'https://www.carmignac.com/',
+    'https://www.r-co.fr/',
+    'https://www.linxea.com/assurance-vie/spirit2/',
+    'https://www.linxea.com/assurance-vie/avenir2/',
+    'https://www.generali.fr/',
+    'https://www.linxea.com/',
+  ],
+  per:[
+    'https://www.linxea.com/per/spirit/',
+    'https://www.boursobank.com/epargne/per',
+    'https://www.linxea.com/per/avenir/',
+    'https://www.linxea.com/per/spirit/',
+    'https://www.swisslife.fr/particuliers/retraite/per.html',
+    'https://www.generali.fr/',
+    'https://www.bnpparibas.fr/',
+    'https://www.credit-agricole.fr/',
+    'https://www.axa.fr/epargne-retraite/per.html',
+    'https://www.prefon-retraite.fr/',
+  ],
+  livrets:[
+    'https://www.service-public.fr/particuliers/vosdroits/F2370',
+    'https://www.service-public.fr/particuliers/vosdroits/F2373',
+    'https://www.distingo.com/',
+    'https://www.zesto.fr/',
+    'https://www.bforbank.com/',
+    'https://www.fortuneo.fr/',
+    'https://www.hellobank.fr/',
+    'https://www.service-public.fr/particuliers/vosdroits/F2365',
+    'https://www.service-public.fr/particuliers/vosdroits/F2368',
+    'https://www.ing.fr/',
+    'https://www.boursobank.com/',
+  ],
+  scpi:[
+    'https://www.remake.fr/',
+    'https://www.iroko.eu/',
+    'https://www.corum.fr/',
+    'https://www.corum.fr/',
+    'https://www.epargnepierrevie.fr/',
+    'https://www.intergestion.fr/',
+    'https://www.alderan.fr/',
+    'https://www.perial.com/',
+    'https://www.sofidy.com/',
+    'https://www.paref.fr/',
+    'https://www.primonialreim.fr/',
+    'https://www.atream.fr/',
+  ],
+  obligations:[
+    'https://www.treasurydirect.gov/',
+    'https://www.treasurydirect.gov/',
+    'https://www.aft.gouv.fr/',
+    'https://www.aft.gouv.fr/',
+    'https://www.deutsche-finanzagentur.de/',
+    'https://www.dt.tesoro.it/',
+    'https://www.justetf.com/fr/etf-profile.html?isin=IE00B4WXJJ64',
+    'https://www.justetf.com/fr/etf-profile.html?isin=LU1829220137',
+    'https://www.justetf.com/fr/',
+    'https://www.justetf.com/fr/',
+    '','',
+  ],
+  crowdfunding:[
+    'https://www.clubfunding.fr/',
+    'https://www.homunity.com/',
+    'https://www.anaxago.com/',
+    'https://www.fundimmo.com/',
+    'https://www.raizers.com/',
+    'https://www.wiseed.com/',
+    'https://www.lendopolis.com/',
+    'https://www.bolden.fr/',
+    'https://fr.october.eu/',
+    'https://www.pretup.fr/',
+  ],
+  'crypto-earn':[
+    'https://lido.fi/',
+    'https://aave.com/',
+    'https://nexo.com/',
+    'https://solflare.com/',
+    'https://www.kraken.com/fr-fr/earn',
+    'https://wallet.keplr.app/',
+    'https://www.binance.com/fr/earn',
+    'https://daedaluswallet.io/',
+    'https://curve.fi/',
+    'https://www.binance.com/fr/earn',
+  ],
+};
+
 function selPlac(type,el){
   document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');
   const p=PL[type];if(!p)return;
+  const urls=PLURL[type]||[];
   $('placTitle').textContent=p.title;
-  $('placHead').innerHTML=p.head;
-  $('placBody').innerHTML=p.rows.map(r=>`<tr>${r.map((c,i)=>{
-    let style='font-size:11px';
-    if(i===p.colorCol){
-      const isPos=c.startsWith('+')||parseFloat(c)>0;
-      style='font-family:var(--mono);font-size:10px;font-weight:700;color:'+(isPos?'var(--green)':'var(--red2)');
-    }
-    return`<td style="${style}">${c}</td>`;
-  }).join('')}</tr>`).join('');
+  $('placHead').innerHTML=p.head.replace('</tr>','<th style="width:28px;text-align:center;color:var(--muted)">↗</th></tr>');
+  $('placBody').innerHTML=p.rows.map((r,ri)=>{
+    const url=urls[ri]||'';
+    const tr=url?`<tr style="cursor:pointer" title="Ouvrir" onclick="window.open('${url}','_blank')">`:'<tr>';
+    return tr+r.map((c,i)=>{
+      let style='font-size:11px';
+      if(i===p.colorCol){
+        const isPos=c.startsWith('+')||parseFloat(c)>0;
+        style='font-family:var(--mono);font-size:10px;font-weight:700;color:'+(isPos?'var(--green)':'var(--red2)');
+      }
+      return`<td style="${style}">${c}</td>`;
+    }).join('')+(url?`<td style="text-align:center;font-size:13px;color:var(--muted)">↗</td>`:'<td></td>')+'</tr>';
+  }).join('');
   renderExplainer(type);
 }
 selPlac('pea',document.querySelector('.cat-tab'));
@@ -1165,7 +1303,7 @@ function updateSim(){
   const m=parseInt($('montant').value),d=parseInt($('duree').value);
   $('montantV').textContent=m.toLocaleString('fr-FR')+'€';
   $('dureeV').textContent=d+' an'+(d>1?'s':'');
-  const opts=[{n:'LEP 🔒',r:6.1},{n:'Livret A 🔒',r:3.0},{n:'AV Fonds € 🔒',r:4.1},{n:'AV UC MSCI World',r:8.5},{n:'PEA ETF Monde',r:9.2},{n:'Actions FR (moy.)',r:7.4}];
+  const opts=[{n:'LEP 🔒',r:2.9},{n:'Livret A 🔒',r:2.4},{n:'AV Fonds € 🔒',r:3.9},{n:'AV UC MSCI World',r:8.5},{n:'PEA ETF Monde',r:9.2},{n:'Actions FR (moy.)',r:7.4}];
   $('simResult').innerHTML=opts.map(o=>{
     const gain=Math.round(m*Math.pow(1+o.r/100,d)-m);const total=m+gain;
     const c=o.r>7?'#40c880':o.r>4?'#c4a050':'#9070e0';
@@ -1623,16 +1761,16 @@ const SCREENER_ASSETS = {
     {n:'Amundi MSCI Europe',sym:'MEUR.PA',flag:'🇪🇺',risk:'equilibre',sec:'Europe · PEA'},
   ],
   epargne:[
-    {n:'Livret A',sym:'LIVRET-A',flag:'🏦',risk:'prudent',taux:'2,40 %',plafond:'22 950 €',fisc:'Exonéré d\'impôt',garantie:true,desc:'Épargne liquide réglementée, disponible immédiatement.'},
-    {n:'LEP',sym:'LEP',flag:'🏦',risk:'prudent',taux:'3,50 %',plafond:'10 000 €',fisc:'Exonéré d\'impôt',garantie:true,desc:'Meilleur taux garanti pour revenus modestes.'},
-    {n:'LDDS',sym:'LDDS',flag:'🏦',risk:'prudent',taux:'2,40 %',plafond:'12 000 €',fisc:'Exonéré d\'impôt',garantie:true,desc:'Livret de développement durable et solidaire.'},
-    {n:'Livret Jeune',sym:'LJ',flag:'🏦',risk:'prudent',taux:'≥ 2,40 %',plafond:'1 600 €',fisc:'Exonéré d\'impôt',garantie:true,desc:'Réservé aux 12-25 ans. Taux libre fixé par la banque.'},
-    {n:'AV — Fonds Euros',sym:'AV-EUR',flag:'🛡️',risk:'prudent',taux:'3,5 – 4,6 %',plafond:'Illimité',fisc:'PFU 30% / exo. après 8 ans',garantie:true,desc:'Capital garanti, intérêts crédités annuellement (effet cliquet).'},
-    {n:'AV — Unités de Compte',sym:'AV-UC',flag:'📈',risk:'dynamique',taux:'~8 – 12 % /an',plafond:'Illimité',fisc:'PFU 30% / exo. après 8 ans',garantie:false,desc:'ETF et fonds actions dans une enveloppe fiscale avantageuse.'},
-    {n:'PEA — ETF',sym:'PEA',flag:'💼',risk:'dynamique',taux:'~9 – 12 % /an',plafond:'150 000 €',fisc:'Exonéré après 5 ans',garantie:false,desc:'Enveloppe fiscale idéale pour les ETF actions européennes.'},
-    {n:'PEA-PME',sym:'PEA-PME',flag:'💼',risk:'speculatif',taux:'Variable',plafond:'225 000 €',fisc:'Exonéré après 5 ans',garantie:false,desc:'Actions et ETF de petites et moyennes entreprises européennes.'},
-    {n:'Compte-Titres Ordinaire',sym:'CTO',flag:'📊',risk:'speculatif',taux:'Variable',plafond:'Illimité',fisc:'PFU 30% sur gains',garantie:false,desc:'Accès à tous les marchés mondiaux sans plafond ni restriction.'},
-    {n:'SCPI',sym:'SCPI',flag:'🏢',risk:'equilibre',taux:'4,5 – 6 % /an',plafond:'Illimité',fisc:'Revenus fonciers / IS',garantie:false,desc:'Immobilier locatif mutualisé. Revenus réguliers, liquidité faible.'},
+    {n:'Livret A',sym:'LIVRET-A',flag:'🏦',risk:'prudent',taux:'2,40 %',plafond:'22 950 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2365',desc:'Épargne liquide réglementée, disponible immédiatement.'},
+    {n:'LEP',sym:'LEP',flag:'🏦',risk:'prudent',taux:'2,90 %',plafond:'10 000 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2370',desc:'Meilleur taux garanti pour revenus modestes (sous conditions de ressources).'},
+    {n:'LDDS',sym:'LDDS',flag:'🏦',risk:'prudent',taux:'2,40 %',plafond:'12 000 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2368',desc:'Livret de développement durable et solidaire.'},
+    {n:'Livret Jeune',sym:'LJ',flag:'🏦',risk:'prudent',taux:'≥ 2,40 %',plafond:'1 600 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2373',desc:'Réservé aux 12-25 ans. Taux libre fixé par la banque.'},
+    {n:'AV — Fonds Euros',sym:'AV-EUR',flag:'🛡️',risk:'prudent',taux:'3,3 – 4,3 %',plafond:'Illimité',fisc:'PFU 30% / exo. après 8 ans',garantie:true,url:'https://www.linxea.com/assurance-vie/',desc:'Capital garanti, intérêts crédités annuellement (effet cliquet).'},
+    {n:'AV — Unités de Compte',sym:'AV-UC',flag:'📈',risk:'dynamique',taux:'~8 – 12 % /an',plafond:'Illimité',fisc:'PFU 30% / exo. après 8 ans',garantie:false,url:'https://www.linxea.com/assurance-vie/spirit2/',desc:'ETF et fonds actions dans une enveloppe fiscale avantageuse.'},
+    {n:'PEA — ETF',sym:'PEA',flag:'💼',risk:'dynamique',taux:'~9 – 12 % /an',plafond:'150 000 €',fisc:'Exonéré après 5 ans',garantie:false,url:'https://www.boursobank.com/bourse/pea',desc:'Enveloppe fiscale idéale pour les ETF actions européennes.'},
+    {n:'PEA-PME',sym:'PEA-PME',flag:'💼',risk:'speculatif',taux:'Variable',plafond:'225 000 €',fisc:'Exonéré après 5 ans',garantie:false,url:'https://www.boursobank.com/bourse/pea',desc:'Actions et ETF de petites et moyennes entreprises européennes.'},
+    {n:'Compte-Titres Ordinaire',sym:'CTO',flag:'📊',risk:'speculatif',taux:'Variable',plafond:'Illimité',fisc:'PFU 30% sur gains',garantie:false,url:'https://www.degiro.fr/',desc:'Accès à tous les marchés mondiaux sans plafond ni restriction.'},
+    {n:'SCPI',sym:'SCPI',flag:'🏢',risk:'equilibre',taux:'4,5 – 6 % /an',plafond:'Illimité',fisc:'Revenus fonciers / IS',garantie:false,url:'https://www.france-scpi.fr/',desc:'Immobilier locatif mutualisé. Revenus réguliers, liquidité faible.'},
   ],
 };
 
@@ -1691,10 +1829,11 @@ function renderScreener() {
         const garantieBadge = a.garantie
           ? `<span class="sc-garantie">✓ Capital garanti</span>`
           : `<span class="sc-no-garantie">Capital non garanti</span>`;
-        cards.push(`<div class="sc-card epargne" data-sym="${a.sym}">
+        const clickAttr = a.url ? `style="cursor:pointer" onclick="window.open('${a.url}','_blank')"` : '';
+        cards.push(`<div class="sc-card epargne" data-sym="${a.sym}" ${clickAttr}>
           <div class="sc-card-top">
             <span class="sc-flag">${a.flag}</span>
-            <div><div class="sc-name">${a.n}</div><div class="sc-sym">${a.desc}</div></div>
+            <div><div class="sc-name">${a.n}${a.url?` <span style="font-size:10px;color:var(--muted)">↗</span>`:''}</div><div class="sc-sym">${a.desc}</div></div>
           </div>
           <div class="sc-taux">${a.taux}</div>
           <div class="sc-plafond">Plafond : ${a.plafond}</div>
