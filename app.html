@@ -942,7 +942,7 @@ const EXPLAINERS = {
   livrets:{icon:'💳',title:"Livrets Réglementés & Bancaires",
     badges:[{t:'Capital garanti',c:'#1e8a4a'},{t:'Disponibilité immédiate',c:'#2a68b8'},{t:'Taux réglementé',c:'#9a7830'}],
     desc:"Les livrets réglementés (Livret A, LDDS, LEP) sont garantis par l'État et totalement exonérés d'impôt. Les livrets bancaires promotionnels offrent des taux plus élevés sur quelques mois, mais soumis à la flat tax 30%. Réservez 3 à 6 mois de dépenses sur ces supports avant tout investissement — c'est votre matelas de sécurité.",
-    items:[{label:'🕐 Horizon',val:'Court terme — épargne de précaution'},{label:'💰 Livret A / LDDS',val:'2,40% — exonéré — Plafond 22 950€ / 12 000€'},{label:'💰 LEP (sous conditions)',val:'2,90% — exonéré — Plafond 10 000€'},{label:'📊 Livrets bancaires',val:'PFU 30% sur intérêts'},{label:'🔓 Retrait',val:'Immédiat (J+1 à J+2)'},{label:'⚠️ Risque',val:'Aucun — Garanti par l\'État jusqu\'à 100 000€'}]},
+    items:[{label:'🕐 Horizon',val:'Court terme — épargne de précaution'},{label:'💰 Livret A / LDDS',val:'1,50% — exonéré — Plafond 22 950€ / 12 000€'},{label:'💰 LEP (sous conditions)',val:'2,50% — exonéré — Plafond 10 000€'},{label:'📊 Livrets bancaires',val:'PFU 30% sur intérêts'},{label:'🔓 Retrait',val:'Immédiat (J+1 à J+2)'},{label:'⚠️ Risque',val:'Aucun — Garanti par l\'État jusqu\'à 100 000€'}]},
   scpi:{icon:'🏢',title:"SCPI — Pierre-Papier",
     badges:[{t:'Revenus réguliers',c:'#1e8a4a'},{t:'Immobilier mutualisé',c:'#2a68b8'},{t:'Faible liquidité',c:'#e07828'}],
     desc:"Les SCPI (Sociétés Civiles de Placement Immobilier) permettent d'investir dans l'immobilier locatif professionnel sans gestion directe. Les loyers sont redistribués trimestriellement sous forme de dividendes. Les taux de distribution 2024 oscillent entre 4,5% et 7%+. Attention : la liquidité est faible et les parts peuvent se revendre avec un délai de plusieurs mois.",
@@ -1061,15 +1061,15 @@ const PL={
     title:'Livrets — Meilleurs taux (mai 2026)', colorCol:2,
     head:'<tr><th>Produit</th><th>Établissement</th><th>Taux brut</th><th>Plafond</th><th>Fiscalité</th></tr>',
     rows:[
-      ['LEP (sous conditions)','La Poste / CE / CIC','2,90%','10 000€','Exonéré'],
-      ['Livret Jeune (12-25 ans)','Toutes banques','≥ 2,40%','1 600€','Exonéré'],
+      ['LEP (sous conditions)','La Poste / CE / CIC','2,50%','10 000€','Exonéré'],
+      ['Livret Jeune (12-25 ans)','Toutes banques','≥ 1,50%','1 600€','Exonéré'],
       ['Livret Distingo','PSA Banque','3,20% (promo 3 mois)','50 000€','PFU 30%'],
       ['Zesto','RCI Banque','3,00% (promo 3 mois)','Illimité','PFU 30%'],
       ['Livret BforBank','BforBank','2,80% (promo 2 mois)','Illimité','PFU 30%'],
       ['Super Livret Fortuneo','Fortuneo','2,70% (promo 4 mois)','Illimité','PFU 30%'],
       ['Livret Hello+','Hello bank!','2,60%','50 000€','PFU 30%'],
-      ['Livret A','Toutes banques','2,40%','22 950€','Exonéré'],
-      ['LDDS','Toutes banques','2,40%','12 000€','Exonéré'],
+      ['Livret A','Toutes banques','1,50%','22 950€','Exonéré'],
+      ['LDDS','Toutes banques','1,50%','12 000€','Exonéré'],
       ['Livret Orange ING','ING Direct','2,00%','Illimité','PFU 30%'],
       ['Livret Boursorama','Boursorama','0,10%','Illimité','PFU 30%'],
     ]
@@ -1303,7 +1303,7 @@ function updateSim(){
   const m=parseInt($('montant').value),d=parseInt($('duree').value);
   $('montantV').textContent=m.toLocaleString('fr-FR')+'€';
   $('dureeV').textContent=d+' an'+(d>1?'s':'');
-  const opts=[{n:'LEP 🔒',r:2.9},{n:'Livret A 🔒',r:2.4},{n:'AV Fonds € 🔒',r:3.9},{n:'AV UC MSCI World',r:8.5},{n:'PEA ETF Monde',r:9.2},{n:'Actions FR (moy.)',r:7.4}];
+  const opts=[{n:'LEP 🔒',r:2.5},{n:'Livret A 🔒',r:1.5},{n:'AV Fonds € 🔒',r:3.9},{n:'AV UC MSCI World',r:8.5},{n:'PEA ETF Monde',r:9.2},{n:'Actions FR (moy.)',r:7.4}];
   $('simResult').innerHTML=opts.map(o=>{
     const gain=Math.round(m*Math.pow(1+o.r/100,d)-m);const total=m+gain;
     const c=o.r>7?'#40c880':o.r>4?'#c4a050':'#9070e0';
@@ -1761,10 +1761,10 @@ const SCREENER_ASSETS = {
     {n:'Amundi MSCI Europe',sym:'MEUR.PA',flag:'🇪🇺',risk:'equilibre',sec:'Europe · PEA'},
   ],
   epargne:[
-    {n:'Livret A',sym:'LIVRET-A',flag:'🏦',risk:'prudent',taux:'2,40 %',plafond:'22 950 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2365',desc:'Épargne liquide réglementée, disponible immédiatement.'},
-    {n:'LEP',sym:'LEP',flag:'🏦',risk:'prudent',taux:'2,90 %',plafond:'10 000 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2370',desc:'Meilleur taux garanti pour revenus modestes (sous conditions de ressources).'},
-    {n:'LDDS',sym:'LDDS',flag:'🏦',risk:'prudent',taux:'2,40 %',plafond:'12 000 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2368',desc:'Livret de développement durable et solidaire.'},
-    {n:'Livret Jeune',sym:'LJ',flag:'🏦',risk:'prudent',taux:'≥ 2,40 %',plafond:'1 600 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2373',desc:'Réservé aux 12-25 ans. Taux libre fixé par la banque.'},
+    {n:'Livret A',sym:'LIVRET-A',flag:'🏦',risk:'prudent',taux:'1,50 %',plafond:'22 950 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2365',desc:'Épargne liquide réglementée, disponible immédiatement.'},
+    {n:'LEP',sym:'LEP',flag:'🏦',risk:'prudent',taux:'2,50 %',plafond:'10 000 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2370',desc:'Meilleur taux garanti pour revenus modestes (sous conditions de ressources).'},
+    {n:'LDDS',sym:'LDDS',flag:'🏦',risk:'prudent',taux:'1,50 %',plafond:'12 000 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2368',desc:'Livret de développement durable et solidaire.'},
+    {n:'Livret Jeune',sym:'LJ',flag:'🏦',risk:'prudent',taux:'≥ 1,50 %',plafond:'1 600 €',fisc:'Exonéré d\'impôt',garantie:true,url:'https://www.service-public.fr/particuliers/vosdroits/F2373',desc:'Réservé aux 12-25 ans. Taux libre fixé par la banque.'},
     {n:'AV — Fonds Euros',sym:'AV-EUR',flag:'🛡️',risk:'prudent',taux:'3,3 – 4,3 %',plafond:'Illimité',fisc:'PFU 30% / exo. après 8 ans',garantie:true,url:'https://www.linxea.com/assurance-vie/',desc:'Capital garanti, intérêts crédités annuellement (effet cliquet).'},
     {n:'AV — Unités de Compte',sym:'AV-UC',flag:'📈',risk:'dynamique',taux:'~8 – 12 % /an',plafond:'Illimité',fisc:'PFU 30% / exo. après 8 ans',garantie:false,url:'https://www.linxea.com/assurance-vie/spirit2/',desc:'ETF et fonds actions dans une enveloppe fiscale avantageuse.'},
     {n:'PEA — ETF',sym:'PEA',flag:'💼',risk:'dynamique',taux:'~9 – 12 % /an',plafond:'150 000 €',fisc:'Exonéré après 5 ans',garantie:false,url:'https://www.boursobank.com/bourse/pea',desc:'Enveloppe fiscale idéale pour les ETF actions européennes.'},
