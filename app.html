@@ -601,11 +601,13 @@ $('clk').textContent=new Date().toLocaleTimeString('fr-FR');
 // ════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════
+let _newsLastLoad = 0;
 function goPage(id,el){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   $('pg-'+id).classList.add('on');el.classList.add('on');
   if(id==='screener' && Object.keys(scState.prices).length===0) loadScreenerPrices();
+  if(id==='news' && Date.now()-_newsLastLoad > 900000){ _newsLastLoad=Date.now(); loadNews(); }
 }
 
 // ════════════════════════════════════
@@ -1473,7 +1475,6 @@ async function loadAll(){
       loadCrypto(),
       loadMatieres(),
       loadActions('fr'),
-      loadNews()
     ]);
     setStatus('✅ '+new Date().toLocaleTimeString('fr-FR')+' · ↺ auto dans 60s');
   }catch(e){
@@ -1869,7 +1870,7 @@ setInterval(loadAll, 60000);
 <footer style="background:linear-gradient(180deg,#1a0606,#2a0a0a);border-top:1px solid rgba(180,20,20,0.35);padding:18px 20px;text-align:center;margin-top:20px">
   <div style="font-size:9px;color:#6a3a3a;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Tradelabuse © 2025 — Pillage des marchés</div>
   <div style="font-family:'Cinzel',serif;font-size:12px;letter-spacing:2px;color:#c09090">
-    Créé par&nbsp;<strong style="color:#fff;letter-spacing:3px">Alexis MINSSIEUX</strong>
+    Capitaine&nbsp;<strong style="color:#fff;letter-spacing:3px">Alexis MINSSIEUX</strong>
   </div>
 </footer>
 

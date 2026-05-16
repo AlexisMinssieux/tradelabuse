@@ -173,20 +173,35 @@ export default {
       }
 
       if (path === '/news') {
-        const GNEWS_KEY = 'a225f952ed71cf7fc114099ecc65e418';
-        const r = await fetch(
-          `https://gnews.io/api/v4/top-headlines?topic=business&lang=fr&country=fr&max=10&apikey=${GNEWS_KEY}`,
-          { headers: { 'User-Agent': 'TradeLabuse/1.0', 'Accept': 'application/json' } }
-        );
-        const data = await r.json();
-        const articles = (data.articles || []).map(a => ({
-          title: a.title,
-          link: a.url,
-          pubDate: a.publishedAt,
-          desc: a.description?.substring(0, 200) || '',
-          source: a.source?.name || 'GNews'
-        }));
-        return new Response(JSON.stringify(articles), { headers: CORS });
+        const feeds = [
+          'https://news.google.com/rss/search?q=bourse+cac40+actions+france&hl=fr&gl=FR&ceid=FR:fr',
+          'https://news.google.com/rss/search?q=%C3%A9conomie+march%C3%A9s+financiers+inflation&hl=fr&gl=FR&ceid=FR:fr',
+        ];
+        const seen = new Set();
+        const results = [];
+        for (const url of feeds) {
+          try {
+            const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/rss+xml,text/xml' } });
+            if (!r.ok) continue;
+            const xml = await r.text();
+            const re = /<item>([\s\S]*?)<\/item>/g;
+            let m;
+            while ((m = re.exec(xml)) !== null) {
+              const c = m[1];
+              const title = (/<title>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/title>/.exec(c)||[])[1]||'';
+              const link  = (/<link>([\s\S]*?)<\/link>/.exec(c)||[])[1]||'';
+              const pubDate = (/<pubDate>([\s\S]*?)<\/pubDate>/.exec(c)||[])[1]||'';
+              const source = (/<source[^>]*>([\s\S]*?)<\/source>/.exec(c)||[])[1]||'Google News';
+              const clean = title.replace(/&amp;/g,'&').replace(/&#39;/g,"'").replace(/&quot;/g,'"').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim();
+              if (clean && !seen.has(clean)) {
+                seen.add(clean);
+                results.push({ title: clean, link: link.trim(), pubDate: pubDate.trim(), desc: '', source: source.trim() });
+              }
+            }
+          } catch(e) {}
+        }
+        results.sort((a,b) => new Date(b.pubDate||0) - new Date(a.pubDate||0));
+        return new Response(JSON.stringify(results.slice(0, 14)), { headers: CORS });
       }
 
       if (path === '/history') {
