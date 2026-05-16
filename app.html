@@ -1282,19 +1282,29 @@ function selPlac(type,el){
   const p=PL[type];if(!p)return;
   const urls=PLURL[type]||[];
   $('placTitle').textContent=p.title;
-  $('placHead').innerHTML=p.head.replace('</tr>','<th style="width:28px;text-align:center;color:var(--muted)">↗</th></tr>');
+  $('placHead').innerHTML=p.head.replace('</tr>','<th style="width:36px;text-align:center;color:var(--muted)">Lien</th></tr>');
   $('placBody').innerHTML=p.rows.map((r,ri)=>{
     const url=urls[ri]||'';
-    const tr=url?`<tr style="cursor:pointer" title="Ouvrir" onclick="window.open('${url}','_blank')">`:'<tr>';
-    return tr+r.map((c,i)=>{
+    const trStyle=url?'cursor:pointer':'';
+    return`<tr data-url="${url}" style="${trStyle}">`+r.map((c,i)=>{
       let style='font-size:11px';
       if(i===p.colorCol){
         const isPos=c.startsWith('+')||parseFloat(c)>0;
         style='font-family:var(--mono);font-size:10px;font-weight:700;color:'+(isPos?'var(--green)':'var(--red2)');
       }
       return`<td style="${style}">${c}</td>`;
-    }).join('')+(url?`<td style="text-align:center;font-size:13px;color:var(--muted)">↗</td>`:'<td></td>')+'</tr>';
+    }).join('')+(url
+      ?`<td style="text-align:center"><a href="${url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color:var(--muted);text-decoration:none;font-size:15px;line-height:1">↗</a></td>`
+      :'<td></td>')+'</tr>';
   }).join('');
+  // clic sur la ligne entière → ouvrir le lien
+  $('placBody').querySelectorAll('tr[data-url]').forEach(tr=>{
+    const u=tr.dataset.url;
+    if(u) tr.addEventListener('click',e=>{
+      if(e.target.tagName==='A')return;
+      window.open(u,'_blank','noopener,noreferrer');
+    });
+  });
   renderExplainer(type);
 }
 selPlac('pea',document.querySelector('.cat-tab'));
@@ -1829,11 +1839,13 @@ function renderScreener() {
         const garantieBadge = a.garantie
           ? `<span class="sc-garantie">✓ Capital garanti</span>`
           : `<span class="sc-no-garantie">Capital non garanti</span>`;
-        const clickAttr = a.url ? `style="cursor:pointer" onclick="window.open('${a.url}','_blank')"` : '';
-        cards.push(`<div class="sc-card epargne" data-sym="${a.sym}" ${clickAttr}>
+        cards.push(`<div class="sc-card epargne" data-sym="${a.sym}" data-url="${a.url||''}">
           <div class="sc-card-top">
             <span class="sc-flag">${a.flag}</span>
-            <div><div class="sc-name">${a.n}${a.url?` <span style="font-size:10px;color:var(--muted)">↗</span>`:''}</div><div class="sc-sym">${a.desc}</div></div>
+            <div>
+              <div class="sc-name">${a.n}${a.url?` <span style="font-size:10px;color:var(--muted)">↗</span>`:''}</div>
+              <div class="sc-sym">${a.desc}</div>
+            </div>
           </div>
           <div class="sc-taux">${a.taux}</div>
           <div class="sc-plafond">Plafond : ${a.plafond}</div>
@@ -1842,6 +1854,7 @@ function renderScreener() {
             ${garantieBadge}
             <span class="sc-risk ${a.risk}">${riskLabel[a.risk]}</span>
           </div>
+          ${a.url?`<a href="${a.url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="display:block;margin-top:8px;text-align:center;font-size:11px;color:var(--muted);text-decoration:none;border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:4px 0">Souscrire ↗</a>`:''}
         </div>`);
       } else {
       const q = scState.prices[a.sym];
