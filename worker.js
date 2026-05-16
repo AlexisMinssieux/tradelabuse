@@ -137,8 +137,8 @@ export default {
 
       if (path === '/news') {
         const feeds = [
-          { url: 'https://news.google.com/rss/search?q=bourse+CAC40+économie+france&hl=fr&gl=FR&ceid=FR:fr', source: 'Google News' },
-          { url: 'https://news.google.com/rss/search?q=marchés+financiers+france&hl=fr&gl=FR&ceid=FR:fr', source: 'Google News' },
+          { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', source: 'BBC Business' },
+          { url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html', source: 'CNBC Markets' },
         ];
         const results = [];
         for (const feed of feeds) {

@@ -775,16 +775,6 @@ async function loadNews(){
   }).join('');
 }
 
-async function loadMatieres(){
-  const syms=['GC=F','CL=F','SI=F','NG=F','HG=F','ZW=F'];
-  const q=await yahooFetch(syms);
-  if(!q.length)return;
-  const merged=FB.matieres.map((d,i)=>{
-    const r=q.find(x=>x.symbol===syms[i]);if(!r)return d;
-    return{...d,p:r.regularMarketPrice||d.p,c:r.regularMarketChangePercent||d.c};
-  });
-  renderMatieres(merged,true);
-}
 
 // ════════════════════════════════════
 // ACTIONS TAB SWITCH
