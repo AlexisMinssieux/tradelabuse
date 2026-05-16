@@ -42,8 +42,10 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--bord);
     }
-    .nav-logo { font-family: var(--serif); font-size: 18px; letter-spacing: 2px; }
-    .nav-logo span { color: var(--red2); text-shadow: 0 0 20px rgba(220,28,28,0.5); }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-text { font-family: var(--serif); font-size: 18px; font-weight: 900; letter-spacing: 2px; line-height: 1; }
+    .nav-logo-text .t { color: var(--red2); text-shadow: 0 0 16px rgba(220,28,28,0.5); }
+    .nav-logo-text .l { color: #f0eded; -webkit-text-stroke: 1px #5a0808; }
     .nav-cta {
       background: var(--red); color: #fff; border: none; border-radius: 6px;
       padding: 8px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
@@ -260,7 +262,41 @@
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo"><span>Trade</span>Labuse</div>
+  <a href="/" class="nav-logo">
+    <svg width="52" height="36" viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg">
+      <defs><clipPath id="tc"><path d="M210,200 Q200,155 215,110 Q238,52 290,28 Q315,14 340,12 Q365,14 390,28 Q442,52 465,110 Q480,155 470,200 Z"/></clipPath></defs>
+      <path d="M100,222 Q130,185 195,198 Q175,215 160,226 Q135,238 110,232 Z" fill="#181818"/>
+      <path d="M580,222 Q550,185 485,198 Q505,215 520,226 Q545,238 570,232 Z" fill="#181818"/>
+      <path d="M172,210 Q240,194 340,190 Q440,194 508,210 Q480,228 340,234 Q200,228 172,210 Z" fill="#181818"/>
+      <path d="M213,204 Q208,162 220,116 Q244,54 294,28 Q317,15 340,12 Q363,15 386,28 Q436,54 460,116 Q472,162 467,204 Z" fill="#1e1e1e"/>
+      <g clip-path="url(#tc)">
+        <line x1="210" y1="175" x2="470" y2="175" stroke="#3a3a3a" stroke-width="0.6" opacity="0.5"/>
+        <line x1="210" y1="130" x2="470" y2="130" stroke="#3a3a3a" stroke-width="0.6" opacity="0.5"/>
+        <line x1="222" y1="184" x2="458" y2="38" stroke="#d4aa20" stroke-width="1.8" stroke-dasharray="7,5" opacity="0.8"/>
+        <polyline points="222,182 237,172 251,176 265,160 293,148 307,143 321,131 349,118 377,104 405,90 433,76 458,55" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="222" y="180" width="8" height="11" rx="1" fill="#cc2222"/>
+        <rect x="236" y="169" width="8" height="12" rx="1" fill="#22bb55"/>
+        <rect x="348" y="115" width="8" height="13" rx="1" fill="#22bb55"/>
+        <rect x="404" y="87" width="8" height="13" rx="1" fill="#22bb55"/>
+        <polygon points="456,36 466,52 446,52" fill="#22bb55"/>
+      </g>
+      <path d="M216,178 Q270,164 340,161 Q410,164 464,178 L464,193 Q410,179 340,176 Q270,179 216,193 Z" fill="#aa0000"/>
+      <ellipse cx="340" cy="183" rx="13" ry="12" fill="#f0ebe0"/>
+      <ellipse cx="334" cy="180" rx="4" ry="4.5" fill="#1a1a1a"/><ellipse cx="346" cy="180" rx="4" ry="4.5" fill="#1a1a1a"/>
+      <path d="M333,189 Q340,194 347,189" fill="#f0ebe0" stroke="#1a1a1a" stroke-width="0.8"/>
+      <rect x="333" y="189" width="4" height="4" rx="0.8" fill="#1a1a1a"/><rect x="339" y="189" width="4" height="4" rx="0.8" fill="#1a1a1a"/>
+      <line x1="324" y1="195" x2="356" y2="201" stroke="#f0ebe0" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="356" y1="195" x2="324" y2="201" stroke="#f0ebe0" stroke-width="2.8" stroke-linecap="round"/>
+      <circle cx="323" cy="195" r="3.5" fill="#f0ebe0"/><circle cx="357" cy="195" r="3.5" fill="#f0ebe0"/>
+      <circle cx="323" cy="201" r="3.5" fill="#f0ebe0"/><circle cx="357" cy="201" r="3.5" fill="#f0ebe0"/>
+      <rect x="320" y="157" width="40" height="26" rx="4" fill="#b8900c"/>
+      <rect x="323" y="160" width="34" height="20" rx="3" fill="#d4aa20"/>
+      <circle cx="340" cy="170" r="5" fill="#b8900c"/><circle cx="340" cy="170" r="3" fill="#e8c030"/>
+      <circle cx="108" cy="218" r="7" fill="#d4aa20"/><circle cx="572" cy="218" r="7" fill="#d4aa20"/>
+      <path d="M110,210 Q88,185 85,158 Q84,138 96,128 Q104,122 109,130 Q100,142 103,160 Q107,178 120,196 Z" fill="#cc1111"/>
+    </svg>
+    <div class="nav-logo-text"><span class="t">TRADE</span><span class="l">LABUSE</span></div>
+  </a>
   <a href="app.html" class="nav-cta">Accéder au tableau de bord →</a>
 </nav>
 
@@ -478,7 +514,25 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo"><span>Trade</span>Labuse — tradelabuse.fr</div>
+  <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+    <svg width="40" height="28" viewBox="0 0 680 360" xmlns="http://www.w3.org/2000/svg">
+      <defs><clipPath id="tc2"><path d="M210,200 Q200,155 215,110 Q238,52 290,28 Q315,14 340,12 Q365,14 390,28 Q442,52 465,110 Q480,155 470,200 Z"/></clipPath></defs>
+      <path d="M100,222 Q130,185 195,198 Q175,215 160,226 Q135,238 110,232 Z" fill="#181818"/>
+      <path d="M580,222 Q550,185 485,198 Q505,215 520,226 Q545,238 570,232 Z" fill="#181818"/>
+      <path d="M172,210 Q240,194 340,190 Q440,194 508,210 Q480,228 340,234 Q200,228 172,210 Z" fill="#181818"/>
+      <path d="M213,204 Q208,162 220,116 Q244,54 294,28 Q317,15 340,12 Q363,15 386,28 Q436,54 460,116 Q472,162 467,204 Z" fill="#1e1e1e"/>
+      <g clip-path="url(#tc2)">
+        <line x1="222" y1="184" x2="458" y2="38" stroke="#d4aa20" stroke-width="1.8" stroke-dasharray="7,5" opacity="0.8"/>
+        <polyline points="222,182 237,172 251,176 265,160 293,148 307,143 321,131 349,118 377,104 405,90 433,76 458,55" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+      <path d="M216,178 Q270,164 340,161 Q410,164 464,178 L464,193 Q410,179 340,176 Q270,179 216,193 Z" fill="#aa0000"/>
+      <ellipse cx="340" cy="183" rx="13" ry="12" fill="#f0ebe0"/>
+      <ellipse cx="334" cy="180" rx="4" ry="4.5" fill="#1a1a1a"/><ellipse cx="346" cy="180" rx="4" ry="4.5" fill="#1a1a1a"/>
+      <circle cx="108" cy="218" r="7" fill="#d4aa20"/><circle cx="572" cy="218" r="7" fill="#d4aa20"/>
+      <path d="M110,210 Q88,185 85,158 Q84,138 96,128 Q104,122 109,130 Q100,142 103,160 Q107,178 120,196 Z" fill="#cc1111"/>
+    </svg>
+    <span class="footer-logo"><span style="color:var(--red2)">TRADE</span>LABUSE — tradelabuse.fr</span>
+  </a>
   <div class="footer-note">Les informations présentées sur ce site sont fournies à titre indicatif uniquement et ne constituent pas des conseils en investissement. Tout investissement comporte des risques, y compris la perte du capital investi.</div>
   <a href="app.html" class="footer-link">Tableau de bord →</a>
 </footer>
