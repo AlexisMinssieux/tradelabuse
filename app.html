@@ -30,8 +30,27 @@
     .tick-name{color:var(--muted);font-size:9px}.tick-val{color:var(--text);font-weight:700}
     .up{color:var(--green)}.dn{color:var(--red2)}.neu{color:var(--muted)}
     /* NAV */
-    .navrow{background:var(--bg2);border-bottom:1px solid var(--bord);display:flex;padding:0 20px;overflow-x:auto;scrollbar-width:none}
+    .navrow{background:var(--bg2);border-bottom:1px solid var(--bord);display:flex;align-items:center;padding:0 20px;overflow-x:auto;scrollbar-width:none;gap:4px}
     .navrow::-webkit-scrollbar{display:none}
+    .nav-search-wrap{position:relative;margin-left:auto;flex-shrink:0;padding:5px 0}
+    .nav-search{padding:5px 30px 5px 10px;border-radius:6px;border:1px solid var(--bord);background:var(--card);color:var(--text);font-size:11px;font-family:var(--body);outline:none;width:160px;transition:width .2s,border-color .2s}
+    .nav-search:focus{border-color:var(--bord2);width:220px}
+    .nav-search::placeholder{color:var(--muted)}
+    .nav-search-ico{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);pointer-events:none}
+    .nav-search-drop{position:absolute;right:0;top:calc(100% - 2px);width:280px;background:var(--card);border:1px solid var(--bord2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:200;max-height:320px;overflow-y:auto;display:none}
+    .nav-search-drop.open{display:block}
+    .nav-drop-item{padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s}
+    .nav-drop-item:hover{background:rgba(180,20,20,.08)}
+    .nav-drop-flag{font-size:14px;flex-shrink:0}
+    .nav-drop-info{flex:1;min-width:0}
+    .nav-drop-name{font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .nav-drop-sym{font-family:var(--mono);font-size:9px;color:var(--muted)}
+    .nav-drop-risk{font-size:9px;padding:1px 6px;border-radius:3px;flex-shrink:0}
+    .nav-drop-risk.prudent{background:rgba(42,184,112,.12);color:#2ab870}
+    .nav-drop-risk.equilibre{background:rgba(196,160,64,.12);color:#c4a040}
+    .nav-drop-risk.dynamique{background:rgba(220,120,40,.12);color:#e07828}
+    .nav-drop-risk.speculatif{background:rgba(196,26,26,.12);color:var(--red2)}
+    .nav-drop-section{padding:4px 12px;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;background:var(--bg2);border-bottom:1px solid var(--bord)}
     .tab{padding:9px 14px;font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;font-family:var(--body);background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
     .tab:hover{color:var(--text)}.tab.on{color:var(--red2);border-bottom-color:var(--red)}
     /* PAGES */
@@ -192,6 +211,11 @@
   <button class="tab" onclick="goPage('tech',this)">📊 Analyse AT</button>
   <button class="tab" onclick="goPage('news',this)">📰 Actualités</button>
   <button class="tab" onclick="goPage('screener',this)">🔍 Screener</button>
+  <div class="nav-search-wrap">
+    <input class="nav-search" id="navSearch" placeholder="🔍 Rechercher un actif…" autocomplete="off"
+      oninput="navSearchInput(this.value)" onblur="setTimeout(()=>navCloseDrop(),200)">
+    <div class="nav-search-drop" id="navDrop"></div>
+  </div>
 </nav>
 
 <main>
@@ -1186,6 +1210,66 @@ function renderScreener() {
     }
   }
   $('screenerGrid').innerHTML = cards.length ? cards.join('') : '<div class="sc-loading">Aucun actif trouvé.</div>';
+}
+
+// ════════════════════════════════════
+// RECHERCHE GLOBALE
+// ════════════════════════════════════
+const RISK_LABEL = { prudent:'🛡️ Prudent', equilibre:'⚖️ Équilibré', dynamique:'🚀 Dynamique', speculatif:'⚡ Spéculatif' };
+const CAT_LABEL  = { indices:'Indices', actions_fr:'Actions FR', actions_us:'Actions US', matieres:'Matières', crypto:'Crypto' };
+
+function navSearchInput(q) {
+  const drop = $('navDrop');
+  if (!q.trim()) { drop.classList.remove('open'); drop.innerHTML = ''; return; }
+  const s = q.toLowerCase();
+  let html = '';
+  let total = 0;
+  for (const [cat, assets] of Object.entries(SCREENER_ASSETS)) {
+    const hits = assets.filter(a => a.n.toLowerCase().includes(s) || a.sym.toLowerCase().includes(s));
+    if (!hits.length) continue;
+    html += `<div class="nav-drop-section">${CAT_LABEL[cat]}</div>`;
+    hits.slice(0, 5).forEach(a => {
+      html += `<div class="nav-drop-item" onclick="navSelectAsset('${a.sym}','${cat}')">
+        <span class="nav-drop-flag">${a.flag}</span>
+        <div class="nav-drop-info">
+          <div class="nav-drop-name">${a.n}</div>
+          <div class="nav-drop-sym">${a.sym}${a.sec ? ' · ' + a.sec : ''}</div>
+        </div>
+        <span class="nav-drop-risk ${a.risk}">${RISK_LABEL[a.risk]}</span>
+      </div>`;
+      total++;
+    });
+  }
+  if (!total) html = '<div style="padding:12px;text-align:center;color:var(--muted);font-size:12px">Aucun résultat</div>';
+  drop.innerHTML = html;
+  drop.classList.add('open');
+}
+
+function navSelectAsset(sym, cat) {
+  navCloseDrop();
+  $('navSearch').value = '';
+  // Ouvre le screener filtré sur ce marché
+  scState.market = cat;
+  scState.risk = 'all';
+  // Sync les boutons de filtre du screener
+  document.querySelectorAll('#scMarket .sc-f').forEach(b => {
+    b.classList.toggle('on', b.getAttribute('onclick')?.includes("'"+cat+"'") || (cat === 'all' && b.getAttribute('onclick')?.includes("'all'")));
+  });
+  document.querySelectorAll('#scRisk .sc-f').forEach((b,i) => b.classList.toggle('on', i===0));
+  const tab = document.querySelector('[onclick*="goPage(\'screener\'"]');
+  if (tab) goPage('screener', tab);
+  // Met la recherche dans le screener et filtre
+  const scInput = $('scSearch');
+  if (scInput) {
+    const asset = Object.values(SCREENER_ASSETS).flat().find(a => a.sym === sym);
+    scInput.value = asset ? asset.n : sym;
+  }
+  loadScreenerPrices().then(() => renderScreener());
+}
+
+function navCloseDrop() {
+  const drop = $('navDrop');
+  if (drop) { drop.classList.remove('open'); }
 }
 
 // ════════════════════════════════════
