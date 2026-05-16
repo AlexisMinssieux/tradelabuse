@@ -180,6 +180,26 @@
     .reason-item{font-size:10px;color:var(--text);padding:2px 0;line-height:1.5}
     .tech-loading{text-align:center;padding:40px;color:var(--muted);font-size:13px}
     @media(max-width:768px){.g4{grid-template-columns:1fr 1fr}.g2x{grid-template-columns:1fr}.logo-name{font-size:18px}}
+    #placModal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;backdrop-filter:blur(4px)}
+    #placModal.open{display:flex}
+    .pm-box{background:#1e1e1e;border:1px solid rgba(180,20,20,.3);border-radius:14px;width:100%;max-width:500px;padding:24px;position:relative;margin:auto}
+    .pm-close{position:absolute;top:14px;right:14px;background:none;border:none;color:#888;font-size:24px;cursor:pointer;line-height:1;padding:2px 6px}
+    .pm-close:hover{color:#fff}
+    .pm-type{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:rgba(180,20,20,.2);color:#cc3030;margin-bottom:10px}
+    .pm-name{font-size:16px;font-weight:700;color:#f0ebe0;margin-bottom:16px;line-height:1.3}
+    .pm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+    .pm-item{background:rgba(255,255,255,.05);border-radius:8px;padding:9px 11px}
+    .pm-item-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:3px}
+    .pm-item-val{font-size:11px;color:#f0ebe0;font-weight:600;line-height:1.4}
+    .pm-divider{height:1px;background:rgba(255,255,255,.07);margin:12px 0}
+    .pm-row{font-size:11px;line-height:1.7;margin-bottom:6px}
+    .pm-row b{color:#f0ebe0}
+    .pm-row span{color:#aaa}
+    .pm-pro::before{content:'✅ '}
+    .pm-con::before{content:'⚠️ '}
+    .pm-pour::before{content:'👤 '}
+    .pm-btn{display:block;width:100%;margin-top:18px;padding:11px;border-radius:8px;background:#cc1a1a;color:#fff;font-weight:700;font-size:12px;text-align:center;text-decoration:none;letter-spacing:.5px;box-sizing:border-box}
+    .pm-btn:hover{background:#e02020}
   </style>
 </head>
 <body>
@@ -407,6 +427,21 @@
       </div>
       <div class="stitle" style="margin-top:10px">Radar risque / rendement</div>
       <div class="card" style="padding:10px"><div style="position:relative;height:160px"><canvas id="riskRadar"></canvas></div></div>
+    </div>
+  </div>
+
+  <!-- Modal détail placement -->
+  <div id="placModal" onclick="if(event.target===this)closePlacModal()">
+    <div class="pm-box">
+      <button class="pm-close" onclick="closePlacModal()">×</button>
+      <div id="pmType" class="pm-type">—</div>
+      <div id="pmName" class="pm-name">—</div>
+      <div id="pmGrid" class="pm-grid"></div>
+      <div class="pm-divider"></div>
+      <div id="pmPro" class="pm-row pm-pro"></div>
+      <div id="pmCon" class="pm-row pm-con"></div>
+      <div id="pmPour" class="pm-row pm-pour"></div>
+      <a id="pmBtn" class="pm-btn" href="#" target="_blank" rel="noopener noreferrer">Souscrire / En savoir plus ↗</a>
     </div>
   </div>
 </section>
@@ -1072,6 +1107,8 @@ const PL={
       ['LDDS','Toutes banques','1,50%','12 000€','Exonéré'],
       ['Livret Orange ING','ING Direct','2,00%','Illimité','PFU 30%'],
       ['Livret Boursorama','Boursorama','0,10%','Illimité','PFU 30%'],
+      ['Livret Cashbee (Natixis)','Cashbee','2,80% (promo 6 mois)','Illimité','PFU 30%'],
+      ['Livret Sumeria','Sumeria (ex-Lydia)','2,40%','Illimité','PFU 30%'],
     ]
   },
   scpi:{
@@ -1090,6 +1127,10 @@ const PL={
       ['Novapierre Allemagne 2','Paref','4,80%','Commerce Allemagne','1 part ~210€'],
       ['Primopierre','Primonial REIM','4,52%','Bureaux France','1 part ~208€'],
       ['Atream Hôtels','Atream','4,35%','Hôtellerie Europe','1 part ~194€'],
+      ['Corum Eurion','Corum AM','5,80%','Zone euro mixte','1 part ~215€'],
+      ['Transitions Europe','Arkéa REIM','6,45%','Europe verte/mixte','1 part ~195€'],
+      ['Logistimmo','Atland','5,90%','Logistique/entrepôts','1 part ~750€'],
+      ['Piervalys','Perial AM','5,10%','Résidentiel/Santé','1 part ~209€'],
     ]
   },
   obligations:{
@@ -1223,6 +1264,8 @@ const PLURL={
     'https://www.service-public.fr/particuliers/vosdroits/F2368',
     'https://www.ing.fr/',
     'https://www.boursobank.com/',
+    'https://www.cashbee.fr/',
+    'https://www.sumeria.eu/',
   ],
   scpi:[
     'https://www.remake.fr/',
@@ -1237,6 +1280,10 @@ const PLURL={
     'https://www.paref.fr/',
     'https://www.primonialreim.fr/',
     'https://www.atream.fr/',
+    'https://www.corum.fr/',
+    'https://www.arkea-reim.fr/',
+    'https://www.atland.fr/',
+    'https://www.perial.com/',
   ],
   obligations:[
     'https://www.treasurydirect.gov/',
@@ -1277,6 +1324,146 @@ const PLURL={
   ],
 };
 
+const PLDETAIL={
+  pea:[
+    {type:'ETF Monde',actifs:'1 600 actions mondiales — 70% US, 15% Europe, 6% Japon',horizon:'5 ans+',risque:'5/7 — Moyen élevé',frais:'0,12%/an',fisc:'Exonéré d\'impôt après 5 ans (PEA)',pour:'Cœur de portefeuille long terme',avantage:'Frais parmi les plus bas du marché, diversification maximale',inconvenient:'Biais USD important (risque de change non couvert)'},
+    {type:'ETF S&P 500',actifs:'500 plus grandes entreprises américaines',horizon:'5 ans+',risque:'5/7 — Moyen élevé',frais:'0,15%/an',fisc:'Exonéré après 5 ans (PEA)',pour:'Investisseur croyant à la suprématie US long terme',avantage:'Meilleur track record historique sur 30 ans, très liquide',inconvenient:'Forte concentration Tech (Apple, Microsoft, Nvidia = 20%+)'},
+    {type:'ETF Nasdaq-100',actifs:'100 plus grandes entreprises tech/croissance US',horizon:'5 ans+',risque:'6/7 — Élevé',frais:'0,30%/an',fisc:'Exonéré après 5 ans (PEA)',pour:'Investisseur à l\'aise avec la volatilité, convaincu de la tech',avantage:'Exposition directe aux GAFA, IA, semi-conducteurs',inconvenient:'Concentration extrême, corrections violentes (-30% possibles)'},
+    {type:'ETF CAC 40',actifs:'40 leaders du marché français (luxe, énergie, banques)',horizon:'3 ans+',risque:'5/7 — Moyen élevé',frais:'0,25%/an',fisc:'Exonéré après 5 ans (PEA)',pour:'Investisseur franco-centré, capitaliser sur dividendes FR',avantage:'Dividendes élevés, fiscalité PEA, biais luxe/défense',inconvenient:'Surpondération LVMH, Hermès, TotalEnergies (50%+ du CAC)'},
+    {type:'ETF Euro Stoxx 50',actifs:'50 leaders de la zone euro',horizon:'5 ans+',risque:'5/7 — Moyen élevé',frais:'0,15%/an',fisc:'Exonéré après 5 ans (PEA)',pour:'Diversification Europe sans biais France',avantage:'Diversifié sur 12 pays, dividendes réinvestis',inconvenient:'Biais grandes capitalisations, secteurs bancaires et industriels'},
+    {type:'ETF Émergents',actifs:'Actions pays émergents — Chine, Inde, Brésil, Taïwan',horizon:'7 ans+',risque:'6/7 — Élevé',frais:'0,20%/an',fisc:'Exonéré après 5 ans (PEA)',pour:'Investisseur cherchant croissance hors marchés développés',avantage:'Valorisations attractives, fort potentiel Inde/Asie SE',inconvenient:'Risque géopolitique, monnaies locales, Chine imprévisible'},
+    {type:'ETF Europe',actifs:'Actions Europe large cap — UK exclue',horizon:'5 ans+',risque:'5/7 — Moyen élevé',frais:'0,15%/an',fisc:'Exonéré après 5 ans (PEA)',pour:'Exposition Europe sans risque USD',avantage:'Dividendes élevés, valorisations plus raisonnables qu\'US',inconvenient:'Croissance structurellement plus faible que les US'},
+    {type:'ETF Small Cap',actifs:'Petites capitalisations mondiales',horizon:'7 ans+',risque:'6/7 — Élevé',frais:'0,45%/an',fisc:'Exonéré après 5 ans (PEA)',pour:'Investisseur long terme cherchant surperformance historique',avantage:'Prime small cap prouvée sur 50 ans, diversification',inconvenient:'Très volatil, illiquidité en crise, frais plus élevés'},
+    {type:'ETF STOXX 600',actifs:'600 actions européennes toutes capitalisations',horizon:'5 ans+',risque:'5/7 — Moyen élevé',frais:'0,19%/an',fisc:'Exonéré après 5 ans (PEA)',pour:'Meilleure diversification Europe que STOXX 50',avantage:'Large spectre, mid et small caps incluses',inconvenient:'Performance légèrement inférieure à MSCI World sur 10 ans'},
+    {type:'ETF USA ESG',actifs:'Actions US filtrées selon critères ESG',horizon:'5 ans+',risque:'5/7 — Moyen élevé',frais:'0,25%/an',fisc:'Exonéré après 5 ans (PEA)',pour:'Investisseur sensible aux critères extra-financiers',avantage:'Performance proche du S&P 500 avec filtre responsable',inconvenient:'Exclut énergie fossile et tabac, tracking error vs S&P 500'},
+    {type:'ETF Obligations',actifs:'Obligations d\'État zone euro',horizon:'2-5 ans',risque:'3/7 — Modéré',frais:'0,40%/an',fisc:'Exonéré après 5 ans (PEA)',pour:'Diminuer la volatilité d\'un portefeuille PEA',avantage:'Seul ETF obligataire éligible PEA, diversification défensive',inconvenient:'Rendement faible, sensibilité aux hausses de taux'},
+    {type:'ETF USA Value',actifs:'Actions US décotées (faible P/E, P/B)',horizon:'5 ans+',risque:'5/7 — Moyen élevé',frais:'0,25%/an',fisc:'Exonéré après 5 ans (PEA)',pour:'Investisseur qui veut diversifier vs croissance tech',avantage:'Valorisations attractives, dividendes, protection en krach',inconvenient:'Peut sous-performer growth en marché haussier tech'},
+  ],
+  cto:[
+    {type:'Courtier en ligne',actifs:'Actions monde, ETF, crypto, obligations',horizon:'Variable',risque:'Selon actifs détenus',frais:'1€ fixe/ordre',fisc:'PFU 30% sur plus-values',pour:'Débutant voulant investir simplement',avantage:'Interface ultra-simple, plan épargne auto gratuit',inconvenient:'Gamme réduite, pas de SRD ni options, spread crypto élevé'},
+    {type:'Courtier en ligne',actifs:'Actions, ETF, options, obligations, fonds',horizon:'Variable',risque:'Selon actifs',frais:'2€ + 0,038% Euronext',fisc:'PFU 30%',pour:'Investisseur actif marchés mondiaux, frais prioritaires',avantage:'Accès 50 marchés, frais parmi les plus bas, PEA dispo',inconvenient:'Interface datée, service client limité, pas toujours en français'},
+    {type:'Courtier pro',actifs:'Tous instruments — actions, options, futures, forex',horizon:'Variable',risque:'Selon actifs',frais:'0,05% min 1€',fisc:'PFU 30%',pour:'Trader expérimenté, professionnel de la finance',avantage:'Frais ultra-bas, margin très compétitif, accès monde entier',inconvenient:'Interface complexe, non adapté aux débutants, réglé en USD'},
+    {type:'Néobanque / Courtier',actifs:'Actions FR/EU, ETF, PEA, OPCVM',horizon:'Variable',risque:'Selon actifs',frais:'0,99% min 1,99€',fisc:'PFU 30%',pour:'Client Boursobank cherchant tout-en-un',avantage:'Interface simple, compte courant gratuit inclus, CB',inconvenient:'Frais élevés sur petits ordres, pas d\'options ni futures'},
+    {type:'Courtier discount',actifs:'Actions, ETF, SRD, PEA, obligations',horizon:'Variable',risque:'Selon actifs',frais:'0,99€ fixe < 1 000€',fisc:'PFU 30%',pour:'Investisseur actif petits/moyens ordres marché français',avantage:'Tarif fixe imbattable sur ordres < 1 000€, SRD dispo',inconvenient:'Moins adapté aux marchés internationaux, interface basique'},
+    {type:'Courtier en ligne',actifs:'Actions, ETF, SCPI, PEA, produits structurés',horizon:'Variable',risque:'Selon actifs',frais:'1,95€ min < 500€',fisc:'PFU 30%',pour:'Client souhaitant CB premium et bonne interface',avantage:'CB Mastercard Gold incluse, interface claire, bons outils',inconvenient:'Frais ordres dans la moyenne haute, offre SCPI limitée'},
+    {type:'Courtier pro',actifs:'Actions, ETF, options, forex, CFD, obligations',horizon:'Variable',risque:'Selon actifs',frais:'0,08% min 3€',fisc:'PFU 30%',pour:'Trader actif et investisseur sophistiqué',avantage:'Plateforme SaxoTrader Pro, analyse avancée, options',inconvenient:'Frais élevés petits ordres, dépôt minimum 2 000€'},
+    {type:'Plateforme sociale',actifs:'Actions, ETF, crypto, CFD',horizon:'Variable',risque:'Élevé (CFD levier)',frais:'Gratuit (spread)',fisc:'PFU 30%',pour:'Investisseur voulant copier des traders performants',avantage:'Copy trading unique, interface intuitive, zéro commission actions',inconvenient:'Spread élevé, CFD à levier très risqués, frais inactivité 10$/mois'},
+    {type:'Néocourtier',actifs:'Actions fractionnées, crypto, ETF, métaux',horizon:'Variable',risque:'Selon actifs',frais:'1,49% par ordre',fisc:'PFU 30%',pour:'Petits montants, diversification avec peu de capital',avantage:'Actions fractionnées dès 1€, interface simple, crypto intégrée',inconvenient:'Frais élevés (1,49%), pas de PEA, pas de SRD'},
+    {type:'Courtier analyse',actifs:'Actions, options, analyse technique avancée',horizon:'Variable',risque:'Selon actifs',frais:'3,50€ < 1 500€',fisc:'PFU 30%',pour:'Trader actif utilisant l\'analyse technique',avantage:'Outils d\'analyse avancés, screener puissant',inconvenient:'Frais parmi les plus élevés, plateforme rachetée par Saxo'},
+  ],
+  'av-euro':[
+    {type:'Assurance Vie Fonds €',actifs:'Obligations d\'État et corporate, immobilier, monétaire',horizon:'8 ans+ pour fiscalité optimale',risque:'1/7 — Très faible',frais:'0,70%/an gestion',fisc:'PFU 30% < 8 ans / Abattement 4 600€ après 8 ans',pour:'Épargne sécurisée avec meilleur taux du marché',avantage:'Taux 4,30% en 2025, capital garanti, effet cliquet',inconvenient:'Conditions de souscription strictes, peu connu'},
+    {type:'Assurance Vie Fonds €',actifs:'Obligations souveraines et corporate, immobilier',horizon:'8 ans+',risque:'1/7 — Très faible',frais:'0,60%/an gestion',fisc:'Abattement 4 600€/9 200€ après 8 ans',pour:'Sécurité maximale avec rendement compétitif',avantage:'Contrat Linxea Avenir 2, accès en ligne 100%, frais bas',inconvenient:'Taux variable d\'une année à l\'autre'},
+    {type:'Assurance Vie Fonds €',actifs:'Obligations, immobilier (SCI), monétaire',horizon:'8 ans+',risque:'1/7 — Très faible',frais:'0,50%/an gestion',fisc:'Abattement fiscal après 8 ans',pour:'Meilleur rapport qualité/prix AV en ligne',avantage:'Linxea Spirit 2, frais gestion parmi les plus bas (0,50%)',inconvenient:'Contrainte UC 30% min pour booster les versements'},
+    {type:'Assurance Vie Fonds €',actifs:'Obligations d\'État et entreprises, monétaire',horizon:'8 ans+',risque:'1/7 — Très faible',frais:'0,75%/an gestion',fisc:'Abattement fiscal après 8 ans',pour:'Client Boursobank cherchant tout-en-un',avantage:'Intégré à l\'interface Boursobank, versements libres dès 300€',inconvenient:'Frais de gestion plus élevés que concurrents en ligne'},
+    {type:'Assurance Vie Fonds €',actifs:'Obligations, monétaire, immobilier',horizon:'8 ans+',risque:'1/7 — Très faible',frais:'0,60%/an gestion',fisc:'Abattement fiscal après 8 ans',pour:'Investisseur voulant déléguer la gestion',avantage:'Suravenir (Crédit Mutuel Arkéa), solidité financière',inconvenient:'Interface moins moderne que pure players en ligne'},
+    {type:'Assurance Vie Fonds €',actifs:'Obligations, immobilier, monétaire',horizon:'8 ans+',risque:'1/7 — Très faible',frais:'0,85%/an gestion',fisc:'Abattement fiscal après 8 ans',pour:'Assuré cherchant garanties élevées',avantage:'SwissLife = garant financier suisse très solide',inconvenient:'Frais de gestion élevés, réseau d\'agences traditionnel'},
+    {type:'Assurance Vie Fonds €',actifs:'Obligations souveraines corporate, immobilier',horizon:'8 ans+',risque:'1/7 — Très faible',frais:'0,80%/an gestion',fisc:'Abattement fiscal après 8 ans',pour:'Investisseur via banque en ligne BNP',avantage:'BNP Paribas Cardif, solidité groupe BNP, large réseau',inconvenient:'Frais de gestion dans la moyenne, moins compétitif en ligne'},
+    {type:'Assurance Vie Fonds €',actifs:'Obligations d\'État et corporate, diversifié',horizon:'8 ans+',risque:'1/7 — Très faible',frais:'0,90%/an gestion',fisc:'Abattement fiscal après 8 ans',pour:'Client réseau traditionnel cherchant sécurité',avantage:'Générali = assureur mondial solide, bonne garantie',inconvenient:'Frais élevés, distribution principalement via CGP'},
+    {type:'Assurance Vie Fonds €',actifs:'Obligations, monétaire, immobilier',horizon:'8 ans+',risque:'1/7 — Très faible',frais:'0,80%/an gestion',fisc:'Abattement fiscal après 8 ans',pour:'Actif d\'entreprise, clientèle Ag2r',avantage:'Groupe paritaire solide, offre prévoyance complète',inconvenient:'Moins performant que les contrats 100% en ligne'},
+    {type:'Assurance Vie Fonds €',actifs:'Obligations, monétaire',horizon:'8 ans+',risque:'1/7 — Très faible',frais:'1,00%/an gestion',fisc:'Abattement fiscal après 8 ans',pour:'Assuré dans réseau MMA (Covéa)',avantage:'Réseau physique, conseiller dédié',inconvenient:'Taux peu compétitif, frais de gestion parmi les plus élevés'},
+    {type:'Assurance Vie Fonds €',actifs:'Obligations souveraines, corporate',horizon:'8 ans+',risque:'1/7 — Très faible',frais:'0,90%/an gestion',fisc:'Abattement fiscal après 8 ans',pour:'Adhérent AFER (association)',avantage:'Association historique, bonne gouvernance, mutualisation',inconvenient:'Produit fermé aux non-adhérents, rendements en baisse'},
+    {type:'Assurance Vie Fonds €',actifs:'Obligations d\'État et corporate',horizon:'8 ans+',risque:'1/7 — Très faible',frais:'0,80%/an gestion',fisc:'Abattement fiscal après 8 ans',pour:'Client réseau Allianz / conseil en gestion de patrimoine',avantage:'Allianz = 1er assureur mondial, très solide',inconvenient:'Taux peu compétitif, frais importants si souscription en agence'},
+  ],
+  'av-uc':[
+    {type:'UC ETF Monde',actifs:'1 600 actions mondiales répliqué en assurance vie',horizon:'8 ans+',risque:'5/7 — Moyen élevé',frais:'0,12% ETF + frais UC contrat',fisc:'Abattement après 8 ans, fiscalité AV',pour:'Construire patrimoine long terme en enveloppe fiscale',avantage:'Diversification mondiale + fiscalité AV = combinaison optimale',inconvenient:'Double couche de frais (ETF + gestion AV)'},
+    {type:'UC ETF Tech US',actifs:'100 valeurs tech/croissance US',horizon:'7 ans+',risque:'6/7 — Élevé',frais:'0,30% ETF + frais UC',fisc:'Fiscalité AV après 8 ans',pour:'Exposition tech US avec enveloppe fiscale',avantage:'Croissance long terme maximale, exposition IA',inconvenient:'Volatilité élevée, concentration sectorielle'},
+    {type:'UC ETF US',actifs:'500 grandes entreprises américaines',horizon:'7 ans+',risque:'5/7 — Moyen élevé',frais:'0,15% ETF + frais UC',fisc:'Fiscalité AV après 8 ans',pour:'S\'exposer aux marchés US dans une AV',avantage:'Track record solide, liquidité maximale',inconvenient:'Risque de change USD/EUR'},
+    {type:'UC Fonds Tech',actifs:'Actions technologiques mondiales actives',horizon:'5 ans+',risque:'6/7 — Élevé',frais:'1,80%/an',fisc:'Fiscalité AV après 8 ans',pour:'Investisseur conviction tech mondiale',avantage:'Gestion active sélective, exposé IA/cloud',inconvenient:'Frais de gestion active élevés'},
+    {type:'UC Actions Monde',actifs:'Actions mondiales gestion active diversifiée',horizon:'5 ans+',risque:'5/7 — Moyen élevé',frais:'1,50%/an',fisc:'Fiscalité AV après 8 ans',pour:'Déléguer la sélection à Fidelity',avantage:'Gestion active reconnue, diversification mondiale',inconvenient:'Frais élevés vs ETF passif équivalent'},
+    {type:'UC Small Cap EU',actifs:'Petites capitalisations européennes',horizon:'7 ans+',risque:'6/7 — Élevé',frais:'1,80%/an',fisc:'Fiscalité AV après 8 ans',pour:'Exposition small caps UE avec potentiel de rebond',avantage:'Segment décoté vs grandes caps, potentiel élevé',inconvenient:'Illiquidité, forte volatilité en période de stress'},
+    {type:'UC Flexible',actifs:'Actions + obligations + monétaire — allocation variable',horizon:'4 ans+',risque:'4/7 — Moyen',frais:'1,50%/an',fisc:'Fiscalité AV après 8 ans',pour:'Investisseur cherchant rendement avec garde-fous',avantage:'Carmignac ajuste l\'allocation selon les marchés',inconvenient:'Performances variables selon le gérant'},
+    {type:'UC Flexible',actifs:'Actions, obligations, actifs diversifiés',horizon:'5 ans+',risque:'4/7 — Moyen',frais:'1,60%/an',fisc:'Fiscalité AV après 8 ans',pour:'Déléguer la gestion à un gérant flexible reconnu',avantage:'Gestion patrimoniale long terme, moins volatil qu\'ETF pur',inconvenient:'Frais élevés, peut rater les rallyes haussiers'},
+    {type:'UC Tech Monde',actifs:'Entreprises numériques/tech mondiales',horizon:'5 ans+',risque:'6/7 — Élevé',frais:'1,80%/an',fisc:'Fiscalité AV après 8 ans',pour:'Conviction forte sur la révolution numérique',avantage:'Meilleur performer court terme, exposition IA/cloud directe',inconvenient:'Frais de gestion très élevés, corrélation marché tech'},
+    {type:'UC Multi-actifs',actifs:'Actions, obligations, diversifié',horizon:'4 ans+',risque:'3/7 — Modéré',frais:'1,20%/an',fisc:'Fiscalité AV après 8 ans',pour:'Profil prudent voulant un peu plus que le fonds euros',avantage:'Revenu régulier potentiel, moins volatil que pure actions',inconvenient:'Rendement plafonné par la poche obligataire'},
+    {type:'UC Oblig./Actions',actifs:'Obligations + actions, profil conservateur',horizon:'3 ans+',risque:'3/7 — Modéré',frais:'0,90%/an',fisc:'Fiscalité AV après 8 ans',pour:'Profil défensif cherchant plus que fonds euros',avantage:'Rendement régulier, faible corrélation actions pures',inconvenient:'Potentiel limité en marché haussier actions'},
+    {type:'UC Immobilier',actifs:'Parts de SCPI en unité de compte',horizon:'8 ans+',risque:'3/7 — Modéré',frais:'1,00%/an',fisc:'Fiscalité AV favorable vs revenus fonciers directs',pour:'S\'exposer à l\'immobilier dans une AV pour la fiscalité',avantage:'Revenu locatif + fiscalité AV (vs revenus fonciers directs)',inconvenient:'Frais de SCPI + frais AV = double couche'},
+  ],
+  per:[
+    {type:'PER Individuel',actifs:'Fonds euros + large gamme UC (ETF, OPCVM)',horizon:'Jusqu\'à la retraite',risque:'Variable selon allocation',frais:'0,50%/an',fisc:'Déduction fiscale versements + exonération à la sortie en rente',pour:'Salarié voulant le meilleur PER avec frais bas',avantage:'Frais les plus bas du marché, ETF accessibles, interface digitale',inconvenient:'Blocage jusqu\'à la retraite sauf cas exceptionnels'},
+    {type:'PER Individuel',actifs:'Fonds euros + ETF + OPCVM',horizon:'Jusqu\'à la retraite',risque:'Variable selon allocation',frais:'0,75%/an',fisc:'Déduction fiscale à l\'entrée',pour:'Client Boursobank cherchant simplicité tout-en-un',avantage:'Interface Boursobank intégrée, gestion facile',inconvenient:'Frais légèrement supérieurs aux meilleurs PER en ligne'},
+    {type:'PER Individuel',actifs:'Fonds euros Suravenir + UC ETF et OPCVM',horizon:'Jusqu\'à la retraite',risque:'Variable selon allocation',frais:'0,60%/an',fisc:'Déduction fiscale versements',pour:'Investisseur voulant sécuriser une partie en fonds euros solide',avantage:'Suravenir = assureur reconnu, bon fonds euros 2025',inconvenient:'Interface moins moderne que pure players'},
+    {type:'PER Individuel',actifs:'Fonds euros Spirica + 600+ UC dont ETF',horizon:'Jusqu\'à la retraite',risque:'Variable',frais:'0,50%/an',fisc:'Déduction fiscale versements',pour:'Investisseur actif voulant personnaliser son PER',avantage:'Très large gamme UC, frais compétitifs, ETF disponibles',inconvenient:'Offre complexe, peu adapté aux débutants'},
+    {type:'PER Individuel',actifs:'Fonds euros SwissLife + UC',horizon:'Jusqu\'à la retraite',risque:'Variable',frais:'0,80%/an',fisc:'Déduction fiscale versements',pour:'Clientèle premium cherchant garanties solides',avantage:'SwissLife = solidité financière suisse, accompagnement premium',inconvenient:'Frais plus élevés, distribution via CGP principalement'},
+    {type:'PER Individuel',actifs:'Fonds euros Générali + UC diversifiés',horizon:'Jusqu\'à la retraite',risque:'Variable',frais:'0,85%/an',fisc:'Déduction fiscale versements',pour:'Client réseau Générali ou via CGP',avantage:'Générali = assureur mondial de référence',inconvenient:'Frais élevés, moins compétitif vs offres en ligne'},
+    {type:'PER Individuel',actifs:'Fonds euros BNP Cardif + UC',horizon:'Jusqu\'à la retraite',risque:'Variable',frais:'0,90%/an',fisc:'Déduction fiscale versements',pour:'Client BNP Paribas cherchant PER en banque',avantage:'Réseau BNP solide, accompagnement agence disponible',inconvenient:'Frais de gestion parmi les plus élevés'},
+    {type:'PER Bancaire',actifs:'Fonds euros CA + UC maison',horizon:'Jusqu\'à la retraite',risque:'Variable',frais:'0,95%/an',fisc:'Déduction fiscale versements',pour:'Client Crédit Agricole déjà bancarisé',avantage:'Conseiller physique disponible, intégration bancaire',inconvenient:'Frais élevés, gamme UC moins large, peu digital'},
+    {type:'PER Individuel',actifs:'Fonds euros AXA + UC',horizon:'Jusqu\'à la retraite',risque:'Variable',frais:'1,00%/an',fisc:'Déduction fiscale versements',pour:'Client réseau AXA cherchant accompagnement physique',avantage:'AXA = assureur #1 mondial, solidité absolue',inconvenient:'Frais parmi les plus élevés, peu adapté à la gestion autonome'},
+    {type:'PER Collectif',actifs:'Fonds euros Préfon + OPCVM',horizon:'Jusqu\'à la retraite (fonctionnaires)',risque:'Variable',frais:'Variable',fisc:'Déduction fiscale versements',pour:'Fonctionnaires d\'État voulant compléter leur pension',avantage:'Conçu pour fonctionnaires, avantages fiscaux spécifiques',inconvenient:'Réservé aux agents de la fonction publique, moins flexible'},
+  ],
+  livrets:[
+    {type:'Livret réglementé',actifs:'Épargne liquide garantie par l\'État',horizon:'Court terme (précaution)',risque:'0/7 — Aucun',frais:'Aucun',fisc:'Totalement exonéré d\'impôt et prélèvements sociaux',pour:'Revenus modestes (conditions de ressources requises)',avantage:'Meilleur taux des livrets réglementés, totalement exonéré',inconvenient:'Accès sous conditions de ressources, plafond 10 000€'},
+    {type:'Livret réglementé',actifs:'Épargne liquide garantie',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'Totalement exonéré',pour:'Jeunes de 12 à 25 ans',avantage:'Taux libre fixé par la banque (souvent > Livret A), exonéré',inconvenient:'Plafond très bas 1 600€, clôture obligatoire à 25 ans'},
+    {type:'Livret bancaire',actifs:'Épargne liquide',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'PFU 30% sur intérêts',pour:'Maximiser rendement sur épargne de précaution court terme',avantage:'Taux promotionnel attractif sur 3 mois',inconvenient:'Taux chute après promo, soumis à la flat tax 30%'},
+    {type:'Livret bancaire',actifs:'Épargne liquide',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'PFU 30%',pour:'Maximiser rendement court terme sans conditions',avantage:'Bon taux promo, pas de plafond, filiale Renault',inconvenient:'Retour au taux normal après 3 mois, PFU 30%'},
+    {type:'Livret bancaire',actifs:'Épargne liquide',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'PFU 30%',pour:'Épargnant mobile et flexible',avantage:'Taux compétitif, pas de conditions de souscription',inconvenient:'Période promo courte, PFU 30%'},
+    {type:'Livret bancaire',actifs:'Épargne liquide',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'PFU 30%',pour:'Client Fortuneo cherchant livret complémentaire',avantage:'Promo longue (4 mois), interface Fortuneo simple',inconvenient:'Taux variable, PFU 30%'},
+    {type:'Livret bancaire',actifs:'Épargne liquide',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'PFU 30%',pour:'Client Hello bank! cherchant taux permanent',avantage:'Taux permanent (non promotionnel), pas de plafond limitatif',inconvenient:'Taux inférieur aux meilleures promos, PFU 30%'},
+    {type:'Livret réglementé',actifs:'Épargne liquide garantie par l\'État',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'Totalement exonéré d\'impôt',pour:'Épargne de précaution, tout épargnant',avantage:'Disponibilité immédiate, exonération totale d\'impôt, garanti',inconvenient:'Taux 1,50% ne couvre plus l\'inflation (2,2% en avril 2026)'},
+    {type:'Livret réglementé',actifs:'Épargne liquide garantie par l\'État',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'Totalement exonéré d\'impôt',pour:'Épargne de précaution avec dimension solidaire',avantage:'Exonération totale, accessible partout, plafond 12 000€',inconvenient:'Même taux que le Livret A (1,50%), taux bas en 2026'},
+    {type:'Livret bancaire',actifs:'Épargne liquide',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'PFU 30%',pour:'Client ING cherchant un livret complémentaire',avantage:'Taux permanent sans conditions, interface ING moderne',inconvenient:'Taux inférieur aux promos concurrentes, PFU 30%'},
+    {type:'Livret bancaire',actifs:'Épargne liquide',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'PFU 30%',pour:'Client Boursobank déjà bancarisé',avantage:'Intégré à l\'interface Boursobank, virement instantané',inconvenient:'Taux extrêmement bas (0,10%), uniquement pour convenience'},
+    {type:'Livret bancaire (néobanque)',actifs:'Épargne liquide',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'PFU 30%',pour:'Épargnant cherchant promo attractive sur 6 mois',avantage:'Promo longue (6 mois), accessible depuis l\'app Cashbee',inconvenient:'Taux baisse après 6 mois, PFU 30%'},
+    {type:'Livret bancaire (néobanque)',actifs:'Épargne liquide',horizon:'Court terme',risque:'0/7 — Aucun',frais:'Aucun',fisc:'PFU 30%',pour:'Utilisateur Sumeria cherchant épargne intégrée',avantage:'Taux permanent, intégré à l\'app de paiement Sumeria',inconvenient:'PFU 30%, moins connu que les grandes banques'},
+  ],
+  scpi:[
+    {type:'SCPI de rendement',actifs:'Bureaux, commerces, logistique en Europe',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'10-12% à la souscription',fisc:'Revenus fonciers (ou IS en démembrement)',pour:'Investisseur cherchant revenus réguliers sans gestion',avantage:'Taux distribution parmi les plus élevés du marché, jeune SCPI dynamique',inconvenient:'SCPI récente (historique limité), frais de souscription'},
+    {type:'SCPI de rendement',actifs:'Bureaux, commerces, logistique en Europe',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'10% souscription',fisc:'Revenus fonciers',pour:'Accès à l\'immobilier européen avec ticket faible',avantage:'Ticket d\'entrée parmi les plus bas, rendement élevé, gestion Iroko',inconvenient:'Jeune SCPI, pas de bureau physique pour souscription'},
+    {type:'SCPI de rendement',actifs:'Immobilier diversifié hors zone euro',horizon:'8-15 ans',risque:'4/7 — Moyen élevé',frais:'12% souscription',fisc:'Revenus étrangers (fiscalité pays de l\'actif)',pour:'Diversification géographique hors EUR et hors USD',avantage:'Exposé à des marchés hors zone euro, rendement élevé',inconvenient:'Risque de change, fiscalité complexe selon les pays'},
+    {type:'SCPI de rendement',actifs:'Bureaux, commerces, logistique zone euro',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'11,96% souscription',fisc:'Revenus fonciers',pour:'Investisseur voulant s\'exposer à la zone euro via SCPI',avantage:'Track record Corum solide, distribution régulière',inconvenient:'Part plus chère (~1 135€), frais de souscription élevés'},
+    {type:'SCPI de rendement',actifs:'Bureaux, commerces, résidentiel en France',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'9,40% souscription',fisc:'Revenus fonciers',pour:'Investisseur cherchant SCPI française diversifiée',avantage:'Bonne diversification sectorielle et géographique France',inconvenient:'Biais France, sensibilité aux cycles immobiliers locaux'},
+    {type:'SCPI de rendement',actifs:'Bureaux et commerces en Europe',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'10% souscription',fisc:'Revenus fonciers',pour:'SCPI paneuropéenne à ticket accessible',avantage:'Exposition à plusieurs marchés européens, rendement > 6%',inconvenient:'Minimum 5 parts à souscrire (~895€)'},
+    {type:'SCPI de rendement',actifs:'Entrepôts et plateformes logistiques France',horizon:'10-15 ans',risque:'3/7 — Modéré',frais:'12% souscription',fisc:'Revenus fonciers',pour:'Investisseur conviction e-commerce et logistique',avantage:'Secteur logistique en forte demande, baux longs',inconvenient:'Part chère (~5 500€), secteur cyclique'},
+    {type:'SCPI de rendement',actifs:'Bureaux Île-de-France, Paris',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'11,5% souscription',fisc:'Revenus fonciers',pour:'Exposition prime office Paris/Grand Paris',avantage:'Actifs de bureaux premium, longue ancienneté (Perial)',inconvenient:'Marché bureaux sous pression (télétravail), IDF uniquement'},
+    {type:'SCPI de rendement',actifs:'Commerces, bureaux, résidentiel France',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'8% souscription',fisc:'Revenus fonciers',pour:'SCPI patrimoniale établie, investisseur prudent',avantage:'Historique très long (Sofidy depuis 1987), frais entrée bas',inconvenient:'Rendement en baisse vs nouvelles SCPI dynamiques'},
+    {type:'SCPI commerce',actifs:'Commerces de pied d\'immeuble en Allemagne',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'10% souscription',fisc:'Revenus étrangers (convention fiscale France-Allemagne)',pour:'Exposition marché immobilier allemand',avantage:'Fiscalité avantageuse franco-allemande, marchés de proximité',inconvenient:'Marché commerce physique sous pression, ticket moyen'},
+    {type:'SCPI de rendement',actifs:'Bureaux à Paris et Île-de-France',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'10% souscription',fisc:'Revenus fonciers',pour:'Exposition bureaux core Paris',avantage:'Primonial REIM = acteur référence, patrimoine solide',inconvenient:'Taux de distribution en baisse, marché bureaux parisiens difficile'},
+    {type:'SCPI thématique',actifs:'Hôtels et actifs hôteliers Europe',horizon:'8-15 ans',risque:'4/7 — Moyen élevé',frais:'12% souscription',fisc:'Revenus fonciers',pour:'Investisseur conviction tourisme et hôtellerie post-Covid',avantage:'Rebond du secteur hôtelier, exposé à plusieurs pays',inconvenient:'Secteur cyclique, dépendant du tourisme et de l\'économie'},
+    {type:'SCPI de rendement',actifs:'Bureaux, commerces, logistique zone euro mixte',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'11% souscription',fisc:'Revenus fonciers / étrangers',pour:'Investisseur voulant diversifier sur plusieurs pays zone euro',avantage:'Stratégie euro mixte, Corum = gestionnaire reconnu',inconvenient:'Frais de souscription importants, historique plus court'},
+    {type:'SCPI verte',actifs:'Immobilier vert, bureaux durables, bâtiments certifiés',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'10% souscription',fisc:'Revenus fonciers / étrangers',pour:'Investisseur cherchant impact ESG + rendement élevé',avantage:'Meilleur taux 2025, SCPI axée transition énergétique',inconvenient:'Concept récent, peu de recul historique'},
+    {type:'SCPI logistique',actifs:'Entrepôts, plateformes logistiques et semi-industriel',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'11% souscription',fisc:'Revenus fonciers',pour:'Conviction e-commerce et logistique du dernier kilomètre',avantage:'Secteur en forte croissance, baux longs 6-12 ans',inconvenient:'Exposition sectorielle unique, sensible au cycle économique'},
+    {type:'SCPI résidentielle/santé',actifs:'Résidentiel, établissements de santé France',horizon:'8-15 ans',risque:'3/7 — Modéré',frais:'10% souscription',fisc:'Revenus fonciers',pour:'Investisseur cherchant actifs résilients en période de crise',avantage:'Secteur santé très défensif, résidentiel demande soutenue',inconvenient:'Rendement légèrement inférieur aux SCPI commerce/bureaux'},
+  ],
+  obligations:[
+    {type:'Obligation souveraine US',actifs:'Bons du Trésor américain 10 ans',horizon:'10 ans (ou revente)',risque:'2/7 — Faible',frais:'Via ETF : 0,15%/an',fisc:'PFU 30% sur coupons',pour:'Investisseur cherchant rendement sécurisé en USD',avantage:'Actif de référence mondial, très liquide, taux 4,45%',inconvenient:'Risque de change USD/EUR, sensibilité taux'},
+    {type:'Obligation souveraine US',actifs:'Bons du Trésor US court terme (3 mois)',horizon:'3 mois',risque:'1/7 — Très faible',frais:'Via ETF court terme',fisc:'PFU 30%',pour:'Alternative monétaire en USD à très court terme',avantage:'Taux 4,80%, quasi-aucun risque de taux, très liquide',inconvenient:'Risque de change USD/EUR, revenu en baisse si la Fed coupe'},
+    {type:'Obligation souveraine FR',actifs:'OAT France 10 ans',horizon:'10 ans',risque:'2/7 — Faible',frais:'Via courtier direct',fisc:'PFU 30% sur coupons',pour:'Investisseur euro cherchant revenu sécurisé en EUR',avantage:'Garantie de l\'État français, taux 3,35% en EUR',inconvenient:'Notation AA- (risque politique FR), taux plus bas que US'},
+    {type:'Obligation souveraine FR',actifs:'OAT France 2 ans',horizon:'2 ans',risque:'1/7 — Très faible',frais:'Via courtier',fisc:'PFU 30%',pour:'Investisseur court terme cherchant sécurité',avantage:'Maturité courte = peu de risque de taux, taux 3,10%',inconvenient:'Taux plus bas que long terme, risque de réinvestissement'},
+    {type:'Obligation souveraine DE',actifs:'Bund allemand 10 ans',horizon:'10 ans',risque:'1/7 — Très faible',frais:'Via courtier',fisc:'PFU 30%',pour:'Investisseur cherchant la référence "sans risque" en EUR',avantage:'Notation AAA, référence mondiale sûre en EUR',inconvenient:'Taux plus bas que OAT FR, rendement 2,85% limité'},
+    {type:'Obligation souveraine IT',actifs:'BTP Italie 10 ans',horizon:'10 ans',risque:'3/7 — Modéré',frais:'Via courtier',fisc:'PFU 30%',pour:'Investisseur cherchant spread vs Allemagne (+1,10%)',avantage:'Rendement 3,95% vs 2,85% Bund = spread de 1,10% extra',inconvenient:'Risque politique et budgétaire italien, notation BBB'},
+    {type:'ETF Obligations',actifs:'Obligations d\'État zone euro diversifiées',horizon:'3-7 ans',risque:'3/7 — Modéré',frais:'0,09%/an',fisc:'PFU 30%',pour:'Diversification obligataire en EUR sans sélection individuelle',avantage:'Diversification maximale en une ligne, frais très bas',inconvenient:'Duration 7,4 ans = sensibilité aux hausses de taux'},
+    {type:'ETF Obligations',actifs:'Obligations d\'entreprises investment grade EUR',horizon:'3-7 ans',risque:'3/7 — Modéré',frais:'0,20%/an',fisc:'PFU 30%',pour:'Rendement supérieur aux souverains avec risque maîtrisé',avantage:'Spread corporate ~0,60% vs souverains, diversification',inconvenient:'Risque de crédit si récession, duration 4,6 ans'},
+    {type:'ETF Obligations US',actifs:'T-Notes américains 10 ans',horizon:'5-10 ans',risque:'2/7 — Faible',frais:'0,15%/an',fisc:'PFU 30%',pour:'Exposition obligataire US en couverture de portefeuille',avantage:'Taux 4,40% en EUR hedged, refuge en crise',inconvenient:'Risque de change si non hedgé, sensibilité taux élevée'},
+    {type:'ETF Obligations',actifs:'Obligations court terme EUR diversifiées',horizon:'1-3 ans',risque:'2/7 — Faible',frais:'0,10%/an',fisc:'PFU 30%',pour:'Alternative aux livrets avec légèrement plus de rendement',avantage:'Duration courte (1,5 an) = peu sensible aux taux, liquide',inconvenient:'Rendement 3,40% brut avant PFU 30% = 2,38% net'},
+    {type:'Obligation corporate',actifs:'Obligation LVMH 2028, rating A+',horizon:'Jusqu\'en 2028',risque:'2/7 — Faible',frais:'Via courtier',fisc:'PFU 30%',pour:'Investisseur cherchant obligations premium solides',avantage:'LVMH = bilan exceptionnel, coupon 2,75%, rating A+',inconvenient:'Coupon inférieur au taux marché actuel (obligation ancienne)'},
+    {type:'Obligation corporate',actifs:'Obligation Volkswagen 2029, rating BBB+',horizon:'Jusqu\'en 2029',risque:'3/7 — Modéré',frais:'Via courtier',fisc:'PFU 30%',pour:'Investisseur acceptant risque auto pour meilleur coupon',avantage:'Coupon 4,00% attractif, Volkswagen = leader mondial',inconvenient:'Secteur auto sous pression (transition électrique, Chine)'},
+  ],
+  crowdfunding:[
+    {type:'Crowdfunding immobilier',actifs:'Prêts aux promoteurs immobiliers français',horizon:'20 mois en moyenne',risque:'4/7 — Moyen élevé',frais:'0% pour investisseurs',fisc:'PFU 30% sur intérêts',pour:'Investisseur cherchant 10%+ sans gestion',avantage:'Meilleur rendement moyen du marché, sélection stricte',inconvenient:'Risque de défaut promoteur, capital non garanti, illiquide'},
+    {type:'Crowdfunding immobilier',actifs:'Prêts promotion immobilière résidentielle',horizon:'22 mois en moyenne',risque:'4/7 — Moyen élevé',frais:'0% investisseurs',fisc:'PFU 30%',pour:'Investisseur en immobilier résidentiel sans gestion',avantage:'Focus résidentiel, bonne sélection des projets',inconvenient:'Capital risqué, aucune garantie de remboursement'},
+    {type:'Crowdfunding multi-classe',actifs:'Immobilier + Private Equity early stage',horizon:'24 mois',risque:'5/7 — Élevé',frais:'0-2%',fisc:'PFU 30%',pour:'Investisseur cherchant diversification entre immo et startup',avantage:'Mix immo/startup, ticket faible, plateforme agréée AMF',inconvenient:'Capital non garanti, private equity très risqué'},
+    {type:'Crowdfunding immobilier',actifs:'Prêts promotion immobilière',horizon:'19 mois',risque:'4/7 — Moyen élevé',frais:'0% investisseurs',fisc:'PFU 30%',pour:'Premier investissement en crowdfunding avec ticket faible',avantage:'Ticket dès 500€, bonne sélection, plateforme agréée ACPR',inconvenient:'Capital non garanti, liquidité nulle avant terme'},
+    {type:'Crowdfunding immo/PME',actifs:'Immobilier + prêts PME françaises',horizon:'21 mois',risque:'4/7 — Moyen élevé',frais:'0%',fisc:'PFU 30%',pour:'Investisseur voulant diversifier immo et PME',avantage:'Double exposition immo et économie réelle',inconvenient:'Deux types de risques combinés'},
+    {type:'Crowdfunding immo/startup',actifs:'Immobilier + startups innovantes',horizon:'26 mois',risque:'5/7 — Élevé',frais:'0%',fisc:'PFU 30%',pour:'Investisseur tolérant au risque, ticket minimal faible',avantage:'Ticket dès 100€, diversification immo/startup',inconvenient:'Startups très risquées, historique de défauts possible'},
+    {type:'Crowdlending PME',actifs:'Prêts PME + projets EnR (éolien, solaire)',horizon:'36 mois',risque:'4/7 — Moyen élevé',frais:'0%',fisc:'PFU 30%',pour:'Investisseur engagé cherchant PME + énergie verte',avantage:'Double impact économique et environnemental',inconvenient:'Duration plus longue, risque PME plus élevé que promo immo'},
+    {type:'Crowdlending PME',actifs:'Prêts PME françaises croissance',horizon:'30 mois',risque:'4/7 — Moyen élevé',frais:'0%',fisc:'PFU 30%',pour:'Soutenir l\'économie réelle française via prêt',avantage:'Focus PME triées sur le volet, impact local',inconvenient:'Risque de défaillance PME, moins de garanties que l\'immo'},
+    {type:'Crowdlending PME',actifs:'Prêts PME européennes',horizon:'42 mois',risque:'4/7 — Moyen élevé',frais:'0%',fisc:'PFU 30%',pour:'Investisseur pan-européen dans l\'économie réelle',avantage:'Diversification européenne, ticket minimal très faible (20€)',inconvenient:'Duration longue, risque PME, marché secondaire limité'},
+    {type:'Crowdlending PME',actifs:'Prêts PME françaises',horizon:'28 mois',risque:'4/7 — Moyen élevé',frais:'0%',fisc:'PFU 30%',pour:'Investisseur cherchant diversification dans les PME',avantage:'Marché secondaire disponible, ticket faible 20€',inconvenient:'Liquidité faible, risque défaut, PFU 30% sur intérêts'},
+  ],
+  'crypto-earn':[
+    {type:'Staking liquide ETH',actifs:'Ether (ETH) staké sur Ethereum',horizon:'Flexible',risque:'5/7 — Élevé',frais:'10% des rewards',fisc:'BIC sur revenus staking',pour:'Détenteur d\'ETH voulant générer rendement sans lock-up',avantage:'Pas de lock-up, token liquide (stETH échangeable), smart contract audité',inconvenient:'Risque smart contract (hack), volatilité prix ETH'},
+    {type:'DeFi Lending',actifs:'Stablecoins USDC/USDT prêtés sur protocoles',horizon:'Flexible',risque:'4/7 — Moyen élevé',frais:'Variable (frais protocole)',fisc:'BIC sur revenus',pour:'Cherchant rendement sur stablecoins sans risque de change',avantage:'Pas de volatilité de prix, rendement 4,5-6%',inconvenient:'Risque smart contract, dépeg stablecoin possible'},
+    {type:'CeFi Earn',actifs:'Bitcoin (BTC) prêté à Nexo',horizon:'Flexible',risque:'5/7 — Élevé',frais:'Aucun',fisc:'BIC sur revenus',pour:'Holder BTC voulant générer du rendement sur ses BTC',avantage:'Interface simple, pas de lock-up, assurance partielle fonds',inconvenient:'Risque plateforme centralisée (cf. FTX 2022), 2-3% seulement'},
+    {type:'Staking SOL',actifs:'Solana (SOL) staké',horizon:'Flexible',risque:'6/7 — Très élevé',frais:'Variable validateur',fisc:'BIC sur rewards',pour:'Conviction Solana long terme + rendement passif',avantage:'APY élevé 6,5-8%, staking non-custodial via wallet',inconvenient:'Volatilité SOL extrême, altcoin risqué'},
+    {type:'Staking DOT',actifs:'Polkadot (DOT) staké',horizon:'28 jours lock',risque:'6/7 — Très élevé',frais:'Variable',fisc:'BIC sur rewards',pour:'Investisseur conviction Polkadot parachain ecosystem',avantage:'APY parmi les plus élevés des altcoins solides',inconvenient:'Lock-up 28 jours (illiquide), altcoin très volatil'},
+    {type:'Staking ATOM',actifs:'Cosmos (ATOM) staké',horizon:'21 jours lock',risque:'7/7 — Très spéculatif',frais:'Variable',fisc:'BIC',pour:'Spéculateur conviction écosystème Cosmos IBC',avantage:'APY très élevé 15-18%, nœuds décentralisés',inconvenient:'ATOM très volatil, perd de la valeur même avec staking'},
+    {type:'Staking MATIC',actifs:'Polygon (MATIC) staké sur Binance',horizon:'Flexible',risque:'6/7 — Élevé',frais:'Binance : variable',fisc:'BIC',pour:'Holder MATIC cherchant rendement passif',avantage:'Flexible, Binance plateforme liquide',inconvenient:'Centralisation Binance, altcoin risqué, migration vers POL'},
+    {type:'Staking ADA',actifs:'Cardano (ADA) délégué',horizon:'Flexible (par époques)',risque:'6/7 — Élevé',frais:'Variable par pool',fisc:'BIC',pour:'Holder ADA conviction développement Cardano',avantage:'Décentralisé (wallet propre), flexible, écologique',inconvenient:'ADA peu volatile à la hausse dernièrement, rendement modéré'},
+    {type:'DeFi Yield',actifs:'USDC dans pools Curve/Yearn Finance',horizon:'Variable',risque:'5/7 — Élevé',frais:'Variable (frais protocole)',fisc:'BIC',pour:'DeFi avancé cherchant optimisation rendement stablecoin',avantage:'Optimisation automatique du yield, jusqu\'à 8% sur USDC',inconvenient:'Smart contract risqué, impermanent loss, complexité technique'},
+    {type:'CeFi Earn',actifs:'BNB staké ou prêté sur Binance',horizon:'15-30 jours',risque:'5/7 — Élevé',frais:'Variable',fisc:'BIC',pour:'Utilisateur Binance cherchant rendement sur BNB',avantage:'Binance = plus grande plateforme mondiale, interface simple',inconvenient:'Centralisation extrême (risque de plateforme), BNB = token maison'},
+  ],
+};
+
 function selPlac(type,el){
   document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('on'));el.classList.add('on');
   const p=PL[type];if(!p)return;
@@ -1297,17 +1484,42 @@ function selPlac(type,el){
       ?`<td style="text-align:center"><a href="${url}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color:var(--muted);text-decoration:none;font-size:15px;line-height:1">↗</a></td>`
       :'<td></td>')+'</tr>';
   }).join('');
-  // clic sur la ligne entière → ouvrir le lien
-  $('placBody').querySelectorAll('tr[data-url]').forEach(tr=>{
-    const u=tr.dataset.url;
-    if(u) tr.addEventListener('click',e=>{
+  // clic sur la ligne entière → ouvrir modal de détail
+  $('placBody').querySelectorAll('tr[data-url], tr').forEach((tr,ri)=>{
+    tr.addEventListener('click',e=>{
       if(e.target.tagName==='A')return;
-      window.open(u,'_blank','noopener,noreferrer');
+      openPlacModal(type, ri, urls[ri]||'');
     });
   });
   renderExplainer(type);
 }
 selPlac('pea',document.querySelector('.cat-tab'));
+
+function openPlacModal(type, ri, url){
+  const d = PLDETAIL[type] && PLDETAIL[type][ri];
+  if(!d) return;
+  const row = PL[type] && PL[type].rows[ri];
+  const name = row ? row[0] : '';
+  $('pmType').textContent = d.type || type;
+  $('pmName').textContent = name;
+  $('pmGrid').innerHTML = [
+    ['Actifs',d.actifs],['Horizon',d.horizon],
+    ['Risque',d.risque],['Frais',d.frais],
+    ['Fiscalité',d.fisc],['Pour qui',d.pour],
+  ].filter(x=>x[1]).map(([l,v])=>`<div class="pm-item"><div class="pm-item-label">${l}</div><div class="pm-item-val">${v}</div></div>`).join('');
+  $('pmPro').textContent = d.avantage || '';
+  $('pmCon').textContent = d.inconvenient || '';
+  $('pmPour').style.display='none';
+  const btn=$('pmBtn');
+  if(url){btn.href=url;btn.style.display='block';}
+  else btn.style.display='none';
+  $('placModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePlacModal(){
+  $('placModal').classList.remove('open');
+  document.body.style.overflow='';
+}
 
 function updateSim(){
   const m=parseInt($('montant').value),d=parseInt($('duree').value);
