@@ -137,9 +137,9 @@ export default {
 
       if (path === '/news') {
         const feeds = [
-          { url: 'https://www.lesechos.fr/rss/rss_finance_marches.xml', source: 'Les Echos' },
-          { url: 'https://bfmbusiness.bfmtv.com/rss/info/flux-rss/flux-toutes-les-actualites/', source: 'BFM Business' },
-          { url: 'https://www.latribune.fr/rss/rubrique/economie.rss', source: 'La Tribune' },
+          { url: 'https://www.lemonde.fr/economie/rss_full.xml', source: 'Le Monde' },
+          { url: 'https://www.francetvinfo.fr/economie.rss', source: 'France Info' },
+          { url: 'https://www.lefigaro.fr/rss/figaro_economie.xml', source: 'Le Figaro' },
         ];
         const results = [];
         for (const feed of feeds) {
