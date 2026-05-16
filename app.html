@@ -126,17 +126,18 @@
     .src-badge{font-size:8px;padding:1px 5px;border-radius:3px;margin-left:6px;font-family:var(--mono)}
     .src-live{background:rgba(64,200,128,.12);color:var(--green)}
     .src-fb{background:rgba(196,160,80,.1);color:var(--gold)}
-    .sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:14px}
-    .sc-card{background:var(--card);border:1px solid var(--bord);border-radius:10px;padding:14px;cursor:pointer;transition:border-color .2s,transform .15s}
-    .sc-card:hover{border-color:var(--bord2);transform:translateY(-2px)}
-    .sc-flag{font-size:18px;margin-bottom:6px}
-    .sc-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .sc-sym{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:8px}
-    .sc-price{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text)}
-    .sc-chg{font-size:10px;margin-top:3px}
-    .sc-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;flex-wrap:wrap;gap:4px}
-    .sc-sec{font-size:9px;background:rgba(42,104,184,.1);color:var(--blue);padding:1px 6px;border-radius:3px}
-    .sc-risk{font-size:9px;padding:1px 6px;border-radius:3px;font-weight:600}
+    .sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:14px}
+    .sc-card{background:var(--card);border:1px solid var(--bord);border-radius:10px;padding:16px;cursor:pointer;transition:border-color .2s,box-shadow .2s,transform .15s;display:flex;flex-direction:column;gap:4px}
+    .sc-card:hover{border-color:var(--bord2);transform:translateY(-2px);box-shadow:0 4px 16px rgba(196,26,26,.1)}
+    .sc-card-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+    .sc-flag{font-size:20px;flex-shrink:0}
+    .sc-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sc-sym{font-family:var(--mono);font-size:9px;color:var(--muted)}
+    .sc-price{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--text);margin-top:4px}
+    .sc-chg{font-size:11px;margin-top:1px}
+    .sc-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--bord);flex-wrap:wrap;gap:4px}
+    .sc-sec{font-size:9px;background:rgba(42,104,184,.1);color:var(--blue);padding:2px 7px;border-radius:3px}
+    .sc-risk{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:600}
     .sc-risk.prudent{background:rgba(42,184,112,.12);color:#2ab870}
     .sc-risk.equilibre{background:rgba(196,160,64,.12);color:#c4a040}
     .sc-risk.dynamique{background:rgba(220,120,40,.12);color:#e07828}
@@ -1181,7 +1182,8 @@ function renderScreener() {
   const search = ($('scSearch')?.value || '').toLowerCase();
   const cats = market === 'all' ? Object.keys(SCREENER_ASSETS) : [market];
 
-  const riskLabel = { prudent: '🛡️ Prudent', equilibre: '⚖️ Équilibré', dynamique: '🚀 Dynamique', speculatif: '⚡ Spéculatif' };
+  const riskLabel = { prudent:'🛡️ Prudent', equilibre:'⚖️ Équilibré', dynamique:'🚀 Dynamique', speculatif:'⚡ Spéculatif' };
+  const techKeys  = { '^FCHI':'CAC40','^GSPC':'SP500','^IXIC':'NASDAQ','GC=F':'GOLD','CL=F':'OIL','AIR.PA':'AIRBUS','MC.PA':'LVMH','BTC':'BTC','ETH':'ETH' };
 
   let cards = [];
   for (const cat of cats) {
@@ -1192,13 +1194,15 @@ function renderScreener() {
       const isCrypto = cat === 'crypto';
       const price = q ? (isCrypto ? '$' : '') + fmtN(q.price, q.price > 100 ? 0 : q.price > 1 ? 2 : 5) : '—';
       const chg = q ? q.chg : null;
-      const chgHtml = chg != null ? `<span class="${chg >= 0 ? 'up' : 'dn'}">${chg >= 0 ? '+' : ''}${(+chg).toFixed(2)}%</span>` : '<span style="color:var(--muted)">—</span>';
-      const techKeys = { '^FCHI': 'CAC40', '^GSPC': 'SP500', '^IXIC': 'NASDAQ', 'GC=F': 'GOLD', 'CL=F': 'OIL', 'AIR.PA': 'AIRBUS', 'MC.PA': 'LVMH', 'BTC': 'BTC', 'ETH': 'ETH' };
-      const hasTech = techKeys[a.sym];
-      cards.push(`<div class="sc-card" onclick="${hasTech ? `goPage('tech',document.querySelector('[onclick*=\\"goPage(\\'tech\\'\\")"]'));setTimeout(()=>{const b=document.querySelector('[onclick*=\\"selTech(\\'${hasTech}\\'\\")"]');if(b){selTech('${hasTech}',b);b.scrollIntoView();}},50)` : ''}">
-        <div class="sc-flag">${a.flag}</div>
-        <div class="sc-name">${a.n}</div>
-        <div class="sc-sym">${a.sym}</div>
+      const chgHtml = chg != null
+        ? `<span class="${chg>=0?'up':'dn'}">${chg>=0?'+':''}${(+chg).toFixed(2)}%</span>`
+        : '<span style="color:var(--muted)">—</span>';
+      const tk = techKeys[a.sym] || '';
+      cards.push(`<div class="sc-card" data-tk="${tk}" data-sym="${a.sym}">
+        <div class="sc-card-top">
+          <span class="sc-flag">${a.flag}</span>
+          <div><div class="sc-name">${a.n}</div><div class="sc-sym">${a.sym}</div></div>
+        </div>
         <div class="sc-price">${price}</div>
         <div class="sc-chg">${chgHtml}</div>
         <div class="sc-meta">
@@ -1208,7 +1212,22 @@ function renderScreener() {
       </div>`);
     }
   }
-  $('screenerGrid').innerHTML = cards.length ? cards.join('') : '<div class="sc-loading">Aucun actif trouvé.</div>';
+  const grid = $('screenerGrid');
+  grid.innerHTML = cards.length ? cards.join('') : '<div class="sc-loading">Aucun actif trouvé.</div>';
+  // event delegation — un seul listener sur le grid
+  grid.onclick = e => {
+    const card = e.target.closest('.sc-card');
+    if (!card) return;
+    const tk = card.dataset.tk;
+    if (tk) {
+      const techTab = document.querySelector('.tab[onclick*="\'tech\'"]');
+      if (techTab) goPage('tech', techTab);
+      setTimeout(() => {
+        const btn = document.querySelector(`.asbtn[onclick*="'${tk}'"]`);
+        if (btn) { selTech(tk, btn); btn.scrollIntoView({block:'nearest'}); }
+      }, 50);
+    }
+  };
 }
 
 // ════════════════════════════════════
