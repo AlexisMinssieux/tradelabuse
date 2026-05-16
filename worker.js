@@ -137,8 +137,9 @@ export default {
 
       if (path === '/news') {
         const feeds = [
-          { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', source: 'BBC Business' },
-          { url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html', source: 'CNBC Markets' },
+          { url: 'https://www.lesechos.fr/rss/rss_finance_marches.xml', source: 'Les Echos' },
+          { url: 'https://bfmbusiness.bfmtv.com/rss/info/flux-rss/flux-toutes-les-actualites/', source: 'BFM Business' },
+          { url: 'https://www.latribune.fr/rss/rubrique/economie.rss', source: 'La Tribune' },
         ];
         const results = [];
         for (const feed of feeds) {
