@@ -148,6 +148,13 @@
     .sc-search{width:100%;max-width:280px;padding:6px 12px;border-radius:6px;border:1px solid var(--bord);background:var(--card);color:var(--text);font-size:12px;font-family:var(--body);outline:none}
     .sc-search:focus{border-color:var(--bord2)}
     .sc-loading{text-align:center;padding:32px;color:var(--muted);font-size:13px}
+    .sc-card.epargne{border-color:rgba(42,184,112,.25);cursor:default}
+    .sc-card.epargne:hover{transform:none;box-shadow:none;border-color:rgba(42,184,112,.4)}
+    .sc-taux{font-family:var(--mono);font-size:20px;font-weight:700;color:#2ab870;margin-top:4px}
+    .sc-plafond{font-size:10px;color:var(--muted);margin-top:1px}
+    .sc-fisc{font-size:9px;color:var(--muted);margin-top:2px;font-style:italic}
+    .sc-garantie{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:600;background:rgba(42,184,112,.15);color:#2ab870}
+    .sc-no-garantie{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:600;background:rgba(220,120,40,.1);color:#e07828}
     @media(max-width:768px){.g4{grid-template-columns:1fr 1fr}.g2x{grid-template-columns:1fr}.logo-name{font-size:18px}}
   </style>
 </head>
@@ -450,6 +457,8 @@
         <button class="sc-f" onclick="scFilter('market','actions_us',this)">🇺🇸 Actions US</button>
         <button class="sc-f" onclick="scFilter('market','crypto',this)">₿ Crypto</button>
         <button class="sc-f" onclick="scFilter('market','matieres',this)">🏅 Matières</button>
+        <button class="sc-f" onclick="scFilter('market','etf',this)">📊 ETF</button>
+        <button class="sc-f" onclick="scFilter('market','epargne',this)">💳 Épargne</button>
       </div>
       <div class="sc-filters" id="scRisk">
         <button class="sc-f on" onclick="scFilter('risk','all',this)">Tout risque</button>
@@ -1061,6 +1070,11 @@ const SCREENER_ASSETS = {
     {n:'Euro Stoxx 50',sym:'^STOXX50E',flag:'🇪🇺',risk:'equilibre'},
     {n:'AEX Amsterdam',sym:'^AEX',flag:'🇳🇱',risk:'equilibre'},
     {n:'IBEX 35',sym:'^IBEX',flag:'🇪🇸',risk:'dynamique'},
+    {n:'Sensex',sym:'^BSESN',flag:'🇮🇳',risk:'dynamique'},
+    {n:'KOSPI',sym:'^KS11',flag:'🇰🇷',risk:'dynamique'},
+    {n:'ASX 200',sym:'^AXJO',flag:'🇦🇺',risk:'equilibre'},
+    {n:'Bovespa',sym:'^BVSP',flag:'🇧🇷',risk:'speculatif'},
+    {n:'Shanghai Comp.',sym:'000001.SS',flag:'🇨🇳',risk:'dynamique'},
   ],
   actions_fr:[
     {n:'LVMH',sym:'MC.PA',flag:'🇫🇷',risk:'dynamique',sec:'Luxe'},
@@ -1083,6 +1097,16 @@ const SCREENER_ASSETS = {
     {n:'Veolia',sym:'VIE.PA',flag:'🇫🇷',risk:'prudent',sec:'Utilities'},
     {n:'STMicro',sym:'STM.PA',flag:'🇫🇷',risk:'dynamique',sec:'Semi.'},
     {n:'Alstom',sym:'ALO.PA',flag:'🇫🇷',risk:'speculatif',sec:'Transport'},
+    {n:'AXA',sym:'CS.PA',flag:'🇫🇷',risk:'equilibre',sec:'Assurance'},
+    {n:'Michelin',sym:'ML.PA',flag:'🇫🇷',risk:'equilibre',sec:'Auto'},
+    {n:'Pernod Ricard',sym:'RI.PA',flag:'🇫🇷',risk:'equilibre',sec:'Boissons'},
+    {n:'Carrefour',sym:'CA.PA',flag:'🇫🇷',risk:'prudent',sec:'Distrib.'},
+    {n:'Bouygues',sym:'EN.PA',flag:'🇫🇷',risk:'equilibre',sec:'BTP/Télécom'},
+    {n:'Legrand',sym:'LR.PA',flag:'🇫🇷',risk:'equilibre',sec:'Électrique'},
+    {n:'Publicis',sym:'PUB.PA',flag:'🇫🇷',risk:'equilibre',sec:'Pub'},
+    {n:'Renault',sym:'RNO.PA',flag:'🇫🇷',risk:'speculatif',sec:'Auto'},
+    {n:'Edenred',sym:'EDEN.PA',flag:'🇫🇷',risk:'dynamique',sec:'Tech'},
+    {n:'Worldline',sym:'WLN.PA',flag:'🇫🇷',risk:'speculatif',sec:'Paiement'},
   ],
   actions_us:[
     {n:'Apple',sym:'AAPL',flag:'🇺🇸',risk:'equilibre',sec:'Tech'},
@@ -1105,6 +1129,21 @@ const SCREENER_ASSETS = {
     {n:'AMD',sym:'AMD',flag:'🇺🇸',risk:'speculatif',sec:'Semi.'},
     {n:'Disney',sym:'DIS',flag:'🇺🇸',risk:'equilibre',sec:'Media'},
     {n:'Salesforce',sym:'CRM',flag:'🇺🇸',risk:'dynamique',sec:'Tech'},
+    {n:'Coca-Cola',sym:'KO',flag:'🇺🇸',risk:'prudent',sec:'Conso.'},
+    {n:'PepsiCo',sym:'PEP',flag:'🇺🇸',risk:'prudent',sec:'Conso.'},
+    {n:'Johnson & Johnson',sym:'JNJ',flag:'🇺🇸',risk:'prudent',sec:'Santé'},
+    {n:'AbbVie',sym:'ABBV',flag:'🇺🇸',risk:'equilibre',sec:'Santé'},
+    {n:'Eli Lilly',sym:'LLY',flag:'🇺🇸',risk:'dynamique',sec:'Santé'},
+    {n:'Goldman Sachs',sym:'GS',flag:'🇺🇸',risk:'dynamique',sec:'Finance'},
+    {n:'Morgan Stanley',sym:'MS',flag:'🇺🇸',risk:'dynamique',sec:'Finance'},
+    {n:'Intel',sym:'INTC',flag:'🇺🇸',risk:'speculatif',sec:'Semi.'},
+    {n:'Oracle',sym:'ORCL',flag:'🇺🇸',risk:'equilibre',sec:'Tech'},
+    {n:'Boeing',sym:'BA',flag:'🇺🇸',risk:'speculatif',sec:'Aéro'},
+    {n:'Chevron',sym:'CVX',flag:'🇺🇸',risk:'equilibre',sec:'Énergie'},
+    {n:'Pfizer',sym:'PFE',flag:'🇺🇸',risk:'prudent',sec:'Santé'},
+    {n:'AT&T',sym:'T',flag:'🇺🇸',risk:'prudent',sec:'Télécom'},
+    {n:'Berkshire B',sym:'BRK-B',flag:'🇺🇸',risk:'equilibre',sec:'Conglomérat'},
+    {n:'Palantir',sym:'PLTR',flag:'🇺🇸',risk:'speculatif',sec:'Tech'},
   ],
   matieres:[
     {n:'Or',sym:'GC=F',flag:'🥇',risk:'prudent',sec:'Métal préc.'},
@@ -1115,6 +1154,8 @@ const SCREENER_ASSETS = {
     {n:'Cuivre',sym:'HG=F',flag:'🟤',risk:'dynamique',sec:'Métal ind.'},
     {n:'Blé',sym:'ZW=F',flag:'🌾',risk:'speculatif',sec:'Agricole'},
     {n:'Maïs',sym:'ZC=F',flag:'🌽',risk:'speculatif',sec:'Agricole'},
+    {n:'Platine',sym:'PL=F',flag:'⬜',risk:'dynamique',sec:'Métal préc.'},
+    {n:'Aluminium',sym:'ALI=F',flag:'🔘',risk:'dynamique',sec:'Métal ind.'},
   ],
   crypto:[
     {n:'Bitcoin',sym:'BTC',flag:'₿',risk:'dynamique'},
@@ -1137,6 +1178,34 @@ const SCREENER_ASSETS = {
     {n:'Uniswap',sym:'UNI',flag:'🦄',risk:'speculatif'},
     {n:'Litecoin',sym:'LTC',flag:'Ł',risk:'dynamique'},
     {n:'OKB',sym:'OKB',flag:'●',risk:'speculatif'},
+  ],
+  etf:[
+    {n:'Amundi MSCI World',sym:'CW8.PA',flag:'🌍',risk:'equilibre',sec:'Monde · PEA'},
+    {n:'Amundi S&P 500',sym:'500.PA',flag:'🇺🇸',risk:'equilibre',sec:'US · PEA'},
+    {n:'BNP Nasdaq-100',sym:'NASD.PA',flag:'🇺🇸',risk:'dynamique',sec:'Tech · PEA'},
+    {n:'Lyxor CAC 40',sym:'CAC.PA',flag:'🇫🇷',risk:'dynamique',sec:'FR · PEA'},
+    {n:'Amundi Euro Stoxx 50',sym:'C50.PA',flag:'🇪🇺',risk:'equilibre',sec:'Europe · PEA'},
+    {n:'Amundi MSCI EM',sym:'PAEEM.PA',flag:'🌏',risk:'dynamique',sec:'Émergents · PEA'},
+    {n:'iShares MSCI World',sym:'IWDA.AS',flag:'🌍',risk:'equilibre',sec:'Monde · CTO'},
+    {n:'SPDR S&P 500',sym:'SPY',flag:'🇺🇸',risk:'equilibre',sec:'US · CTO'},
+    {n:'Invesco QQQ',sym:'QQQ',flag:'🇺🇸',risk:'dynamique',sec:'Tech · CTO'},
+    {n:'SPDR Gold',sym:'GLD',flag:'🥇',risk:'prudent',sec:'Or · CTO'},
+    {n:'Vanguard Total Market',sym:'VTI',flag:'🇺🇸',risk:'equilibre',sec:'US · CTO'},
+    {n:'iShares US Bonds 20y',sym:'TLT',flag:'🇺🇸',risk:'prudent',sec:'Oblig. · CTO'},
+    {n:'Vanguard Emerging',sym:'VWO',flag:'🌏',risk:'dynamique',sec:'Émergents · CTO'},
+    {n:'Amundi MSCI Europe',sym:'MEUR.PA',flag:'🇪🇺',risk:'equilibre',sec:'Europe · PEA'},
+  ],
+  epargne:[
+    {n:'Livret A',sym:'LIVRET-A',flag:'🏦',risk:'prudent',taux:'2,40 %',plafond:'22 950 €',fisc:'Exonéré d\'impôt',garantie:true,desc:'Épargne liquide réglementée, disponible immédiatement.'},
+    {n:'LEP',sym:'LEP',flag:'🏦',risk:'prudent',taux:'3,50 %',plafond:'10 000 €',fisc:'Exonéré d\'impôt',garantie:true,desc:'Meilleur taux garanti pour revenus modestes.'},
+    {n:'LDDS',sym:'LDDS',flag:'🏦',risk:'prudent',taux:'2,40 %',plafond:'12 000 €',fisc:'Exonéré d\'impôt',garantie:true,desc:'Livret de développement durable et solidaire.'},
+    {n:'Livret Jeune',sym:'LJ',flag:'🏦',risk:'prudent',taux:'≥ 2,40 %',plafond:'1 600 €',fisc:'Exonéré d\'impôt',garantie:true,desc:'Réservé aux 12-25 ans. Taux libre fixé par la banque.'},
+    {n:'AV — Fonds Euros',sym:'AV-EUR',flag:'🛡️',risk:'prudent',taux:'3,5 – 4,6 %',plafond:'Illimité',fisc:'PFU 30% / exo. après 8 ans',garantie:true,desc:'Capital garanti, intérêts crédités annuellement (effet cliquet).'},
+    {n:'AV — Unités de Compte',sym:'AV-UC',flag:'📈',risk:'dynamique',taux:'~8 – 12 % /an',plafond:'Illimité',fisc:'PFU 30% / exo. après 8 ans',garantie:false,desc:'ETF et fonds actions dans une enveloppe fiscale avantageuse.'},
+    {n:'PEA — ETF',sym:'PEA',flag:'💼',risk:'dynamique',taux:'~9 – 12 % /an',plafond:'150 000 €',fisc:'Exonéré après 5 ans',garantie:false,desc:'Enveloppe fiscale idéale pour les ETF actions européennes.'},
+    {n:'PEA-PME',sym:'PEA-PME',flag:'💼',risk:'speculatif',taux:'Variable',plafond:'225 000 €',fisc:'Exonéré après 5 ans',garantie:false,desc:'Actions et ETF de petites et moyennes entreprises européennes.'},
+    {n:'Compte-Titres Ordinaire',sym:'CTO',flag:'📊',risk:'speculatif',taux:'Variable',plafond:'Illimité',fisc:'PFU 30% sur gains',garantie:false,desc:'Accès à tous les marchés mondiaux sans plafond ni restriction.'},
+    {n:'SCPI',sym:'SCPI',flag:'🏢',risk:'equilibre',taux:'4,5 – 6 % /an',plafond:'Illimité',fisc:'Revenus fonciers / IS',garantie:false,desc:'Immobilier locatif mutualisé. Revenus réguliers, liquidité faible.'},
   ],
 };
 
@@ -1167,6 +1236,8 @@ async function loadScreenerPrices() {
     } else if (cat === 'indices') {
       const data = await fetchIndicesAPI();
       if (data) data.forEach(q => { scState.prices[q.symbol] = { price: q.price, chg: q.changesPercentage }; });
+    } else if (cat === 'epargne') {
+      // no live price for épargne products — static data only
     } else {
       const syms = SCREENER_ASSETS[cat].map(a => a.sym).join(',');
       const data = await apiFetch('/quotes?symbols=' + encodeURIComponent(syms));
@@ -1190,6 +1261,24 @@ function renderScreener() {
     for (const a of SCREENER_ASSETS[cat]) {
       if (risk !== 'all' && a.risk !== risk) continue;
       if (search && !a.n.toLowerCase().includes(search) && !a.sym.toLowerCase().includes(search)) continue;
+      if (cat === 'epargne') {
+        const garantieBadge = a.garantie
+          ? `<span class="sc-garantie">✓ Capital garanti</span>`
+          : `<span class="sc-no-garantie">Capital non garanti</span>`;
+        cards.push(`<div class="sc-card epargne" data-sym="${a.sym}">
+          <div class="sc-card-top">
+            <span class="sc-flag">${a.flag}</span>
+            <div><div class="sc-name">${a.n}</div><div class="sc-sym">${a.desc}</div></div>
+          </div>
+          <div class="sc-taux">${a.taux}</div>
+          <div class="sc-plafond">Plafond : ${a.plafond}</div>
+          <div class="sc-fisc">${a.fisc}</div>
+          <div class="sc-meta">
+            ${garantieBadge}
+            <span class="sc-risk ${a.risk}">${riskLabel[a.risk]}</span>
+          </div>
+        </div>`);
+      } else {
       const q = scState.prices[a.sym];
       const isCrypto = cat === 'crypto';
       const price = q ? (isCrypto ? '$' : '') + fmtN(q.price, q.price > 100 ? 0 : q.price > 1 ? 2 : 5) : '—';
@@ -1210,6 +1299,7 @@ function renderScreener() {
           <span class="sc-risk ${a.risk}">${riskLabel[a.risk]}</span>
         </div>
       </div>`);
+      }
     }
   }
   const grid = $('screenerGrid');
@@ -1234,7 +1324,7 @@ function renderScreener() {
 // RECHERCHE GLOBALE
 // ════════════════════════════════════
 const RISK_LABEL = { prudent:'🛡️ Prudent', equilibre:'⚖️ Équilibré', dynamique:'🚀 Dynamique', speculatif:'⚡ Spéculatif' };
-const CAT_LABEL  = { indices:'Indices', actions_fr:'Actions FR', actions_us:'Actions US', matieres:'Matières', crypto:'Crypto' };
+const CAT_LABEL  = { indices:'Indices', actions_fr:'Actions FR', actions_us:'Actions US', matieres:'Matières', crypto:'Crypto', etf:'ETF', epargne:'Épargne' };
 
 // Recherche globale — initialisation après le DOM
 (function() {

@@ -34,6 +34,20 @@ const STOOQ_MAP = {
   'BZ=F':'bz.f','HG=F':'hg.f','ZW=F':'zw.f','ZC=F':'zc.f',
   // More indices
   '^STOXX50E':'^stoxx50e','^AEX':'^aex','^IBEX':'^ibex',
+  '^BSESN':'^bsesn','^KS11':'^ks11','^AXJO':'^axjo','^BVSP':'^bvsp','000001.SS':'000001.cn',
+  // More French stocks
+  'CS.PA':'cs.fr','ML.PA':'ml.fr','RI.PA':'ri.fr','CA.PA':'ca.fr','EN.PA':'en.fr',
+  'LR.PA':'lr.fr','PUB.PA':'pub.fr','RNO.PA':'rno.fr','EDEN.PA':'eden.fr','WLN.PA':'wln.fr',
+  // More US stocks
+  'KO':'ko.us','PEP':'pep.us','JNJ':'jnj.us','ABBV':'abbv.us','LLY':'lly.us',
+  'GS':'gs.us','MS':'ms.us','INTC':'intc.us','ORCL':'orcl.us','BA':'ba.us',
+  'CVX':'cvx.us','PFE':'pfe.us','T':'t.us','BRK-B':'brk-b.us','PLTR':'pltr.us',
+  // ETFs
+  'CW8.PA':'cw8.fr','500.PA':'500.fr','NASD.PA':'nasd.fr','CAC.PA':'cac.fr',
+  'C50.PA':'c50.fr','PAEEM.PA':'paeem.fr','IWDA.AS':'iwda.nl','MEUR.PA':'meur.fr',
+  'SPY':'spy.us','QQQ':'qqq.us','GLD':'gld.us','VTI':'vti.us','TLT':'tlt.us','VWO':'vwo.us',
+  // More commodities
+  'PL=F':'pl.f','ALI=F':'ali.f',
 };
 
 function toStooq(sym) {
