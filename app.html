@@ -107,6 +107,27 @@
     .src-badge{font-size:8px;padding:1px 5px;border-radius:3px;margin-left:6px;font-family:var(--mono)}
     .src-live{background:rgba(64,200,128,.12);color:var(--green)}
     .src-fb{background:rgba(196,160,80,.1);color:var(--gold)}
+    .sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:14px}
+    .sc-card{background:var(--card);border:1px solid var(--bord);border-radius:10px;padding:14px;cursor:pointer;transition:border-color .2s,transform .15s}
+    .sc-card:hover{border-color:var(--bord2);transform:translateY(-2px)}
+    .sc-flag{font-size:18px;margin-bottom:6px}
+    .sc-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sc-sym{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:8px}
+    .sc-price{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text)}
+    .sc-chg{font-size:10px;margin-top:3px}
+    .sc-meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px;flex-wrap:wrap;gap:4px}
+    .sc-sec{font-size:9px;background:rgba(42,104,184,.1);color:var(--blue);padding:1px 6px;border-radius:3px}
+    .sc-risk{font-size:9px;padding:1px 6px;border-radius:3px;font-weight:600}
+    .sc-risk.prudent{background:rgba(42,184,112,.12);color:#2ab870}
+    .sc-risk.equilibre{background:rgba(196,160,64,.12);color:#c4a040}
+    .sc-risk.dynamique{background:rgba(220,120,40,.12);color:#e07828}
+    .sc-risk.speculatif{background:rgba(196,26,26,.12);color:var(--red2)}
+    .sc-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+    .sc-f{padding:4px 12px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--bord);background:var(--card);color:var(--muted);font-family:var(--body);transition:all .2s}
+    .sc-f:hover{color:var(--text)}.sc-f.on{background:rgba(180,20,20,.12);color:var(--red2);border-color:var(--red)}
+    .sc-search{width:100%;max-width:280px;padding:6px 12px;border-radius:6px;border:1px solid var(--bord);background:var(--card);color:var(--text);font-size:12px;font-family:var(--body);outline:none}
+    .sc-search:focus{border-color:var(--bord2)}
+    .sc-loading{text-align:center;padding:32px;color:var(--muted);font-size:13px}
     @media(max-width:768px){.g4{grid-template-columns:1fr 1fr}.g2x{grid-template-columns:1fr}.logo-name{font-size:18px}}
   </style>
 </head>
@@ -170,6 +191,7 @@
   <button class="tab" onclick="goPage('placements',this)">🏦 Placements</button>
   <button class="tab" onclick="goPage('tech',this)">📊 Analyse AT</button>
   <button class="tab" onclick="goPage('news',this)">📰 Actualités</button>
+  <button class="tab" onclick="goPage('screener',this)">🔍 Screener</button>
 </nav>
 
 <main>
@@ -393,6 +415,31 @@
   </div>
 </section>
 
+<section class="pg" id="pg-screener">
+  <div class="g2" style="margin-bottom:10px;align-items:center;flex-wrap:wrap;gap:8px">
+    <div>
+      <div class="stitle" style="margin-bottom:6px">Marchés — Choisir un actif</div>
+      <div class="sc-filters" id="scMarket">
+        <button class="sc-f on" onclick="scFilter('market','all',this)">Tous</button>
+        <button class="sc-f" onclick="scFilter('market','indices',this)">🌍 Indices</button>
+        <button class="sc-f" onclick="scFilter('market','actions_fr',this)">🇫🇷 Actions FR</button>
+        <button class="sc-f" onclick="scFilter('market','actions_us',this)">🇺🇸 Actions US</button>
+        <button class="sc-f" onclick="scFilter('market','crypto',this)">₿ Crypto</button>
+        <button class="sc-f" onclick="scFilter('market','matieres',this)">🏅 Matières</button>
+      </div>
+      <div class="sc-filters" id="scRisk">
+        <button class="sc-f on" onclick="scFilter('risk','all',this)">Tout risque</button>
+        <button class="sc-f" onclick="scFilter('risk','prudent',this)">🛡️ Prudent</button>
+        <button class="sc-f" onclick="scFilter('risk','equilibre',this)">⚖️ Équilibré</button>
+        <button class="sc-f" onclick="scFilter('risk','dynamique',this)">🚀 Dynamique</button>
+        <button class="sc-f" onclick="scFilter('risk','speculatif',this)">⚡ Spéculatif</button>
+      </div>
+    </div>
+    <input class="sc-search" id="scSearch" placeholder="Rechercher un actif…" oninput="renderScreener()">
+  </div>
+  <div id="screenerGrid" class="sc-grid"><div class="sc-loading">Chargement…</div></div>
+</section>
+
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -486,6 +533,7 @@ function goPage(id,el){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   $('pg-'+id).classList.add('on');el.classList.add('on');
+  if(id==='screener' && Object.keys(scState.prices).length===0) loadScreenerPrices();
 }
 
 // ════════════════════════════════════
@@ -972,6 +1020,172 @@ async function loadAll(){
   }catch(e){
     setStatus('⚠️ Données du jour affichées');
   }
+}
+
+// ════════════════════════════════════
+// SCREENER
+// ════════════════════════════════════
+const SCREENER_ASSETS = {
+  indices:[
+    {n:'CAC 40',sym:'^FCHI',flag:'🇫🇷',risk:'equilibre'},
+    {n:'S&P 500',sym:'^GSPC',flag:'🇺🇸',risk:'equilibre'},
+    {n:'NASDAQ',sym:'^IXIC',flag:'🇺🇸',risk:'dynamique'},
+    {n:'DAX',sym:'^GDAXI',flag:'🇩🇪',risk:'equilibre'},
+    {n:'FTSE 100',sym:'^FTSE',flag:'🇬🇧',risk:'equilibre'},
+    {n:'Nikkei 225',sym:'^N225',flag:'🇯🇵',risk:'equilibre'},
+    {n:'Hang Seng',sym:'^HSI',flag:'🇭🇰',risk:'dynamique'},
+    {n:'Euro Stoxx 50',sym:'^STOXX50E',flag:'🇪🇺',risk:'equilibre'},
+    {n:'AEX Amsterdam',sym:'^AEX',flag:'🇳🇱',risk:'equilibre'},
+    {n:'IBEX 35',sym:'^IBEX',flag:'🇪🇸',risk:'dynamique'},
+  ],
+  actions_fr:[
+    {n:'LVMH',sym:'MC.PA',flag:'🇫🇷',risk:'dynamique',sec:'Luxe'},
+    {n:'Hermès',sym:'RMS.PA',flag:'🇫🇷',risk:'dynamique',sec:'Luxe'},
+    {n:'TotalEnergies',sym:'TTE.PA',flag:'🇫🇷',risk:'equilibre',sec:'Énergie'},
+    {n:'Sanofi',sym:'SAN.PA',flag:'🇫🇷',risk:'prudent',sec:'Santé'},
+    {n:'BNP Paribas',sym:'BNP.PA',flag:'🇫🇷',risk:'equilibre',sec:'Finance'},
+    {n:'Airbus',sym:'AIR.PA',flag:'🇫🇷',risk:'dynamique',sec:'Aéro'},
+    {n:'Safran',sym:'SAF.PA',flag:'🇫🇷',risk:'dynamique',sec:'Défense'},
+    {n:'Schneider',sym:'SU.PA',flag:'🇫🇷',risk:'equilibre',sec:'Industrie'},
+    {n:"L'Oréal",sym:'OR.PA',flag:'🇫🇷',risk:'equilibre',sec:'Cosmétiques'},
+    {n:'Air Liquide',sym:'AI.PA',flag:'🇫🇷',risk:'equilibre',sec:'Chimie'},
+    {n:'Soc. Générale',sym:'GLE.PA',flag:'🇫🇷',risk:'dynamique',sec:'Finance'},
+    {n:'Kering',sym:'KER.PA',flag:'🇫🇷',risk:'dynamique',sec:'Luxe'},
+    {n:'Vinci',sym:'DG.PA',flag:'🇫🇷',risk:'equilibre',sec:'BTP'},
+    {n:'Danone',sym:'BN.PA',flag:'🇫🇷',risk:'prudent',sec:'Alim.'},
+    {n:'Orange',sym:'ORA.PA',flag:'🇫🇷',risk:'prudent',sec:'Télécom'},
+    {n:'Dassault Syst.',sym:'DSY.PA',flag:'🇫🇷',risk:'dynamique',sec:'Tech'},
+    {n:'Crédit Agricole',sym:'ACA.PA',flag:'🇫🇷',risk:'equilibre',sec:'Finance'},
+    {n:'Veolia',sym:'VIE.PA',flag:'🇫🇷',risk:'prudent',sec:'Utilities'},
+    {n:'STMicro',sym:'STM.PA',flag:'🇫🇷',risk:'dynamique',sec:'Semi.'},
+    {n:'Alstom',sym:'ALO.PA',flag:'🇫🇷',risk:'speculatif',sec:'Transport'},
+  ],
+  actions_us:[
+    {n:'Apple',sym:'AAPL',flag:'🇺🇸',risk:'equilibre',sec:'Tech'},
+    {n:'Microsoft',sym:'MSFT',flag:'🇺🇸',risk:'equilibre',sec:'Tech'},
+    {n:'NVIDIA',sym:'NVDA',flag:'🇺🇸',risk:'dynamique',sec:'Semi.'},
+    {n:'Amazon',sym:'AMZN',flag:'🇺🇸',risk:'dynamique',sec:'E-com'},
+    {n:'Alphabet',sym:'GOOGL',flag:'🇺🇸',risk:'equilibre',sec:'Tech'},
+    {n:'Tesla',sym:'TSLA',flag:'🇺🇸',risk:'speculatif',sec:'EV'},
+    {n:'Meta',sym:'META',flag:'🇺🇸',risk:'dynamique',sec:'Tech'},
+    {n:'JPMorgan',sym:'JPM',flag:'🇺🇸',risk:'equilibre',sec:'Finance'},
+    {n:'Visa',sym:'V',flag:'🇺🇸',risk:'equilibre',sec:'Finance'},
+    {n:'Mastercard',sym:'MA',flag:'🇺🇸',risk:'equilibre',sec:'Finance'},
+    {n:'UnitedHealth',sym:'UNH',flag:'🇺🇸',risk:'equilibre',sec:'Santé'},
+    {n:'Walmart',sym:'WMT',flag:'🇺🇸',risk:'prudent',sec:'Distrib.'},
+    {n:'ExxonMobil',sym:'XOM',flag:'🇺🇸',risk:'equilibre',sec:'Énergie'},
+    {n:'Bank of America',sym:'BAC',flag:'🇺🇸',risk:'dynamique',sec:'Finance'},
+    {n:'Home Depot',sym:'HD',flag:'🇺🇸',risk:'equilibre',sec:'Distrib.'},
+    {n:'Procter & Gamble',sym:'PG',flag:'🇺🇸',risk:'prudent',sec:'Conso.'},
+    {n:'Netflix',sym:'NFLX',flag:'🇺🇸',risk:'dynamique',sec:'Tech'},
+    {n:'AMD',sym:'AMD',flag:'🇺🇸',risk:'speculatif',sec:'Semi.'},
+    {n:'Disney',sym:'DIS',flag:'🇺🇸',risk:'equilibre',sec:'Media'},
+    {n:'Salesforce',sym:'CRM',flag:'🇺🇸',risk:'dynamique',sec:'Tech'},
+  ],
+  matieres:[
+    {n:'Or',sym:'GC=F',flag:'🥇',risk:'prudent',sec:'Métal préc.'},
+    {n:'Argent',sym:'SI=F',flag:'🥈',risk:'equilibre',sec:'Métal préc.'},
+    {n:'Pétrole WTI',sym:'CL=F',flag:'🛢️',risk:'dynamique',sec:'Énergie'},
+    {n:'Pétrole Brent',sym:'BZ=F',flag:'🛢️',risk:'dynamique',sec:'Énergie'},
+    {n:'Gaz Naturel',sym:'NG=F',flag:'🔥',risk:'speculatif',sec:'Énergie'},
+    {n:'Cuivre',sym:'HG=F',flag:'🟤',risk:'dynamique',sec:'Métal ind.'},
+    {n:'Blé',sym:'ZW=F',flag:'🌾',risk:'speculatif',sec:'Agricole'},
+    {n:'Maïs',sym:'ZC=F',flag:'🌽',risk:'speculatif',sec:'Agricole'},
+  ],
+  crypto:[
+    {n:'Bitcoin',sym:'BTC',flag:'₿',risk:'dynamique'},
+    {n:'Ethereum',sym:'ETH',flag:'Ξ',risk:'dynamique'},
+    {n:'BNB',sym:'BNB',flag:'●',risk:'dynamique'},
+    {n:'Solana',sym:'SOL',flag:'◎',risk:'dynamique'},
+    {n:'XRP',sym:'XRP',flag:'✕',risk:'dynamique'},
+    {n:'Dogecoin',sym:'DOGE',flag:'Ð',risk:'speculatif'},
+    {n:'Cardano',sym:'ADA',flag:'₳',risk:'speculatif'},
+    {n:'Avalanche',sym:'AVAX',flag:'△',risk:'speculatif'},
+    {n:'Chainlink',sym:'LINK',flag:'⬡',risk:'speculatif'},
+    {n:'Sui',sym:'SUI',flag:'◈',risk:'speculatif'},
+    {n:'Polkadot',sym:'DOT',flag:'●',risk:'speculatif'},
+    {n:'Tron',sym:'TRX',flag:'◆',risk:'speculatif'},
+    {n:'Shiba Inu',sym:'SHIB',flag:'🐕',risk:'speculatif'},
+    {n:'Toncoin',sym:'TON',flag:'◉',risk:'speculatif'},
+    {n:'Bitcoin Cash',sym:'BCH',flag:'Ƀ',risk:'dynamique'},
+    {n:'Stellar',sym:'XLM',flag:'✦',risk:'speculatif'},
+    {n:'Monero',sym:'XMR',flag:'ɱ',risk:'speculatif'},
+    {n:'Uniswap',sym:'UNI',flag:'🦄',risk:'speculatif'},
+    {n:'Litecoin',sym:'LTC',flag:'Ł',risk:'dynamique'},
+    {n:'OKB',sym:'OKB',flag:'●',risk:'speculatif'},
+  ],
+};
+
+let scState = { market: 'all', risk: 'all', prices: {} };
+
+function scFilter(type, val, el) {
+  scState[type] = val;
+  const group = type === 'market' ? 'scMarket' : 'scRisk';
+  $(group).querySelectorAll('.sc-f').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  loadScreenerPrices();
+}
+
+async function loadScreenerPrices() {
+  $('screenerGrid').innerHTML = '<div class="sc-loading">Chargement des cours…</div>';
+  const market = scState.market;
+  const cats = market === 'all' ? Object.keys(SCREENER_ASSETS) : [market];
+
+  for (const cat of cats) {
+    if (cat === 'crypto') {
+      const coins = await fetchCryptoAPI();
+      if (coins) {
+        SCREENER_ASSETS.crypto.forEach(a => {
+          const c = coins.find(x => x.symbol === a.sym.toLowerCase());
+          if (c) scState.prices[a.sym] = { price: c.current_price, chg: c.price_change_percentage_24h };
+        });
+      }
+    } else if (cat === 'indices') {
+      const data = await fetchIndicesAPI();
+      if (data) data.forEach(q => { scState.prices[q.symbol] = { price: q.price, chg: q.changesPercentage }; });
+    } else {
+      const syms = SCREENER_ASSETS[cat].map(a => a.sym).join(',');
+      const data = await apiFetch('/quotes?symbols=' + encodeURIComponent(syms));
+      if (data) data.forEach(q => { scState.prices[q.symbol] = { price: q.price, chg: q.changesPercentage }; });
+    }
+  }
+  renderScreener();
+}
+
+function renderScreener() {
+  const market = scState.market;
+  const risk = scState.risk;
+  const search = ($('scSearch')?.value || '').toLowerCase();
+  const cats = market === 'all' ? Object.keys(SCREENER_ASSETS) : [market];
+
+  const riskLabel = { prudent: '🛡️ Prudent', equilibre: '⚖️ Équilibré', dynamique: '🚀 Dynamique', speculatif: '⚡ Spéculatif' };
+
+  let cards = [];
+  for (const cat of cats) {
+    for (const a of SCREENER_ASSETS[cat]) {
+      if (risk !== 'all' && a.risk !== risk) continue;
+      if (search && !a.n.toLowerCase().includes(search) && !a.sym.toLowerCase().includes(search)) continue;
+      const q = scState.prices[a.sym];
+      const isCrypto = cat === 'crypto';
+      const price = q ? (isCrypto ? '$' : '') + fmtN(q.price, q.price > 100 ? 0 : q.price > 1 ? 2 : 5) : '—';
+      const chg = q ? q.chg : null;
+      const chgHtml = chg != null ? `<span class="${chg >= 0 ? 'up' : 'dn'}">${chg >= 0 ? '+' : ''}${(+chg).toFixed(2)}%</span>` : '<span style="color:var(--muted)">—</span>';
+      const techKeys = { '^FCHI': 'CAC40', '^GSPC': 'SP500', '^IXIC': 'NASDAQ', 'GC=F': 'GOLD', 'CL=F': 'OIL', 'AIR.PA': 'AIRBUS', 'MC.PA': 'LVMH', 'BTC': 'BTC', 'ETH': 'ETH' };
+      const hasTech = techKeys[a.sym];
+      cards.push(`<div class="sc-card" onclick="${hasTech ? `goPage('tech',document.querySelector('[onclick*=\\"goPage(\\'tech\\'\\")"]'));setTimeout(()=>{const b=document.querySelector('[onclick*=\\"selTech(\\'${hasTech}\\'\\")"]');if(b){selTech('${hasTech}',b);b.scrollIntoView();}},50)` : ''}">
+        <div class="sc-flag">${a.flag}</div>
+        <div class="sc-name">${a.n}</div>
+        <div class="sc-sym">${a.sym}</div>
+        <div class="sc-price">${price}</div>
+        <div class="sc-chg">${chgHtml}</div>
+        <div class="sc-meta">
+          ${a.sec ? `<span class="sc-sec">${a.sec}</span>` : '<span></span>'}
+          <span class="sc-risk ${a.risk}">${riskLabel[a.risk]}</span>
+        </div>
+      </div>`);
+    }
+  }
+  $('screenerGrid').innerHTML = cards.length ? cards.join('') : '<div class="sc-loading">Aucun actif trouvé.</div>';
 }
 
 // ════════════════════════════════════

@@ -22,6 +22,18 @@ const STOOQ_MAP = {
   'AAPL':'aapl.us','MSFT':'msft.us','NVDA':'nvda.us','AMZN':'amzn.us',
   'GOOGL':'googl.us','TSLA':'tsla.us','META':'meta.us','JPM':'jpm.us',
   'GC=F':'gc.f','CL=F':'cl.f','SI=F':'si.f','NG=F':'ng.f',
+  // More French stocks
+  'OR.PA':'or.fr','AI.PA':'ai.fr','GLE.PA':'gle.fr','KER.PA':'ker.fr',
+  'DG.PA':'dg.fr','BN.PA':'bn.fr','ORA.PA':'ora.fr','DSY.PA':'dsy.fr',
+  'ACA.PA':'aca.fr','VIE.PA':'vie.fr','STM.PA':'stm.fr','ALO.PA':'alo.fr',
+  // More US stocks
+  'V':'v.us','MA':'ma.us','UNH':'unh.us','WMT':'wmt.us',
+  'XOM':'xom.us','BAC':'bac.us','HD':'hd.us','PG':'pg.us',
+  'NFLX':'nflx.us','AMD':'amd.us','DIS':'dis.us','CRM':'crm.us',
+  // More commodities
+  'BZ=F':'bz.f','HG=F':'hg.f','ZW=F':'zw.f','ZC=F':'zc.f',
+  // More indices
+  '^STOXX50E':'^stoxx50e','^AEX':'^aex','^IBEX':'^ibex',
 };
 
 function toStooq(sym) {
@@ -31,19 +43,10 @@ function toStooq(sym) {
   return sym.toLowerCase()+'.us';
 }
 
-async function stooqOne(sym) {
-  try {
-    const r = await fetch(`https://stooq.com/q/l/?s=${encodeURIComponent(sym)}&f=sd2t2ohlcv&h&e=json`,
-      { headers: { 'User-Agent': 'Mozilla/5.0' } });
-    const d = await r.json();
-    return d?.symbols?.[0] || null;
-  } catch { return null; }
-}
-
 async function yahooV8(symbol) {
   try {
     const r = await fetch(
-      `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`,
+      `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=2d`,
       { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' } }
     );
     if (!r.ok) return null;
@@ -51,18 +54,33 @@ async function yahooV8(symbol) {
     const meta = d?.chart?.result?.[0]?.meta;
     if (!meta?.regularMarketPrice) return null;
     const price = meta.regularMarketPrice;
-    const prevClose = meta.chartPreviousClose;
+    const prevClose = meta.chartPreviousClose || meta.previousClose;
     const change = prevClose ? ((price - prevClose) / prevClose) * 100 : 0;
     return { price, changesPercentage: +change.toFixed(2) };
   } catch { return null; }
 }
 
+async function stooqOne(sym) {
+  try {
+    const r = await fetch(`https://stooq.com/q/l/?s=${encodeURIComponent(sym)}&f=sd2t2ohlcv&h&e=json`,
+      { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    const d = await r.json();
+    const q = d?.symbols?.[0];
+    if (!q || !q.close || q.close === 'N/D') return null;
+    // use open as prev approximation — stooq doesn't give prev_close directly
+    const chg = q.open ? ((+q.close - +q.open) / +q.open) * 100 : 0;
+    return { price: +q.close, changesPercentage: +chg.toFixed(2), volume: +q.volume || 0 };
+  } catch { return null; }
+}
+
+// Yahoo as primary, stooq as fallback for stocks/commodities
 async function fetchSymbols(yahooSymsList) {
   const results = await Promise.all(yahooSymsList.map(async sym => {
-    const q = await stooqOne(toStooq(sym));
-    if (!q || !q.close || q.close === 'N/D') return null;
-    const chg = q.open ? ((+q.close - +q.open) / +q.open) * 100 : 0;
-    return { symbol: sym, price: +q.close, changesPercentage: +chg.toFixed(2), volume: +q.volume || 0 };
+    const yq = await yahooV8(sym);
+    if (yq) return { symbol: sym, price: yq.price, changesPercentage: yq.changesPercentage, volume: 0 };
+    const sq = await stooqOne(toStooq(sym));
+    if (sq) return { symbol: sym, price: sq.price, changesPercentage: sq.changesPercentage, volume: sq.volume };
+    return null;
   }));
   return results.filter(Boolean);
 }
@@ -78,17 +96,16 @@ export default {
 
       if (path === '/indices') {
         const syms = Object.keys(INDEX_META);
-        // Stooq pour tous (^cac fonctionne, ^spx/^ndq/^dax aussi)
-        const stooqQuotes = await fetchSymbols(syms);
-        // Yahoo v8 en fallback pour ceux que stooq ne retourne pas
-        const missing = syms.filter(s => !stooqQuotes.find(q => q.symbol === s));
-        const yahooQuotes = await Promise.all(missing.map(async sym => {
+        const quotes = await Promise.all(syms.map(async sym => {
           const q = await yahooV8(sym);
-          return q ? { symbol: sym, price: q.price, changesPercentage: q.changesPercentage } : null;
+          if (q) return { symbol: sym, price: q.price, changesPercentage: q.changesPercentage };
+          // fallback stooq
+          const sq = await stooqOne(toStooq(sym));
+          if (sq) return { symbol: sym, price: sq.price, changesPercentage: sq.changesPercentage };
+          return { symbol: sym, price: 0, changesPercentage: 0 };
         }));
-        const allQuotes = [...stooqQuotes, ...yahooQuotes.filter(Boolean)];
         const results = syms.map(sym => {
-          const q = allQuotes.find(x => x.symbol === sym);
+          const q = quotes.find(x => x.symbol === sym);
           return { sym, symbol: sym, ...INDEX_META[sym], price: q?.price || 0, changesPercentage: q?.changesPercentage || 0, open: true };
         });
         return new Response(JSON.stringify(results), { headers: CORS });
@@ -111,9 +128,13 @@ export default {
       }
 
       if (path === '/matieres') {
-        const quotes = await fetchSymbols(['GC=F','SI=F','CL=F','NG=F']);
-        const find = sym => quotes.find(q => q.symbol === sym);
-        const toItem = (q, fb) => q ? { price: q.price, change: q.changesPercentage } : fb;
+        const syms = ['GC=F','SI=F','CL=F','NG=F'];
+        const quotes = await Promise.all(syms.map(async sym => {
+          const q = await yahooV8(sym);
+          return q ? { symbol: sym, price: q.price, change: q.changesPercentage } : null;
+        }));
+        const find = sym => quotes.find(q => q?.symbol === sym);
+        const toItem = (q, fb) => q ? { price: q.price, change: q.change } : fb;
         return new Response(JSON.stringify({
           gold:   toItem(find('GC=F'),  { price: 3284,  change: 0 }),
           silver: toItem(find('SI=F'),  { price: 32.18, change: 0 }),
@@ -124,7 +145,9 @@ export default {
 
       if (path === '/crypto') {
         const ids = 'bitcoin,ethereum,binancecoin,solana,ripple,dogecoin,cardano,sui,chainlink,avalanche-2,polkadot,tron,shiba-inu,toncoin,bitcoin-cash,stellar,monero,okb,uniswap,litecoin';
-        const r = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h`);
+        const r = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=20&page=1&sparkline=false&price_change_percentage=24h`, {
+          headers: { 'User-Agent': 'TradeLabuse/1.0 (financial dashboard; contact@tradelabuse.fr)', 'Accept': 'application/json' }
+        });
         const data = await r.json();
         return new Response(JSON.stringify(data), { headers: CORS });
       }
@@ -136,68 +159,30 @@ export default {
       }
 
       if (path === '/news') {
-        const feeds = [
-          { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', source: 'BBC Business' },
-          { url: 'https://www.cnbc.com/id/100003114/device/rss/rss.html', source: 'CNBC Markets' },
-        ];
-        const results = [];
-        for (const feed of feeds) {
-          try {
-            const r = await fetch(feed.url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-            const xml = await r.text();
-            const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)];
-            for (const item of items.slice(0, 6)) {
-              const c = item[1];
-              const title = (c.match(/<title>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/title>/) || [])[1] || '';
-              const link  = (c.match(/<link[^>]*>(.*?)<\/link>/) || [])[1] || '';
-              const pubDate = (c.match(/<pubDate>(.*?)<\/pubDate>/) || [])[1] || '';
-              const desc  = (c.match(/<description>(?:<!\[CDATA\[)?(.*?)(?:\]\]>)?<\/description>/) || [])[1] || '';
-              if (title) results.push({ title: title.replace(/&amp;/g,'&').trim(), link: link.trim(), pubDate: pubDate.trim(), desc: desc.replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').trim().substring(0,200), source: feed.source });
-            }
-          } catch(e) {}
-        }
-        results.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-        return new Response(JSON.stringify(results.slice(0, 12)), { headers: CORS });
+        const GNEWS_KEY = 'a225f952ed71cf7fc114099ecc65e418';
+        const r = await fetch(
+          `https://gnews.io/api/v4/top-headlines?topic=business&lang=fr&country=fr&max=10&apikey=${GNEWS_KEY}`,
+          { headers: { 'User-Agent': 'TradeLabuse/1.0', 'Accept': 'application/json' } }
+        );
+        const data = await r.json();
+        const articles = (data.articles || []).map(a => ({
+          title: a.title,
+          link: a.url,
+          pubDate: a.publishedAt,
+          desc: a.description?.substring(0, 200) || '',
+          source: a.source?.name || 'GNews'
+        }));
+        return new Response(JSON.stringify(articles), { headers: CORS });
       }
 
-      if (path === '/debug-sources') {
-        const out = {};
-        // Yahoo Finance v8 (chart endpoint, different from v7 quote)
-        try {
-          const r = await fetch('https://query2.finance.yahoo.com/v8/finance/chart/%5EFCHI?interval=1d&range=1d',
-            { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' } });
-          out.yahooV8 = { status: r.status };
-          if (r.ok) { const d = await r.json(); out.yahooV8.price = d?.chart?.result?.[0]?.meta?.regularMarketPrice; }
-          else { out.yahooV8.body = await r.text(); }
-        } catch(e) { out.yahooV8 = { error: e.message }; }
-        // Stooq ^cac (alternative symbol)
-        try {
-          const r = await fetch('https://stooq.com/q/l/?s=%5Ecac&f=sd2t2ohlcv&h&e=json',
-            { headers: { 'User-Agent': 'Mozilla/5.0' } });
-          out.stooqCac = { status: r.status };
-          if (r.ok) { const d = await r.json(); out.stooqCac.data = d?.symbols?.[0]; }
-        } catch(e) { out.stooqCac = { error: e.message }; }
-        // Stooq ^fchi
-        try {
-          const r = await fetch('https://stooq.com/q/l/?s=%5Efchi&f=sd2t2ohlcv&h&e=json',
-            { headers: { 'User-Agent': 'Mozilla/5.0' } });
-          out.stooqFchi = { status: r.status };
-          if (r.ok) { const d = await r.json(); out.stooqFchi.data = d?.symbols?.[0]; }
-        } catch(e) { out.stooqFchi = { error: e.message }; }
-        // Alpha Vantage GLOBAL_QUOTE ^FCHI
-        try {
-          const r = await fetch('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=%5EFCHI&apikey=demo');
-          out.alphaVantage = { status: r.status };
-          if (r.ok) { out.alphaVantage.data = await r.json(); }
-        } catch(e) { out.alphaVantage = { error: e.message }; }
-        return new Response(JSON.stringify(out, null, 2), { headers: CORS });
-      }
-
-      if (path === '/debug-td') {
-        const TD_KEY = '5faedc1fa2eb4ad1859d39fc2baaeb95';
-        const r = await fetch(`https://api.twelvedata.com/quote?symbol=CAC40,FTSE100,N225,HSI&apikey=${TD_KEY}`);
-        const text = await r.text();
-        return new Response(text, { headers: CORS });
+      if (path === '/debug') {
+        const tests = await Promise.all([
+          yahooV8('^FCHI').then(r => ({ sym: '^FCHI', ...r })),
+          yahooV8('^GSPC').then(r => ({ sym: '^GSPC', ...r })),
+          yahooV8('GC=F').then(r => ({ sym: 'GC=F', ...r })),
+          stooqOne('^cac').then(r => ({ sym: '^cac (stooq)', ...r })),
+        ]);
+        return new Response(JSON.stringify(tests, null, 2), { headers: CORS });
       }
 
       return new Response(JSON.stringify({ error: 'Route inconnue' }), { status: 404, headers: CORS });
