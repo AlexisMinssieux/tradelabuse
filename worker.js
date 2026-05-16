@@ -15,7 +15,7 @@ const INDEX_META = {
 };
 
 const STOOQ_MAP = {
-  '^FCHI':'^fchi','^GSPC':'^spx','^IXIC':'^ndq','^GDAXI':'^dax',
+  '^FCHI':'^cac','^GSPC':'^spx','^IXIC':'^ndq','^GDAXI':'^dax',
   '^FTSE':'^ftse','^N225':'^nk225','^HSI':'^hsi',
   'SAF.PA':'saf.fr','SU.PA':'su.fr','AIR.PA':'air.fr','RMS.PA':'rms.fr',
   'TTE.PA':'tte.fr','BNP.PA':'bnp.fr','MC.PA':'mc.fr','SAN.PA':'san.fr',
@@ -40,6 +40,23 @@ async function stooqOne(sym) {
   } catch { return null; }
 }
 
+async function yahooV8(symbol) {
+  try {
+    const r = await fetch(
+      `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`,
+      { headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' } }
+    );
+    if (!r.ok) return null;
+    const d = await r.json();
+    const meta = d?.chart?.result?.[0]?.meta;
+    if (!meta?.regularMarketPrice) return null;
+    const price = meta.regularMarketPrice;
+    const prevClose = meta.chartPreviousClose;
+    const change = prevClose ? ((price - prevClose) / prevClose) * 100 : 0;
+    return { price, changesPercentage: +change.toFixed(2) };
+  } catch { return null; }
+}
+
 async function fetchSymbols(yahooSymsList) {
   const results = await Promise.all(yahooSymsList.map(async sym => {
     const q = await stooqOne(toStooq(sym));
@@ -60,37 +77,19 @@ export default {
     try {
 
       if (path === '/indices') {
-        const TD_KEY = '5faedc1fa2eb4ad1859d39fc2baaeb95';
-        const TD_SYMS = { 'CAC40': '^FCHI', 'FTSE100': '^FTSE', 'N225': '^N225', 'HSI': '^HSI' };
         const syms = Object.keys(INDEX_META);
-
-        // stooq pour S&P, NASDAQ, DAX
-        const stooqQuotes = await fetchSymbols(['^GSPC', '^IXIC', '^GDAXI']);
-
-        // Twelve Data avec cache 5 min pour économiser les crédits
-        const cache = caches.default;
-        const tdCacheKey = new Request('https://cache.internal/td-indices-v1');
-        let tdData = {};
-        const cached = await cache.match(tdCacheKey);
-        if (cached) {
-          tdData = await cached.json();
-        } else {
-          const tdR = await fetch(`https://api.twelvedata.com/quote?symbol=CAC40,FTSE100,N225,HSI&apikey=${TD_KEY}`);
-          if (tdR.ok) {
-            tdData = await tdR.json();
-            if (!tdData.code) { // pas d'erreur
-              const cacheResp = new Response(JSON.stringify(tdData), { headers: { 'Cache-Control': 'max-age=300', 'Content-Type': 'application/json' } });
-              await cache.put(tdCacheKey, cacheResp);
-            }
-          }
-        }
-
+        // Stooq pour tous (^cac fonctionne, ^spx/^ndq/^dax aussi)
+        const stooqQuotes = await fetchSymbols(syms);
+        // Yahoo v8 en fallback pour ceux que stooq ne retourne pas
+        const missing = syms.filter(s => !stooqQuotes.find(q => q.symbol === s));
+        const yahooQuotes = await Promise.all(missing.map(async sym => {
+          const q = await yahooV8(sym);
+          return q ? { symbol: sym, price: q.price, changesPercentage: q.changesPercentage } : null;
+        }));
+        const allQuotes = [...stooqQuotes, ...yahooQuotes.filter(Boolean)];
         const results = syms.map(sym => {
-          const stooqQ = stooqQuotes.find(x => x.symbol === sym);
-          if (stooqQ) return { sym, symbol: sym, ...INDEX_META[sym], price: stooqQ.price, changesPercentage: stooqQ.changesPercentage, open: true };
-          const tdKey = Object.keys(TD_SYMS).find(k => TD_SYMS[k] === sym);
-          const tdQ = tdKey ? tdData[tdKey] : null;
-          return { sym, symbol: sym, ...INDEX_META[sym], price: tdQ?.close ? +tdQ.close : 0, changesPercentage: tdQ?.percent_change ? +tdQ.percent_change : 0, open: true };
+          const q = allQuotes.find(x => x.symbol === sym);
+          return { sym, symbol: sym, ...INDEX_META[sym], price: q?.price || 0, changesPercentage: q?.changesPercentage || 0, open: true };
         });
         return new Response(JSON.stringify(results), { headers: CORS });
       }
