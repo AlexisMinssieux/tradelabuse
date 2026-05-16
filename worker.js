@@ -189,6 +189,28 @@ export default {
         return new Response(JSON.stringify(articles), { headers: CORS });
       }
 
+      if (path === '/history') {
+        const sym = url.searchParams.get('sym');
+        if (!sym) return new Response(JSON.stringify({error:'sym requis'}),{status:400,headers:CORS});
+        const r = await fetch(
+          `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=6mo`,
+          {headers:{'User-Agent':'Mozilla/5.0','Accept':'application/json'}}
+        );
+        if (!r.ok) return new Response(JSON.stringify({error:'Yahoo '+r.status}),{status:502,headers:CORS});
+        const d = await r.json();
+        const res = d?.chart?.result?.[0];
+        if (!res) return new Response(JSON.stringify({error:'Pas de données'}),{status:404,headers:CORS});
+        const raw = res.indicators?.quote?.[0]?.close || [];
+        const ts  = res.timestamp || [];
+        const pairs = ts.map((t,i)=>({t,c:raw[i]})).filter(x=>x.c!=null&&!isNaN(x.c));
+        return new Response(JSON.stringify({
+          closes: pairs.map(x=>+x.c.toFixed(6)),
+          dates:  pairs.map(x=>new Date(x.t*1000).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})),
+          price:  res.meta?.regularMarketPrice,
+          currency: res.meta?.currency||''
+        }),{headers:CORS});
+      }
+
       if (path === '/debug') {
         const tests = await Promise.all([
           yahooV8('^FCHI').then(r => ({ sym: '^FCHI', ...r })),
