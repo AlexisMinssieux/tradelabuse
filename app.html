@@ -32,12 +32,12 @@
     /* NAV */
     .navrow{background:var(--bg2);border-bottom:1px solid var(--bord);display:flex;align-items:center;padding:0 20px;overflow-x:auto;scrollbar-width:none;gap:4px}
     .navrow::-webkit-scrollbar{display:none}
-    .nav-search-wrap{position:relative;margin-left:auto;flex-shrink:0;padding:5px 0}
-    .nav-search{padding:5px 30px 5px 10px;border-radius:6px;border:1px solid var(--bord);background:var(--card);color:var(--text);font-size:11px;font-family:var(--body);outline:none;width:160px;transition:width .2s,border-color .2s}
-    .nav-search:focus{border-color:var(--bord2);width:220px}
+    .nav-search-wrap{position:relative;background:var(--bg2);border-bottom:1px solid var(--bord);padding:6px 20px;display:flex;align-items:center}
+    .nav-search{padding:6px 36px 6px 12px;border-radius:6px;border:1px solid var(--bord);background:var(--card);color:var(--text);font-size:12px;font-family:var(--body);outline:none;width:100%;max-width:400px;transition:border-color .2s}
+    .nav-search:focus{border-color:var(--bord2)}
     .nav-search::placeholder{color:var(--muted)}
-    .nav-search-ico{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);pointer-events:none}
-    .nav-search-drop{position:absolute;right:0;top:calc(100% - 2px);width:280px;background:var(--card);border:1px solid var(--bord2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:200;max-height:320px;overflow-y:auto;display:none}
+    .nav-search-ico{position:absolute;right:28px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--muted);pointer-events:none}
+    .nav-search-drop{position:absolute;left:20px;top:100%;width:380px;background:var(--card);border:1px solid var(--bord2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:500;max-height:340px;overflow-y:auto;display:none}
     .nav-search-drop.open{display:block}
     .nav-drop-item{padding:8px 12px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .15s}
     .nav-drop-item:hover{background:rgba(180,20,20,.08)}
@@ -211,12 +211,11 @@
   <button class="tab" onclick="goPage('tech',this)">📊 Analyse AT</button>
   <button class="tab" onclick="goPage('news',this)">📰 Actualités</button>
   <button class="tab" onclick="goPage('screener',this)">🔍 Screener</button>
-  <div class="nav-search-wrap">
-    <input class="nav-search" id="navSearch" placeholder="🔍 Rechercher un actif…" autocomplete="off"
-      oninput="navSearchInput(this.value)" onblur="setTimeout(()=>navCloseDrop(),200)">
-    <div class="nav-search-drop" id="navDrop"></div>
-  </div>
 </nav>
+<div class="nav-search-wrap" id="navSearchWrap">
+  <input class="nav-search" id="navSearch" placeholder="🔍 Rechercher un actif, symbole…" autocomplete="off">
+  <div class="nav-search-drop" id="navDrop"></div>
+</div>
 
 <main>
 
@@ -1218,59 +1217,98 @@ function renderScreener() {
 const RISK_LABEL = { prudent:'🛡️ Prudent', equilibre:'⚖️ Équilibré', dynamique:'🚀 Dynamique', speculatif:'⚡ Spéculatif' };
 const CAT_LABEL  = { indices:'Indices', actions_fr:'Actions FR', actions_us:'Actions US', matieres:'Matières', crypto:'Crypto' };
 
-function navSearchInput(q) {
-  const drop = $('navDrop');
-  if (!q.trim()) { drop.classList.remove('open'); drop.innerHTML = ''; return; }
-  const s = q.toLowerCase();
-  let html = '';
-  let total = 0;
-  for (const [cat, assets] of Object.entries(SCREENER_ASSETS)) {
-    const hits = assets.filter(a => a.n.toLowerCase().includes(s) || a.sym.toLowerCase().includes(s));
-    if (!hits.length) continue;
-    html += `<div class="nav-drop-section">${CAT_LABEL[cat]}</div>`;
-    hits.slice(0, 5).forEach(a => {
-      html += `<div class="nav-drop-item" onclick="navSelectAsset('${a.sym}','${cat}')">
-        <span class="nav-drop-flag">${a.flag}</span>
-        <div class="nav-drop-info">
-          <div class="nav-drop-name">${a.n}</div>
-          <div class="nav-drop-sym">${a.sym}${a.sec ? ' · ' + a.sec : ''}</div>
-        </div>
-        <span class="nav-drop-risk ${a.risk}">${RISK_LABEL[a.risk]}</span>
-      </div>`;
-      total++;
+// Recherche globale — initialisation après le DOM
+(function() {
+  let _pendingSelect = null;
+
+  function init() {
+    const input = $('navSearch');
+    const drop  = $('navDrop');
+    if (!input || !drop) return;
+
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) { drop.classList.remove('open'); drop.innerHTML = ''; return; }
+
+      let html = '';
+      let total = 0;
+      for (const [cat, assets] of Object.entries(SCREENER_ASSETS)) {
+        const hits = assets.filter(a =>
+          a.n.toLowerCase().includes(q) || a.sym.toLowerCase().includes(q)
+        );
+        if (!hits.length) continue;
+        html += `<div class="nav-drop-section">${CAT_LABEL[cat]}</div>`;
+        hits.slice(0, 5).forEach(a => {
+          html += `<div class="nav-drop-item" data-sym="${a.sym}" data-cat="${cat}" data-name="${a.n.replace(/"/g,'&quot;')}">
+            <span class="nav-drop-flag">${a.flag}</span>
+            <div class="nav-drop-info">
+              <div class="nav-drop-name">${a.n}</div>
+              <div class="nav-drop-sym">${a.sym}${a.sec ? ' · ' + a.sec : ''}</div>
+            </div>
+            <span class="nav-drop-risk ${a.risk}">${RISK_LABEL[a.risk]}</span>
+          </div>`;
+          total++;
+        });
+      }
+      if (!total) html = '<div style="padding:12px;text-align:center;color:var(--muted);font-size:12px">Aucun résultat</div>';
+      drop.innerHTML = html;
+      drop.classList.add('open');
+
+      drop.querySelectorAll('.nav-drop-item').forEach(el => {
+        el.addEventListener('mousedown', e => {
+          e.preventDefault();
+          _pendingSelect = { sym: el.dataset.sym, cat: el.dataset.cat, name: el.dataset.name };
+        });
+        el.addEventListener('click', () => {
+          if (_pendingSelect) { doSelect(_pendingSelect); _pendingSelect = null; }
+        });
+      });
+    });
+
+    input.addEventListener('blur', () => {
+      setTimeout(() => {
+        if (_pendingSelect) { doSelect(_pendingSelect); _pendingSelect = null; }
+        drop.classList.remove('open');
+      }, 150);
+    });
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { drop.classList.remove('open'); input.blur(); }
     });
   }
-  if (!total) html = '<div style="padding:12px;text-align:center;color:var(--muted);font-size:12px">Aucun résultat</div>';
-  drop.innerHTML = html;
-  drop.classList.add('open');
-}
 
-function navSelectAsset(sym, cat) {
-  navCloseDrop();
-  $('navSearch').value = '';
-  // Ouvre le screener filtré sur ce marché
-  scState.market = cat;
-  scState.risk = 'all';
-  // Sync les boutons de filtre du screener
-  document.querySelectorAll('#scMarket .sc-f').forEach(b => {
-    b.classList.toggle('on', b.getAttribute('onclick')?.includes("'"+cat+"'") || (cat === 'all' && b.getAttribute('onclick')?.includes("'all'")));
-  });
-  document.querySelectorAll('#scRisk .sc-f').forEach((b,i) => b.classList.toggle('on', i===0));
-  const tab = document.querySelector('[onclick*="goPage(\'screener\'"]');
-  if (tab) goPage('screener', tab);
-  // Met la recherche dans le screener et filtre
-  const scInput = $('scSearch');
-  if (scInput) {
-    const asset = Object.values(SCREENER_ASSETS).flat().find(a => a.sym === sym);
-    scInput.value = asset ? asset.n : sym;
+  function doSelect({ sym, cat, name }) {
+    $('navSearch').value = '';
+    $('navDrop').classList.remove('open');
+
+    // Sync état screener
+    scState.market = cat;
+    scState.risk = 'all';
+    document.querySelectorAll('#scMarket .sc-f').forEach(b =>
+      b.classList.toggle('on', b.textContent.trim() === 'Tous'
+        ? cat === 'all'
+        : b.getAttribute('onclick')?.includes("'" + cat + "'"))
+    );
+    document.querySelectorAll('#scRisk .sc-f').forEach((b, i) => b.classList.toggle('on', i === 0));
+
+    // Navigue vers screener
+    const tab = document.querySelector('.tab[onclick*="screener"]');
+    if (tab) goPage('screener', tab);
+
+    // Injecte le nom dans la recherche du screener
+    const scInput = $('scSearch');
+    if (scInput) scInput.value = name;
+
+    loadScreenerPrices().then(() => renderScreener());
   }
-  loadScreenerPrices().then(() => renderScreener());
-}
 
-function navCloseDrop() {
-  const drop = $('navDrop');
-  if (drop) { drop.classList.remove('open'); }
-}
+  // Init après que tout le DOM + JS soit prêt
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    setTimeout(init, 0);
+  }
+})();
 
 // ════════════════════════════════════
 // INIT
