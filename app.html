@@ -182,7 +182,7 @@
     @media(max-width:768px){.g4{grid-template-columns:1fr 1fr}.g2x{grid-template-columns:1fr}.logo-name{font-size:18px}}
     #placModal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;backdrop-filter:blur(4px)}
     #placModal.open{display:flex}
-    .pm-box{background:#1e1e1e;border:1px solid rgba(180,20,20,.3);border-radius:14px;width:100%;max-width:500px;padding:24px;position:relative;margin:auto}
+    .pm-box{background:#1e1e1e;border:1px solid rgba(180,20,20,.3);border-radius:14px;width:100%;max-width:500px;padding:24px;position:relative;margin:auto;max-height:calc(100vh - 60px);overflow-y:auto}
     .pm-close{position:absolute;top:14px;right:14px;background:none;border:none;color:#888;font-size:24px;cursor:pointer;line-height:1;padding:2px 6px}
     .pm-close:hover{color:#fff}
     .pm-type{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:rgba(180,20,20,.2);color:#cc3030;margin-bottom:10px}
@@ -192,13 +192,11 @@
     .pm-item-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:3px}
     .pm-item-val{font-size:11px;color:#f0ebe0;font-weight:600;line-height:1.4}
     .pm-divider{height:1px;background:rgba(255,255,255,.07);margin:12px 0}
-    .pm-row{font-size:11px;line-height:1.7;margin-bottom:6px}
-    .pm-row b{color:#f0ebe0}
-    .pm-row span{color:#aaa}
-    .pm-pro::before{content:'✅ '}
-    .pm-con::before{content:'⚠️ '}
-    .pm-pour::before{content:'👤 '}
-    .pm-btn{display:block;width:100%;margin-top:18px;padding:11px;border-radius:8px;background:#cc1a1a;color:#fff;font-weight:700;font-size:12px;text-align:center;text-decoration:none;letter-spacing:.5px;box-sizing:border-box}
+    .pm-card-pro{background:rgba(42,184,112,.1);border-left:3px solid #2ab870;border-radius:0 6px 6px 0;padding:10px 13px;margin-bottom:8px}
+    .pm-card-con{background:rgba(224,128,64,.1);border-left:3px solid #e08040;border-radius:0 6px 6px 0;padding:10px 13px;margin-bottom:8px}
+    .pm-card-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;display:block;margin-bottom:4px}
+    .pm-card-text{font-size:12px;color:#ccc;line-height:1.5}
+    .pm-btn{display:block;width:100%;margin-top:18px;padding:12px;border-radius:8px;background:#cc1a1a;color:#fff;font-weight:700;font-size:13px;text-align:center;text-decoration:none;letter-spacing:.5px;box-sizing:border-box}
     .pm-btn:hover{background:#e02020}
   </style>
 </head>
@@ -438,9 +436,8 @@
       <div id="pmName" class="pm-name">—</div>
       <div id="pmGrid" class="pm-grid"></div>
       <div class="pm-divider"></div>
-      <div id="pmPro" class="pm-row pm-pro"></div>
-      <div id="pmCon" class="pm-row pm-con"></div>
-      <div id="pmPour" class="pm-row pm-pour"></div>
+      <div id="pmPro"></div>
+      <div id="pmCon"></div>
       <a id="pmBtn" class="pm-btn" href="#" target="_blank" rel="noopener noreferrer">Souscrire / En savoir plus ↗</a>
     </div>
   </div>
@@ -1507,9 +1504,10 @@ function openPlacModal(type, ri, url){
     ['Risque',d.risque],['Frais',d.frais],
     ['Fiscalité',d.fisc],['Pour qui',d.pour],
   ].filter(x=>x[1]).map(([l,v])=>`<div class="pm-item"><div class="pm-item-label">${l}</div><div class="pm-item-val">${v}</div></div>`).join('');
-  $('pmPro').textContent = d.avantage || '';
-  $('pmCon').textContent = d.inconvenient || '';
-  $('pmPour').style.display='none';
+  $('pmPro').innerHTML = d.avantage
+    ? `<div class="pm-card-pro"><span class="pm-card-label" style="color:#2ab870">✅ Avantage</span><div class="pm-card-text">${d.avantage}</div></div>` : '';
+  $('pmCon').innerHTML = d.inconvenient
+    ? `<div class="pm-card-con"><span class="pm-card-label" style="color:#e08040">⚠️ Inconvénient</span><div class="pm-card-text">${d.inconvenient}</div></div>` : '';
   const btn=$('pmBtn');
   if(url){btn.href=url;btn.style.display='block';}
   else btn.style.display='none';
