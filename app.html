@@ -289,10 +289,6 @@
 <!-- NAV -->
 <nav class="navrow">
   <button class="tab on" onclick="goPage('marches',this)">🌍 Marchés</button>
-  <button class="tab" onclick="goPage('actions',this)">📈 Actions</button>
-  <button class="tab" onclick="goPage('devises',this)">💱 Devises</button>
-  <button class="tab" onclick="goPage('crypto',this)">₿ Crypto</button>
-  <button class="tab" onclick="goPage('matieres',this)">🏅 Matières 1ères</button>
   <button class="tab" onclick="goPage('placements',this)">🏦 Placements</button>
   <button class="tab" onclick="goPage('tech',this)">📊 Analyse AT</button>
   <button class="tab" onclick="goPage('news',this)">📊 Analyse</button>
@@ -307,114 +303,126 @@
 
 <!-- MARCHÉS -->
 <section class="pg on" id="pg-marches">
-  <div class="g4">
-    <div class="card accent"><div class="ctitle">CAC 40</div><div class="bnum" id="ov-cac">—</div><div id="ov-cac-b"></div></div>
-    <div class="card"><div class="ctitle">S&amp;P 500</div><div class="bnum" id="ov-sp">—</div><div id="ov-sp-b"></div></div>
-    <div class="card"><div class="ctitle">Bitcoin</div><div class="bnum" id="ov-btc">—</div><div id="ov-btc-b"></div></div>
-    <div class="card"><div class="ctitle">Or (XAU/USD)</div><div class="bnum" id="ov-gold">—</div><div id="ov-gold-b"></div></div>
+  <!-- Sous-onglets -->
+  <div class="cat-tabs" id="marcheSubTabs">
+    <button class="cat-tab on" onclick="selMarche('vue',this)">🌍 Vue générale</button>
+    <button class="cat-tab" onclick="selMarche('actions',this)">📈 Actions</button>
+    <button class="cat-tab" onclick="selMarche('devises',this)">💱 Devises</button>
+    <button class="cat-tab" onclick="selMarche('crypto',this)">₿ Crypto</button>
+    <button class="cat-tab" onclick="selMarche('matieres',this)">🏅 Matières 1ères</button>
   </div>
-  <div class="g2x">
-    <div>
-      <div class="stitle">Indices mondiaux <button class="rbtn" onclick="loadAll()">↺ Actualiser</button></div>
-      <div class="card"><table class="mtbl"><thead><tr><th>Indice</th><th>Dernier</th><th>Variation</th><th>Statut</th></tr></thead><tbody id="indTbody"><tr><td colspan="4" style="padding:16px;text-align:center;color:var(--muted)">Chargement...</td></tr></tbody></table></div>
-    </div>
-    <div>
-      <div class="stitle">Carte thermique</div>
-      <div class="card"><div class="heatmap" id="heatmap" style="min-height:140px"></div></div>
-      <div class="stitle" style="margin-top:10px">Secteurs (perf. du jour)</div>
-      <div class="card" style="padding:10px"><div style="position:relative;height:120px"><canvas id="sectorChart"></canvas></div></div>
-    </div>
-  </div>
-</section>
 
-<!-- ACTIONS -->
-<section class="pg" id="pg-actions">
-  <div class="cat-tabs">
-    <button class="cat-tab on" onclick="selActions('fr',this)">🇫🇷 CAC 40</button>
-    <button class="cat-tab" onclick="selActions('us',this)">🇺🇸 US</button>
-  </div>
-  <div class="g2x">
-    <div>
-      <div class="stitle" id="actTitle">Actions France — CAC 40</div>
-      <div class="card"><table class="mtbl"><thead><tr><th>Valeur</th><th>Prix</th><th>Var. %</th><th>Volume</th><th>Secteur</th></tr></thead><tbody id="actTbody"><tr><td colspan="5" style="padding:14px;text-align:center;color:var(--muted)">Chargement...</td></tr></tbody></table></div>
+  <!-- Vue générale -->
+  <div id="marche-vue">
+    <div class="g4">
+      <div class="card accent"><div class="ctitle">CAC 40</div><div class="bnum" id="ov-cac">—</div><div id="ov-cac-b"></div></div>
+      <div class="card"><div class="ctitle">S&amp;P 500</div><div class="bnum" id="ov-sp">—</div><div id="ov-sp-b"></div></div>
+      <div class="card"><div class="ctitle">Bitcoin</div><div class="bnum" id="ov-btc">—</div><div id="ov-btc-b"></div></div>
+      <div class="card"><div class="ctitle">Or (XAU/USD)</div><div class="bnum" id="ov-gold">—</div><div id="ov-gold-b"></div></div>
     </div>
-    <div>
-      <div class="stitle">Top / Flop du jour</div>
-      <div class="card" style="padding:10px"><div style="position:relative;height:220px"><canvas id="actTopChart"></canvas></div></div>
-      <div class="stitle" style="margin-top:10px">Répartition sectorielle</div>
-      <div class="card" style="padding:10px"><div style="position:relative;height:130px"><canvas id="sectorDough"></canvas></div></div>
-    </div>
-  </div>
-</section>
-
-<!-- DEVISES -->
-<section class="pg" id="pg-devises">
-  <div class="g4">
-    <div class="card"><div class="ctitle">EUR/USD</div><div class="bnum" id="fx-eurusd">—</div><div id="fx-eurusd-b"></div></div>
-    <div class="card"><div class="ctitle">EUR/GBP</div><div class="bnum" id="fx-eurgbp">—</div><div id="fx-eurgbp-b"></div></div>
-    <div class="card"><div class="ctitle">EUR/JPY</div><div class="bnum" id="fx-eurjpy">—</div><div id="fx-eurjpy-b"></div></div>
-    <div class="card"><div class="ctitle">USD/CHF</div><div class="bnum" id="fx-usdchf">—</div><div id="fx-usdchf-b"></div></div>
-  </div>
-  <div class="g2x">
-    <div>
-      <div class="stitle">Paires majeures <button class="rbtn" onclick="loadForex()">↺</button></div>
-      <div class="card"><table class="mtbl"><thead><tr><th>Paire</th><th>Cours</th><th>Var. 24h</th><th>Haut</th><th>Bas</th></tr></thead><tbody id="fxTbody"><tr><td colspan="5" style="padding:14px;text-align:center;color:var(--muted)">Chargement...</td></tr></tbody></table></div>
-    </div>
-    <div>
-      <div class="stitle">EUR vs devises</div>
-      <div class="card" style="padding:10px"><div style="position:relative;height:200px"><canvas id="forexChart"></canvas></div></div>
-      <div class="stitle" style="margin-top:10px">Force relative</div>
-      <div class="card" style="padding:10px"><div style="position:relative;height:110px"><canvas id="forexRadar"></canvas></div></div>
-    </div>
-  </div>
-</section>
-
-<!-- CRYPTO -->
-<section class="pg" id="pg-crypto">
-  <div class="g4">
-    <div class="card"><div class="ctitle">Bitcoin</div><div class="bnum" id="cr-btc">—</div><div id="cr-btc-b"></div></div>
-    <div class="card"><div class="ctitle">Ethereum</div><div class="bnum" id="cr-eth">—</div><div id="cr-eth-b"></div></div>
-    <div class="card"><div class="ctitle">Solana</div><div class="bnum" id="cr-sol">—</div><div id="cr-sol-b"></div></div>
-    <div class="card"><div class="ctitle">BNB</div><div class="bnum" id="cr-bnb">—</div><div id="cr-bnb-b"></div></div>
-  </div>
-  <div class="g2x">
-    <div>
-      <div class="stitle">Top 20 Cryptomonnaies <button class="rbtn" onclick="loadCrypto()">↺</button></div>
-      <div class="card"><table class="mtbl"><thead><tr><th>#</th><th>Nom</th><th>Prix</th><th>24h %</th><th>Cap. Mkt</th></tr></thead><tbody id="crTbody"><tr><td colspan="5" style="padding:14px;text-align:center;color:var(--muted)">Chargement CoinGecko...</td></tr></tbody></table></div>
-    </div>
-    <div>
-      <div class="stitle">Dominance marché</div>
-      <div class="card" style="padding:10px"><div style="position:relative;height:170px"><canvas id="crDom"></canvas></div></div>
-      <div class="stitle" style="margin-top:10px">Fear &amp; Greed Index</div>
-      <div class="fg-wrap">
-        <div style="font-size:9px;color:var(--muted);letter-spacing:1px">FEAR &amp; GREED INDEX</div>
-        <div class="fg-num" id="fgVal">—</div>
-        <div id="fgLabel" style="font-size:11px;color:var(--muted)">Chargement...</div>
-        <div class="fg-bar"><div class="fg-marker" id="fgMarker" style="left:50%"></div></div>
-        <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--muted)"><span>Peur extrême</span><span>Neutre</span><span>Avidité extrême</span></div>
+    <div class="g2x">
+      <div>
+        <div class="stitle">Indices mondiaux <button class="rbtn" onclick="loadAll()">↺ Actualiser</button></div>
+        <div class="card"><table class="mtbl"><thead><tr><th>Indice</th><th>Dernier</th><th>Variation</th><th>Statut</th></tr></thead><tbody id="indTbody"><tr><td colspan="4" style="padding:16px;text-align:center;color:var(--muted)">Chargement...</td></tr></tbody></table></div>
+      </div>
+      <div>
+        <div class="stitle">Carte thermique</div>
+        <div class="card"><div class="heatmap" id="heatmap" style="min-height:140px"></div></div>
+        <div class="stitle" style="margin-top:10px">Secteurs (perf. du jour)</div>
+        <div class="card" style="padding:10px"><div style="position:relative;height:120px"><canvas id="sectorChart"></canvas></div></div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- MATIÈRES -->
-<section class="pg" id="pg-matieres">
-  <div class="g4">
-    <div class="card"><div class="ctitle">Or (XAU/USD)</div><div class="bnum" id="mp-gold">—</div><div id="mp-gold-b"></div></div>
-    <div class="card"><div class="ctitle">Pétrole WTI</div><div class="bnum" id="mp-oil">—</div><div id="mp-oil-b"></div></div>
-    <div class="card"><div class="ctitle">Argent (XAG)</div><div class="bnum" id="mp-silver">—</div><div id="mp-silver-b"></div></div>
-    <div class="card"><div class="ctitle">Gaz Naturel</div><div class="bnum" id="mp-gas">—</div><div id="mp-gas-b"></div></div>
-  </div>
-  <div class="g2x">
-    <div>
-      <div class="stitle">Matières premières <button class="rbtn" onclick="loadMatieres()">↺</button></div>
-      <div class="card"><table class="mtbl"><thead><tr><th>Actif</th><th>Prix</th><th>Var. 24h</th><th>Unité</th><th>Tend.</th></tr></thead><tbody id="matTbody"><tr><td colspan="5" style="padding:14px;text-align:center;color:var(--muted)">Chargement...</td></tr></tbody></table></div>
+  <!-- Actions -->
+  <div id="marche-actions" style="display:none">
+    <div class="cat-tabs">
+      <button class="cat-tab on" onclick="selActions('fr',this)">🇫🇷 CAC 40</button>
+      <button class="cat-tab" onclick="selActions('us',this)">🇺🇸 US</button>
     </div>
-    <div>
-      <div class="stitle">Performance YTD (%)</div>
-      <div class="card" style="padding:10px"><div style="position:relative;height:200px"><canvas id="matChart"></canvas></div></div>
-      <div class="stitle" style="margin-top:10px">Or — Évolution 2025</div>
-      <div class="card" style="padding:10px"><div style="position:relative;height:100px"><canvas id="goldChart"></canvas></div></div>
+    <div class="g2x">
+      <div>
+        <div class="stitle" id="actTitle">Actions France — CAC 40</div>
+        <div class="card"><table class="mtbl"><thead><tr><th>Valeur</th><th>Prix</th><th>Var. %</th><th>Volume</th><th>Secteur</th></tr></thead><tbody id="actTbody"><tr><td colspan="5" style="padding:14px;text-align:center;color:var(--muted)">Chargement...</td></tr></tbody></table></div>
+      </div>
+      <div>
+        <div class="stitle">Top / Flop du jour</div>
+        <div class="card" style="padding:10px"><div style="position:relative;height:220px"><canvas id="actTopChart"></canvas></div></div>
+        <div class="stitle" style="margin-top:10px">Répartition sectorielle</div>
+        <div class="card" style="padding:10px"><div style="position:relative;height:130px"><canvas id="sectorDough"></canvas></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Devises -->
+  <div id="marche-devises" style="display:none">
+    <div class="g4">
+      <div class="card"><div class="ctitle">EUR/USD</div><div class="bnum" id="fx-eurusd">—</div><div id="fx-eurusd-b"></div></div>
+      <div class="card"><div class="ctitle">EUR/GBP</div><div class="bnum" id="fx-eurgbp">—</div><div id="fx-eurgbp-b"></div></div>
+      <div class="card"><div class="ctitle">EUR/JPY</div><div class="bnum" id="fx-eurjpy">—</div><div id="fx-eurjpy-b"></div></div>
+      <div class="card"><div class="ctitle">USD/CHF</div><div class="bnum" id="fx-usdchf">—</div><div id="fx-usdchf-b"></div></div>
+    </div>
+    <div class="g2x">
+      <div>
+        <div class="stitle">Paires majeures <button class="rbtn" onclick="loadForex()">↺</button></div>
+        <div class="card"><table class="mtbl"><thead><tr><th>Paire</th><th>Cours</th><th>Var. 24h</th><th>Haut</th><th>Bas</th></tr></thead><tbody id="fxTbody"><tr><td colspan="5" style="padding:14px;text-align:center;color:var(--muted)">Chargement...</td></tr></tbody></table></div>
+      </div>
+      <div>
+        <div class="stitle">EUR vs devises</div>
+        <div class="card" style="padding:10px"><div style="position:relative;height:200px"><canvas id="forexChart"></canvas></div></div>
+        <div class="stitle" style="margin-top:10px">Force relative</div>
+        <div class="card" style="padding:10px"><div style="position:relative;height:110px"><canvas id="forexRadar"></canvas></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Crypto -->
+  <div id="marche-crypto" style="display:none">
+    <div class="g4">
+      <div class="card"><div class="ctitle">Bitcoin</div><div class="bnum" id="cr-btc">—</div><div id="cr-btc-b"></div></div>
+      <div class="card"><div class="ctitle">Ethereum</div><div class="bnum" id="cr-eth">—</div><div id="cr-eth-b"></div></div>
+      <div class="card"><div class="ctitle">Solana</div><div class="bnum" id="cr-sol">—</div><div id="cr-sol-b"></div></div>
+      <div class="card"><div class="ctitle">BNB</div><div class="bnum" id="cr-bnb">—</div><div id="cr-bnb-b"></div></div>
+    </div>
+    <div class="g2x">
+      <div>
+        <div class="stitle">Top 20 Cryptomonnaies <button class="rbtn" onclick="loadCrypto()">↺</button></div>
+        <div class="card"><table class="mtbl"><thead><tr><th>#</th><th>Nom</th><th>Prix</th><th>24h %</th><th>Cap. Mkt</th></tr></thead><tbody id="crTbody"><tr><td colspan="5" style="padding:14px;text-align:center;color:var(--muted)">Chargement CoinGecko...</td></tr></tbody></table></div>
+      </div>
+      <div>
+        <div class="stitle">Dominance marché</div>
+        <div class="card" style="padding:10px"><div style="position:relative;height:170px"><canvas id="crDom"></canvas></div></div>
+        <div class="stitle" style="margin-top:10px">Fear &amp; Greed Index</div>
+        <div class="fg-wrap">
+          <div style="font-size:9px;color:var(--muted);letter-spacing:1px">FEAR &amp; GREED INDEX</div>
+          <div class="fg-num" id="fgVal">—</div>
+          <div id="fgLabel" style="font-size:11px;color:var(--muted)">Chargement...</div>
+          <div class="fg-bar"><div class="fg-marker" id="fgMarker" style="left:50%"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--muted)"><span>Peur extrême</span><span>Neutre</span><span>Avidité extrême</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Matières premières -->
+  <div id="marche-matieres" style="display:none">
+    <div class="g4">
+      <div class="card"><div class="ctitle">Or (XAU/USD)</div><div class="bnum" id="mp-gold">—</div><div id="mp-gold-b"></div></div>
+      <div class="card"><div class="ctitle">Pétrole WTI</div><div class="bnum" id="mp-oil">—</div><div id="mp-oil-b"></div></div>
+      <div class="card"><div class="ctitle">Argent (XAG)</div><div class="bnum" id="mp-silver">—</div><div id="mp-silver-b"></div></div>
+      <div class="card"><div class="ctitle">Gaz Naturel</div><div class="bnum" id="mp-gas">—</div><div id="mp-gas-b"></div></div>
+    </div>
+    <div class="g2x">
+      <div>
+        <div class="stitle">Matières premières <button class="rbtn" onclick="loadMatieres()">↺</button></div>
+        <div class="card"><table class="mtbl"><thead><tr><th>Actif</th><th>Prix</th><th>Var. 24h</th><th>Unité</th><th>Tend.</th></tr></thead><tbody id="matTbody"><tr><td colspan="5" style="padding:14px;text-align:center;color:var(--muted)">Chargement...</td></tr></tbody></table></div>
+      </div>
+      <div>
+        <div class="stitle">Performance YTD (%)</div>
+        <div class="card" style="padding:10px"><div style="position:relative;height:200px"><canvas id="matChart"></canvas></div></div>
+        <div class="stitle" style="margin-top:10px">Or — Évolution 2025</div>
+        <div class="card" style="padding:10px"><div style="position:relative;height:100px"><canvas id="goldChart"></canvas></div></div>
+      </div>
     </div>
   </div>
 </section>
@@ -1834,6 +1842,18 @@ function toggleATIntro(){
     if(btn){btn.textContent='Afficher';}
   }
 })();
+
+function selMarche(cat, el){
+  ['vue','actions','devises','crypto','matieres'].forEach(c=>{
+    document.getElementById('marche-'+c).style.display = c===cat ? '' : 'none';
+  });
+  document.querySelectorAll('#marcheSubTabs .cat-tab').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  if(cat==='actions') loadActions('fr');
+  if(cat==='devises') loadForex();
+  if(cat==='crypto') loadCrypto();
+  if(cat==='matieres') loadMatieres();
+}
 
 function selTechCat(cat, el) {
   techState.cat = cat;
