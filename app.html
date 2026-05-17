@@ -216,6 +216,25 @@
     .at-sig-chip{font-size:10px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap}
     .at-how{font-size:11px;color:var(--muted);line-height:1.7;border-top:1px solid rgba(255,255,255,.06);padding-top:12px}
     .at-how strong{color:var(--text)}
+    /* ── Scanner de signaux ── */
+    .scan-chips{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}
+    .scan-chip{padding:7px 16px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--muted);font-family:var(--body);transition:all .2s;white-space:nowrap}
+    .scan-chip:hover{color:var(--text);border-color:rgba(255,255,255,.25)}
+    .scan-chip.on{box-shadow:0 0 0 1px currentColor}
+    .scan-count{font-size:10px;color:var(--muted);margin-bottom:10px}
+    .scan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+    .scan-card{background:var(--card);border:1px solid var(--bord);border-radius:10px;padding:12px 14px;cursor:pointer;transition:border-color .2s,transform .15s}
+    .scan-card:hover{border-color:var(--bord2);transform:translateY(-2px)}
+    .scan-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:6px}
+    .scan-card-name{font-size:11px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .scan-sig-chip{font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0}
+    .scan-card-price{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px}
+    .scan-card-entry{font-size:9px;color:var(--muted);margin-bottom:3px}
+    .scan-card-stop{font-size:9px;color:var(--muted)}
+    .scan-loading{padding:24px;text-align:center;color:var(--muted);font-size:12px}
+    .scan-btn{padding:7px 16px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid rgba(196,26,26,.4);background:rgba(196,26,26,.08);color:var(--red2);font-family:var(--body);transition:all .2s;margin-left:auto}
+    .scan-btn:hover{background:rgba(196,26,26,.15)}
+    .scan-btn.on{background:rgba(196,26,26,.18);border-color:var(--red)}
     /* ── Analyse actifs ── */
     .an-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
     .an-card{background:var(--card);border:1px solid var(--bord);border-radius:10px;padding:14px;transition:border-color .2s,transform .15s;cursor:default}
@@ -558,18 +577,44 @@
     <button class="tc-btn" onclick="selTechCat('matieres',this)">🏅 Matières</button>
     <button class="tc-btn" onclick="selTechCat('crypto',this)">₿ Crypto</button>
     <button class="tc-btn" onclick="selTechCat('forex',this)">💱 Forex</button>
+    <button class="scan-btn" id="scanToggleBtn" onclick="toggleScanMode()">📡 Scanner</button>
   </div>
-  <!-- Actifs -->
-  <div class="asbtns" id="techBtns"></div>
-  <!-- Horizon -->
-  <div class="hz-row">
-    <span class="hz-label">Horizon :</span>
-    <button class="hz-btn" onclick="setTimeframe('1h',this)">⏱ Horaire<small>Intraday</small></button>
-    <button class="hz-btn on" onclick="setTimeframe('1d',this)">📅 Journalier<small>Court terme</small></button>
-    <button class="hz-btn" onclick="setTimeframe('1wk',this)">📆 Hebdo<small>Moyen terme</small></button>
-    <button class="hz-btn" onclick="setTimeframe('1mo',this)">🏛️ Mensuel<small>Long terme</small></button>
+
+  <!-- Vue principale AT -->
+  <div id="techMainView">
+    <!-- Actifs -->
+    <div class="asbtns" id="techBtns"></div>
+    <!-- Horizon -->
+    <div class="hz-row">
+      <span class="hz-label">Horizon :</span>
+      <button class="hz-btn" onclick="setTimeframe('1h',this)">⏱ Horaire<small>Intraday</small></button>
+      <button class="hz-btn on" onclick="setTimeframe('1d',this)">📅 Journalier<small>Court terme</small></button>
+      <button class="hz-btn" onclick="setTimeframe('1wk',this)">📆 Hebdo<small>Moyen terme</small></button>
+      <button class="hz-btn" onclick="setTimeframe('1mo',this)">🏛️ Mensuel<small>Long terme</small></button>
+    </div>
   </div>
-  <div class="g2x">
+
+  <!-- Panel Scanner -->
+  <div id="scanPanel" style="display:none">
+    <div class="hz-row" style="align-items:center;gap:8px;margin-bottom:0">
+      <span class="hz-label">Timeframe :</span>
+      <button class="hz-btn" onclick="setScanTf('1h',this)">⏱ Horaire<small>Intraday</small></button>
+      <button class="hz-btn on" id="scanTfDay" onclick="setScanTf('1d',this)">📅 Journalier<small>Court terme</small></button>
+      <button class="hz-btn" onclick="setScanTf('1wk',this)">📆 Hebdo<small>Moyen terme</small></button>
+      <button class="hz-btn" onclick="setScanTf('1mo',this)">🏛️ Mensuel<small>Long terme</small></button>
+    </div>
+    <div class="scan-chips">
+      <button class="scan-chip" style="color:#4ade80;border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)" onclick="runScan('ACHAT FORT',this)">↑↑ ACHAT FORT</button>
+      <button class="scan-chip" style="color:#86efac;border-color:rgba(34,197,94,.2);background:rgba(34,197,94,.05)" onclick="runScan('ACHAT',this)">↑ ACHAT</button>
+      <button class="scan-chip" onclick="runScan('NEUTRE',this)">— NEUTRE</button>
+      <button class="scan-chip" style="color:#fca5a5;border-color:rgba(239,68,68,.2);background:rgba(239,68,68,.05)" onclick="runScan('VENTE',this)">↓ VENTE</button>
+      <button class="scan-chip" style="color:#f87171;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)" onclick="runScan('VENTE FORTE',this)">↓↓ VENTE FORTE</button>
+      <button class="scan-chip" onclick="runScan('all',this)">🔍 Tous les signaux</button>
+    </div>
+    <div id="scanResults"><div class="scan-loading">Sélectionne un signal pour lancer l'analyse.</div></div>
+  </div>
+
+  <div class="g2x" id="techChartsView">
     <!-- GAUCHE : graphique + Fibonacci + S/R -->
     <div>
       <div class="stitle" id="techLabel">—</div>
@@ -1891,10 +1936,107 @@ function selMarche(cat, el){
   if(cat==='matieres') loadMatieres();
 }
 
+let scanTf = '1d';
+
+function toggleScanMode() {
+  const isOpen = $('scanPanel').style.display !== 'none';
+  $('scanPanel').style.display   = isOpen ? 'none' : '';
+  $('techMainView').style.display = isOpen ? '' : 'none';
+  $('techChartsView').style.display = isOpen ? '' : 'none';
+  $('scanToggleBtn').classList.toggle('on', !isOpen);
+  if (!isOpen) $('scanResults').innerHTML = '<div class="scan-loading">Sélectionne un signal pour lancer l\'analyse.</div>';
+}
+
+function setScanTf(tf, el) {
+  scanTf = tf;
+  document.querySelectorAll('#scanPanel .hz-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  // Re-run if a signal is active
+  const active = document.querySelector('.scan-chip.on');
+  if (active) active.click();
+}
+
+async function runScan(sigFilter, el) {
+  document.querySelectorAll('.scan-chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  const assets = TECH_ASSETS[techState.cat] || [];
+  if (!assets.length) return;
+  const syms = assets.map(a=>a.sym).join(',');
+  $('scanResults').innerHTML = `<div class="scan-loading">Analyse de ${assets.length} actifs en cours…</div>`;
+  try {
+    const data = await apiFetch('/scan?tf='+scanTf+'&syms='+encodeURIComponent(syms));
+    const matched = [];
+    for (const item of data) {
+      if (item.error || !item.closes || item.closes.length < 20) continue;
+      const asset = assets.find(a=>a.sym===item.sym);
+      if (!asset) continue;
+      const ind = tAll(item.closes);
+      const sig = horizonSig(ind, scanTf, asset.u, asset.dp);
+      const sl  = sigLevel(sig.score);
+      if (sigFilter === 'all' || sl.txt === sigFilter) {
+        matched.push({asset, ind, sig, sl, price: item.price, chg: item.chg});
+      }
+    }
+    matched.sort((a,b) => Math.abs(b.sig.score) - Math.abs(a.sig.score));
+    renderScanResults(matched, assets.length, sigFilter);
+  } catch(e) {
+    $('scanResults').innerHTML = `<div class="scan-loading">Erreur : ${e.message}</div>`;
+  }
+}
+
+function renderScanResults(matched, total, sigFilter) {
+  if (!matched.length) {
+    $('scanResults').innerHTML = `<div class="scan-loading">Aucun actif "${sigFilter}" sur ce timeframe.</div>`;
+    return;
+  }
+  const fmt = (v,dp,u) => v!=null ? fmtN(+v.toFixed(dp),dp)+u : '—';
+  $('scanResults').innerHTML = `
+    <div class="scan-count">${matched.length} résultat${matched.length>1?'s':''} sur ${total} actifs analysés</div>
+    <div class="scan-grid">${matched.map(m => {
+      const chgColor = (m.chg||0)>=0 ? '#40c880' : '#ff4444';
+      const chgSign  = (m.chg||0)>=0 ? '+' : '';
+      const symEsc   = m.asset.sym.replace(/'/g,"\\'");
+      const nameEsc  = m.asset.n.replace(/'/g,"\\'");
+      return `<div class="scan-card" onclick="selectScanAsset('${symEsc}','${nameEsc}','${m.asset.u}',${m.asset.dp})">
+        <div class="scan-card-top">
+          <span class="scan-card-name">${m.asset.n}</span>
+          <span class="scan-sig-chip" style="background:${m.sl.bg};color:${m.sl.color};border:1px solid ${m.sl.color}55">${m.sl.txt}</span>
+        </div>
+        <div class="scan-card-price">${fmt(m.price||m.ind.cur,m.asset.dp,m.asset.u)}&nbsp;<span style="font-size:9px;color:${chgColor}">${chgSign}${(m.chg||0).toFixed(2)}%</span></div>
+        <div class="scan-card-entry">Entrée : <b>${m.sig.entry}</b> &nbsp;·&nbsp; Cible : <b>${m.sig.exit}</b></div>
+        <div class="scan-card-stop">🛑 Stop : ${m.sig.stop}</div>
+      </div>`;
+    }).join('')}</div>`;
+}
+
+function selectScanAsset(sym, name, u, dp) {
+  // Ferme le scanner et ouvre la vue AT sur cet actif
+  $('scanPanel').style.display = 'none';
+  $('techMainView').style.display = '';
+  $('techChartsView').style.display = '';
+  $('scanToggleBtn').classList.remove('on');
+  // Sync le timeframe AT sur le timeframe du scanner
+  techState.tf = scanTf;
+  document.querySelectorAll('#techMainView .hz-btn').forEach(b=>{
+    b.classList.toggle('on', b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+scanTf+"'"));
+  });
+  selTechByData(sym, name, u, +dp);
+  setTimeout(()=>{
+    document.querySelectorAll('#techBtns .asbtn').forEach(b=>{
+      b.classList.toggle('on', b.dataset.sym===sym);
+    });
+  }, 200);
+}
+
 function selTechCat(cat, el) {
   techState.cat = cat;
   document.querySelectorAll('.tc-btn').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');
+  // Si le scanner est ouvert, reset les résultats pour la nouvelle catégorie
+  if ($('scanPanel').style.display !== 'none') {
+    $('scanResults').innerHTML = '<div class="scan-loading">Sélectionne un signal pour lancer l\'analyse.</div>';
+    document.querySelectorAll('.scan-chip').forEach(c=>c.classList.remove('on'));
+  }
   buildTechBtns(cat);
 }
 

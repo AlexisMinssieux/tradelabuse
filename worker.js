@@ -226,6 +226,32 @@ export default {
         return new Response(JSON.stringify(results.slice(0, 14)), { headers: CORS });
       }
 
+      if (path === '/scan') {
+        const tf  = url.searchParams.get('tf') || '1d';
+        const symsParam = url.searchParams.get('syms');
+        if (!symsParam) return new Response(JSON.stringify({error:'syms requis'}),{status:400,headers:CORS});
+        const syms = symsParam.split(',').filter(Boolean).slice(0, 30);
+        const rangeMap = {'1h':'5d','1d':'6mo','1wk':'2y','1mo':'5y'};
+        const range = rangeMap[tf] || '6mo';
+        const results = await Promise.all(syms.map(async sym => {
+          try {
+            const r = await fetch(
+              `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=${tf}&range=${range}`,
+              {headers:{'User-Agent':'Mozilla/5.0','Accept':'application/json'}}
+            );
+            if (!r.ok) return {sym, error: r.status};
+            const d = await r.json();
+            const res = d?.chart?.result?.[0];
+            if (!res) return {sym, error: 'no data'};
+            const raw = res.indicators?.quote?.[0]?.close || [];
+            const ts  = res.timestamp || [];
+            const pairs = ts.map((t,i)=>({t,c:raw[i]})).filter(x=>x.c!=null&&!isNaN(x.c));
+            return {sym, closes: pairs.map(x=>+x.c.toFixed(6)), price: res.meta?.regularMarketPrice, chg: res.meta?.regularMarketChangePercent};
+          } catch(e) { return {sym, error: e.message}; }
+        }));
+        return new Response(JSON.stringify(results), {headers: CORS});
+      }
+
       if (path === '/history') {
         const sym = url.searchParams.get('sym');
         const tf  = url.searchParams.get('tf') || '1d';
