@@ -1959,16 +1959,34 @@ function setScanTf(tf, el) {
 async function runScan(sigFilter, el) {
   document.querySelectorAll('.scan-chip').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
-  const assets = TECH_ASSETS[techState.cat] || [];
-  if (!assets.length) return;
-  const syms = assets.map(a=>a.sym).join(',');
-  $('scanResults').innerHTML = `<div class="scan-loading">Analyse de ${assets.length} actifs en cours…</div>`;
+
+  // Collecte TOUS les actifs de toutes les catégories (dédupliqués par sym)
+  const allAssets = [];
+  const seenSyms = new Set();
+  for (const cat of Object.keys(TECH_ASSETS)) {
+    for (const a of TECH_ASSETS[cat]) {
+      if (!seenSyms.has(a.sym)) { seenSyms.add(a.sym); allAssets.push({...a, cat}); }
+    }
+  }
+
+  $('scanResults').innerHTML = `<div class="scan-loading">Analyse de ${allAssets.length} actifs en cours…</div>`;
+
+  // Batches de 25 en parallèle
+  const BATCH = 25;
+  const batches = [];
+  for (let i = 0; i < allAssets.length; i += BATCH) batches.push(allAssets.slice(i, i+BATCH));
+
   try {
-    const data = await apiFetch('/scan?tf='+scanTf+'&syms='+encodeURIComponent(syms));
+    const batchResults = await Promise.all(batches.map(batch => {
+      const syms = batch.map(a=>a.sym).join(',');
+      return apiFetch('/scan?tf='+scanTf+'&syms='+encodeURIComponent(syms));
+    }));
+    const flat = batchResults.flat();
+
     const matched = [];
-    for (const item of data) {
+    for (const item of flat) {
       if (item.error || !item.closes || item.closes.length < 20) continue;
-      const asset = assets.find(a=>a.sym===item.sym);
+      const asset = allAssets.find(a=>a.sym===item.sym);
       if (!asset) continue;
       const ind = tAll(item.closes);
       const sig = horizonSig(ind, scanTf, asset.u, asset.dp);
@@ -1978,7 +1996,7 @@ async function runScan(sigFilter, el) {
       }
     }
     matched.sort((a,b) => Math.abs(b.sig.score) - Math.abs(a.sig.score));
-    renderScanResults(matched, assets.length, sigFilter);
+    renderScanResults(matched, allAssets.length, sigFilter);
   } catch(e) {
     $('scanResults').innerHTML = `<div class="scan-loading">Erreur : ${e.message}</div>`;
   }

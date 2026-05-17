@@ -230,7 +230,7 @@ export default {
         const tf  = url.searchParams.get('tf') || '1d';
         const symsParam = url.searchParams.get('syms');
         if (!symsParam) return new Response(JSON.stringify({error:'syms requis'}),{status:400,headers:CORS});
-        const syms = symsParam.split(',').filter(Boolean).slice(0, 30);
+        const syms = symsParam.split(',').filter(Boolean).slice(0, 40);
         const rangeMap = {'1h':'5d','1d':'6mo','1wk':'2y','1mo':'5y'};
         const range = rangeMap[tf] || '6mo';
         const results = await Promise.all(syms.map(async sym => {
