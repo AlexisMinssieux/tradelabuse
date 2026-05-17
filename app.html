@@ -1725,6 +1725,9 @@ const TECH_ASSETS = {
     {n:'Russell 2000',sym:'^RUT',u:'$',dp:0},{n:'Shanghai',sym:'000001.SS',u:'¥',dp:2},
     {n:'Nifty 50',sym:'^NSEI',u:'₹',dp:0},{n:'AEX (NL)',sym:'^AEX',u:'',dp:2},
     {n:'SMI (CH)',sym:'^SSMI',u:'',dp:0},{n:'IBEX 35',sym:'^IBEX',u:'',dp:0},
+    {n:'KOSPI (KR)',sym:'^KS11',u:'₩',dp:0},{n:'ASX 200 (AU)',sym:'^AXJO',u:'A$',dp:0},
+    {n:'Bovespa (BR)',sym:'^BVSP',u:'R$',dp:0},{n:'Dow Jones',sym:'^DJI',u:'$',dp:0},
+    {n:'MIB (IT)',sym:'FTSEMIB.MI',u:'',dp:0},{n:'BEL 20 (BE)',sym:'^BFX',u:'',dp:2},
   ],
   actions_fr:[
     {n:'LVMH',sym:'MC.PA',u:'€',dp:2},{n:'Airbus',sym:'AIR.PA',u:'€',dp:2},
@@ -1739,6 +1742,10 @@ const TECH_ASSETS = {
     {n:'Stellantis',sym:'STLAM.MI',u:'€',dp:2},{n:'Publicis',sym:'PUB.PA',u:'€',dp:2},
     {n:'Legrand',sym:'LR.PA',u:'€',dp:2},{n:'ArcelorMittal',sym:'MT.AS',u:'€',dp:2},
     {n:'Société Générale',sym:'GLE.PA',u:'€',dp:2},{n:'Capgemini',sym:'CAP.PA',u:'€',dp:2},
+    {n:'Engie',sym:'ENGI.PA',u:'€',dp:2},{n:'Veolia',sym:'VIE.PA',u:'€',dp:2},
+    {n:'Pernod Ricard',sym:'RI.PA',u:'€',dp:0},{n:'Saint-Gobain',sym:'SGO.PA',u:'€',dp:2},
+    {n:'EssilorLuxottica',sym:'EL.PA',u:'€',dp:0},{n:'Alstom',sym:'ALO.PA',u:'€',dp:2},
+    {n:'STMicroelectronics',sym:'STM.PA',u:'€',dp:2},{n:'Teleperformance',sym:'TEP.PA',u:'€',dp:0},
   ],
   actions_us:[
     {n:'Apple',sym:'AAPL',u:'$',dp:2},{n:'Microsoft',sym:'MSFT',u:'$',dp:2},
@@ -1753,6 +1760,11 @@ const TECH_ASSETS = {
     {n:'Salesforce',sym:'CRM',u:'$',dp:2},{n:'UnitedHealth',sym:'UNH',u:'$',dp:2},
     {n:'Intel',sym:'INTC',u:'$',dp:2},{n:'Disney',sym:'DIS',u:'$',dp:2},
     {n:'Pfizer',sym:'PFE',u:'$',dp:2},{n:'Exxon Mobil',sym:'XOM',u:'$',dp:2},
+    {n:'MasterCard',sym:'MA',u:'$',dp:2},{n:'ASML',sym:'ASML',u:'$',dp:2},
+    {n:'Oracle',sym:'ORCL',u:'$',dp:2},{n:'ServiceNow',sym:'NOW',u:'$',dp:2},
+    {n:'Shopify',sym:'SHOP',u:'$',dp:2},{n:'Home Depot',sym:'HD',u:'$',dp:2},
+    {n:'Johnson & Johnson',sym:'JNJ',u:'$',dp:2},{n:'Caterpillar',sym:'CAT',u:'$',dp:2},
+    {n:'Alibaba',sym:'BABA',u:'$',dp:2},{n:'TSMC',sym:'TSM',u:'$',dp:2},
   ],
   etf:[
     {n:'MSCI World (CW8)',sym:'CW8.PA',u:'€',dp:2},{n:'S&P 500 (SP5)',sym:'SP5.PA',u:'€',dp:2},
@@ -1761,6 +1773,10 @@ const TECH_ASSETS = {
     {n:'SPY (US)',sym:'SPY',u:'$',dp:2},{n:'QQQ (Nasdaq)',sym:'QQQ',u:'$',dp:2},
     {n:'GLD (Or)',sym:'GLD',u:'$',dp:2},{n:'TLT (Oblig US)',sym:'TLT',u:'$',dp:2},
     {n:'VIX (Volatilité)',sym:'^VIX',u:'',dp:2},{n:'EWJ (Japon)',sym:'EWJ',u:'$',dp:2},
+    {n:'IWM (Russell 2000)',sym:'IWM',u:'$',dp:2},{n:'VT (World)',sym:'VT',u:'$',dp:2},
+    {n:'EEM (Émergents)',sym:'EEM',u:'$',dp:2},{n:'DIA (Dow Jones)',sym:'DIA',u:'$',dp:2},
+    {n:'ARKK (Innovation)',sym:'ARKK',u:'$',dp:2},{n:'VNQ (Immo US)',sym:'VNQ',u:'$',dp:2},
+    {n:'HYG (High Yield)',sym:'HYG',u:'$',dp:2},{n:'AGG (Oblig US)',sym:'AGG',u:'$',dp:2},
   ],
   matieres:[
     {n:'Or',sym:'GC=F',u:'$',dp:0},{n:'Argent',sym:'SI=F',u:'$',dp:2},
@@ -1769,6 +1785,8 @@ const TECH_ASSETS = {
     {n:'Blé',sym:'ZW=F',u:'$',dp:2},{n:'Maïs',sym:'ZC=F',u:'$',dp:2},
     {n:'Platine',sym:'PL=F',u:'$',dp:0},{n:'Palladium',sym:'PA=F',u:'$',dp:0},
     {n:'Cacao',sym:'CC=F',u:'$',dp:0},{n:'Sucre',sym:'SB=F',u:'$',dp:2},
+    {n:'Café',sym:'KC=F',u:'$',dp:2},{n:'Coton',sym:'CT=F',u:'$',dp:2},
+    {n:'Soja',sym:'ZS=F',u:'$',dp:2},{n:'Aluminium',sym:'ALI=F',u:'$',dp:0},
   ],
   crypto:[
     {n:'Bitcoin',sym:'BTC-USD',u:'$',dp:0},{n:'Ethereum',sym:'ETH-USD',u:'$',dp:2},
@@ -1778,6 +1796,9 @@ const TECH_ASSETS = {
     {n:'Chainlink',sym:'LINK-USD',u:'$',dp:3},{n:'Monero',sym:'XMR-USD',u:'$',dp:2},
     {n:'Polkadot',sym:'DOT-USD',u:'$',dp:3},{n:'Litecoin',sym:'LTC-USD',u:'$',dp:2},
     {n:'Uniswap',sym:'UNI-USD',u:'$',dp:3},{n:'Sui',sym:'SUI20947-USD',u:'$',dp:3},
+    {n:'Stellar',sym:'XLM-USD',u:'$',dp:5},{n:'Near',sym:'NEAR-USD',u:'$',dp:3},
+    {n:'Shiba Inu',sym:'SHIB-USD',u:'$',dp:8},{n:'Filecoin',sym:'FIL-USD',u:'$',dp:3},
+    {n:'Render',sym:'RNDR-USD',u:'$',dp:3},{n:'Toncoin',sym:'TON11419-USD',u:'$',dp:3},
   ],
   forex:[
     {n:'EUR/USD',sym:'EURUSD=X',u:'',dp:4},{n:'USD/JPY',sym:'JPY=X',u:'',dp:2},
@@ -1785,6 +1806,9 @@ const TECH_ASSETS = {
     {n:'AUD/USD',sym:'AUDUSD=X',u:'',dp:4},{n:'USD/CAD',sym:'CADUSD=X',u:'',dp:4},
     {n:'EUR/GBP',sym:'EURGBP=X',u:'',dp:4},{n:'EUR/JPY',sym:'EURJPY=X',u:'',dp:2},
     {n:'GBP/JPY',sym:'GBPJPY=X',u:'',dp:2},{n:'USD/MXN',sym:'MXN=X',u:'',dp:4},
+    {n:'USD/CNY',sym:'CNY=X',u:'',dp:4},{n:'USD/INR',sym:'INR=X',u:'',dp:2},
+    {n:'USD/BRL',sym:'BRL=X',u:'',dp:4},{n:'NZD/USD',sym:'NZDUSD=X',u:'',dp:4},
+    {n:'EUR/AUD',sym:'EURAUD=X',u:'',dp:4},{n:'USD/TRY',sym:'TRY=X',u:'',dp:2},
   ],
 };
 
