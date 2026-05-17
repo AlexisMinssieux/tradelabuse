@@ -228,9 +228,12 @@ export default {
 
       if (path === '/history') {
         const sym = url.searchParams.get('sym');
+        const tf  = url.searchParams.get('tf') || '1d';
         if (!sym) return new Response(JSON.stringify({error:'sym requis'}),{status:400,headers:CORS});
+        const rangeMap = {'1h':'5d','1d':'6mo','1wk':'2y','1mo':'5y'};
+        const range = rangeMap[tf] || '6mo';
         const r = await fetch(
-          `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=6mo`,
+          `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=${tf}&range=${range}`,
           {headers:{'User-Agent':'Mozilla/5.0','Accept':'application/json'}}
         );
         if (!r.ok) return new Response(JSON.stringify({error:'Yahoo '+r.status}),{status:502,headers:CORS});
@@ -240,10 +243,14 @@ export default {
         const raw = res.indicators?.quote?.[0]?.close || [];
         const ts  = res.timestamp || [];
         const pairs = ts.map((t,i)=>({t,c:raw[i]})).filter(x=>x.c!=null&&!isNaN(x.c));
+        const fmtDate = tf==='1h'
+          ? t => new Date(t*1000).toLocaleString('fr-FR',{weekday:'short',hour:'2-digit',minute:'2-digit'})
+          : t => new Date(t*1000).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'});
         return new Response(JSON.stringify({
-          closes: pairs.map(x=>+x.c.toFixed(6)),
-          dates:  pairs.map(x=>new Date(x.t*1000).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})),
-          price:  res.meta?.regularMarketPrice,
+          closes:   pairs.map(x=>+x.c.toFixed(6)),
+          dates:    pairs.map(x=>fmtDate(x.t)),
+          price:    res.meta?.regularMarketPrice,
+          chg:      res.meta?.regularMarketChangePercent,
           currency: res.meta?.currency||''
         }),{headers:CORS});
       }

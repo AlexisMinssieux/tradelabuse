@@ -554,6 +554,7 @@
     <button class="tc-btn on" onclick="selTechCat('indices',this)">🌍 Indices</button>
     <button class="tc-btn" onclick="selTechCat('actions_fr',this)">🇫🇷 Actions FR</button>
     <button class="tc-btn" onclick="selTechCat('actions_us',this)">🇺🇸 Actions US</button>
+    <button class="tc-btn" onclick="selTechCat('etf',this)">📦 ETF</button>
     <button class="tc-btn" onclick="selTechCat('matieres',this)">🏅 Matières</button>
     <button class="tc-btn" onclick="selTechCat('crypto',this)">₿ Crypto</button>
     <button class="tc-btn" onclick="selTechCat('forex',this)">💱 Forex</button>
@@ -563,9 +564,10 @@
   <!-- Horizon -->
   <div class="hz-row">
     <span class="hz-label">Horizon :</span>
-    <button class="hz-btn on" onclick="setHorizon('court',this)">⚡ Court terme<small>1 – 4 semaines</small></button>
-    <button class="hz-btn" onclick="setHorizon('moyen',this)">📈 Moyen terme<small>3 – 12 mois</small></button>
-    <button class="hz-btn" onclick="setHorizon('long',this)">🏛️ Long terme<small>1 – 3 ans</small></button>
+    <button class="hz-btn" onclick="setTimeframe('1h',this)">⏱ Horaire<small>5 jours</small></button>
+    <button class="hz-btn on" onclick="setTimeframe('1d',this)">📅 Journalier<small>6 mois</small></button>
+    <button class="hz-btn" onclick="setTimeframe('1wk',this)">📆 Hebdo<small>2 ans</small></button>
+    <button class="hz-btn" onclick="setTimeframe('1mo',this)">🏛️ Mensuel<small>5 ans</small></button>
   </div>
   <div class="g2x">
     <!-- GAUCHE : graphique + Fibonacci + S/R -->
@@ -1675,6 +1677,9 @@ const TECH_ASSETS = {
     {n:'NASDAQ',sym:'^IXIC',u:'',dp:0},{n:'DAX',sym:'^GDAXI',u:'',dp:0},
     {n:'FTSE 100',sym:'^FTSE',u:'',dp:0},{n:'Nikkei 225',sym:'^N225',u:'¥',dp:0},
     {n:'Hang Seng',sym:'^HSI',u:'',dp:0},{n:'Euro Stoxx 50',sym:'^STOXX50E',u:'',dp:0},
+    {n:'Russell 2000',sym:'^RUT',u:'$',dp:0},{n:'Shanghai',sym:'000001.SS',u:'¥',dp:2},
+    {n:'Nifty 50',sym:'^NSEI',u:'₹',dp:0},{n:'AEX (NL)',sym:'^AEX',u:'',dp:2},
+    {n:'SMI (CH)',sym:'^SSMI',u:'',dp:0},{n:'IBEX 35',sym:'^IBEX',u:'',dp:0},
   ],
   actions_fr:[
     {n:'LVMH',sym:'MC.PA',u:'€',dp:2},{n:'Airbus',sym:'AIR.PA',u:'€',dp:2},
@@ -1686,6 +1691,9 @@ const TECH_ASSETS = {
     {n:'Vinci',sym:'DG.PA',u:'€',dp:2},{n:'Danone',sym:'BN.PA',u:'€',dp:2},
     {n:'Orange',sym:'ORA.PA',u:'€',dp:2},{n:'Dassault Syst.',sym:'DSY.PA',u:'€',dp:2},
     {n:'Renault',sym:'RNO.PA',u:'€',dp:2},{n:'Michelin',sym:'ML.PA',u:'€',dp:2},
+    {n:'Stellantis',sym:'STLAM.MI',u:'€',dp:2},{n:'Publicis',sym:'PUB.PA',u:'€',dp:2},
+    {n:'Legrand',sym:'LR.PA',u:'€',dp:2},{n:'ArcelorMittal',sym:'MT.AS',u:'€',dp:2},
+    {n:'Société Générale',sym:'GLE.PA',u:'€',dp:2},{n:'Capgemini',sym:'CAP.PA',u:'€',dp:2},
   ],
   actions_us:[
     {n:'Apple',sym:'AAPL',u:'$',dp:2},{n:'Microsoft',sym:'MSFT',u:'$',dp:2},
@@ -1696,13 +1704,26 @@ const TECH_ASSETS = {
     {n:'Goldman Sachs',sym:'GS',u:'$',dp:2},{n:'Berkshire B',sym:'BRK-B',u:'$',dp:2},
     {n:'Coca-Cola',sym:'KO',u:'$',dp:2},{n:'Boeing',sym:'BA',u:'$',dp:2},
     {n:'Netflix',sym:'NFLX',u:'$',dp:2},{n:'AMD',sym:'AMD',u:'$',dp:2},
+    {n:'Broadcom',sym:'AVGO',u:'$',dp:2},{n:'Visa',sym:'V',u:'$',dp:2},
+    {n:'Salesforce',sym:'CRM',u:'$',dp:2},{n:'UnitedHealth',sym:'UNH',u:'$',dp:2},
+    {n:'Intel',sym:'INTC',u:'$',dp:2},{n:'Disney',sym:'DIS',u:'$',dp:2},
+    {n:'Pfizer',sym:'PFE',u:'$',dp:2},{n:'Exxon Mobil',sym:'XOM',u:'$',dp:2},
+  ],
+  etf:[
+    {n:'MSCI World (CW8)',sym:'CW8.PA',u:'€',dp:2},{n:'S&P 500 (SP5)',sym:'SP5.PA',u:'€',dp:2},
+    {n:'Nasdaq-100 (PANX)',sym:'PANX.PA',u:'€',dp:2},{n:'CAC 40 (CAC)',sym:'CACC.PA',u:'€',dp:2},
+    {n:'Euro Stoxx 50',sym:'C50.PA',u:'€',dp:2},{n:'Émergents (PAEEM)',sym:'PAEEM.PA',u:'€',dp:2},
+    {n:'SPY (US)',sym:'SPY',u:'$',dp:2},{n:'QQQ (Nasdaq)',sym:'QQQ',u:'$',dp:2},
+    {n:'GLD (Or)',sym:'GLD',u:'$',dp:2},{n:'TLT (Oblig US)',sym:'TLT',u:'$',dp:2},
+    {n:'VIX (Volatilité)',sym:'^VIX',u:'',dp:2},{n:'EWJ (Japon)',sym:'EWJ',u:'$',dp:2},
   ],
   matieres:[
     {n:'Or',sym:'GC=F',u:'$',dp:0},{n:'Argent',sym:'SI=F',u:'$',dp:2},
     {n:'Pétrole WTI',sym:'CL=F',u:'$',dp:2},{n:'Pétrole Brent',sym:'BZ=F',u:'$',dp:2},
     {n:'Gaz Naturel',sym:'NG=F',u:'$',dp:3},{n:'Cuivre',sym:'HG=F',u:'$',dp:3},
     {n:'Blé',sym:'ZW=F',u:'$',dp:2},{n:'Maïs',sym:'ZC=F',u:'$',dp:2},
-    {n:'Platine',sym:'PL=F',u:'$',dp:0},
+    {n:'Platine',sym:'PL=F',u:'$',dp:0},{n:'Palladium',sym:'PA=F',u:'$',dp:0},
+    {n:'Cacao',sym:'CC=F',u:'$',dp:0},{n:'Sucre',sym:'SB=F',u:'$',dp:2},
   ],
   crypto:[
     {n:'Bitcoin',sym:'BTC-USD',u:'$',dp:0},{n:'Ethereum',sym:'ETH-USD',u:'$',dp:2},
@@ -1710,18 +1731,22 @@ const TECH_ASSETS = {
     {n:'BNB',sym:'BNB-USD',u:'$',dp:2},{n:'Dogecoin',sym:'DOGE-USD',u:'$',dp:5},
     {n:'Cardano',sym:'ADA-USD',u:'$',dp:4},{n:'Avalanche',sym:'AVAX-USD',u:'$',dp:2},
     {n:'Chainlink',sym:'LINK-USD',u:'$',dp:3},{n:'Monero',sym:'XMR-USD',u:'$',dp:2},
+    {n:'Polkadot',sym:'DOT-USD',u:'$',dp:3},{n:'Litecoin',sym:'LTC-USD',u:'$',dp:2},
+    {n:'Uniswap',sym:'UNI-USD',u:'$',dp:3},{n:'Sui',sym:'SUI20947-USD',u:'$',dp:3},
   ],
   forex:[
     {n:'EUR/USD',sym:'EURUSD=X',u:'',dp:4},{n:'USD/JPY',sym:'JPY=X',u:'',dp:2},
     {n:'GBP/USD',sym:'GBPUSD=X',u:'',dp:4},{n:'USD/CHF',sym:'CHF=X',u:'',dp:4},
     {n:'AUD/USD',sym:'AUDUSD=X',u:'',dp:4},{n:'USD/CAD',sym:'CADUSD=X',u:'',dp:4},
+    {n:'EUR/GBP',sym:'EURGBP=X',u:'',dp:4},{n:'EUR/JPY',sym:'EURJPY=X',u:'',dp:2},
+    {n:'GBP/JPY',sym:'GBPJPY=X',u:'',dp:2},{n:'USD/MXN',sym:'MXN=X',u:'',dp:4},
   ],
 };
 
 // mapping screener crypto sym → Yahoo tech sym
 const CRYPTO_TO_YAHOO = {BTC:'BTC-USD',ETH:'ETH-USD',BNB:'BNB-USD',SOL:'SOL-USD',XRP:'XRP-USD',DOGE:'DOGE-USD',ADA:'ADA-USD',AVAX:'AVAX-USD',LINK:'LINK-USD',DOT:'DOT-USD',TRX:'TRX-USD',BCH:'BCH-USD',XLM:'XLM-USD',XMR:'XMR-USD',UNI:'UNI-USD',LTC:'LTC-USD'};
 
-let techState = {cat:'indices', sym:'^FCHI', name:'CAC 40', horizon:'court', u:'€', dp:0};
+let techState = {cat:'indices', sym:'^FCHI', name:'CAC 40', tf:'1d', u:'€', dp:0};
 let techInst = null;
 let techCache = {};
 
@@ -1734,15 +1759,17 @@ function tMACD(c){const n=c.length,k12=2/13,k26=2/27,k9=2/10;if(n<35){const e12=
 function tSR(c){const c20=c.slice(-20),c50=c.length>=50?c.slice(-50):c;return{s1:Math.min(...c20),s2:Math.min(...c50),r1:Math.max(...c20),r2:Math.max(...c50)};}
 function tAll(closes){return{cur:closes[closes.length-1],rsi:tRSI(closes),stoch:tStoch(closes),boll:tBoll(closes),macd:tMACD(closes),mm20:tMM(closes,20),mm50:tMM(closes,50),mm200:tMM(closes,200),sr:tSR(closes)};}
 
-// ── Signal par horizon ──
-function horizonSig(ind, horizon, u, dp) {
+// ── Signal par timeframe ──
+function horizonSig(ind, tf, u, dp) {
   const {cur,rsi,stoch,boll,macd,mm20,mm50,mm200,sr} = ind;
   let score=0; const reasons=[];
   const fmt = v => v!=null ? fmtN(+v.toFixed(dp),dp)+u : '—';
   let entry,exit,stop,eHint,xHint;
+  const per = tf==='1h'?'périodes horaires':tf==='1d'?'jours':tf==='1wk'?'semaines':'mois';
 
   // ── Score ──
-  if (horizon==='court') {
+  if (tf==='1h' || tf==='1d') {
+    // Court terme : oscillateurs prioritaires
     if(rsi<30){score+=3;reasons.push('RSI en survente forte ('+rsi+')');}
     else if(rsi<40){score+=2;reasons.push('RSI en zone de survente ('+rsi+')');}
     else if(rsi>75){score-=3;reasons.push('RSI en surachat fort ('+rsi+')');}
@@ -1754,8 +1781,13 @@ function horizonSig(ind, horizon, u, dp) {
     else if(macd.bull)score+=1; else score-=1;
     if(boll<15){score+=2;reasons.push('Prix en borne basse Bollinger');}
     else if(boll>85){score-=2;reasons.push('Prix en borne haute Bollinger');}
-  } else if (horizon==='moyen') {
-    if(mm50&&cur>mm50*1.01){score+=2;reasons.push('Prix au-dessus de la MM50');}
+    if(tf==='1h'&&mm20){
+      if(cur>mm20*1.005){score+=1;reasons.push('Prix au-dessus MM20 horaire');}
+      else if(cur<mm20*0.995){score-=1;reasons.push('Prix sous MM20 horaire');}
+    }
+  } else if (tf==='1wk') {
+    // Moyen terme : MM50 et tendance
+    if(mm50&&cur>mm50*1.01){score+=2;reasons.push('Prix au-dessus de la MM50 hebdo');}
     else if(mm50&&cur<mm50*0.99){score-=2;reasons.push('Prix sous la MM50 — tendance baissière');}
     if(cur>mm20)score+=1; else score-=1;
     if(rsi<40){score+=2;reasons.push('RSI bas — point d\'entrée moyen terme favorable');}
@@ -1763,7 +1795,10 @@ function horizonSig(ind, horizon, u, dp) {
     else if(rsi>45&&rsi<65){score+=1;reasons.push('Momentum RSI sain');}
     if(macd.bull){score+=1;reasons.push('MACD positif — momentum haussier');}
     else{score-=1;reasons.push('MACD négatif — pression baissière');}
+    if(boll<20){score+=1;reasons.push('Borne basse Bollinger — compression');}
+    else if(boll>80){score-=1;reasons.push('Borne haute Bollinger — extension');}
   } else {
+    // Long terme (mensuel) : MM200, golden/death cross
     if(mm200){
       if(cur>mm200*1.02){score+=3;reasons.push('Tendance long terme haussière (> MM200)');}
       else if(cur<mm200*0.98){score-=3;reasons.push('Tendance long terme baissière (< MM200)');}
@@ -1772,34 +1807,35 @@ function horizonSig(ind, horizon, u, dp) {
     } else if(mm50){if(cur>mm50)score+=2;else score-=2;}
     if(rsi<50){score+=1;reasons.push('RSI < 50 — marge de progression');}
     if(rsi<40){score++;reasons.push('Zone d\'accumulation potentielle');}
+    if(macd.bull){score+=1;reasons.push('MACD mensuel positif');}else score-=1;
   }
 
-  // ── Entry / Exit / Stop selon la DIRECTION du signal ──
+  // ── Entry / Exit / Stop selon direction ──
   const bull = score>=2, bear = score<=-2;
 
-  if (horizon==='court') {
+  if (tf==='1h' || tf==='1d') {
     if (bull) {
       entry=sr.s1; exit=sr.r1; stop=sr.s1*0.97;
-      eHint='Zone de support 20 jours'; xHint='Zone de résistance 20 jours';
+      eHint='Zone de support (20 '+per+')'; xHint='Zone de résistance (20 '+per+')';
     } else if (bear) {
       entry=sr.r1; exit=sr.s1; stop=sr.r1*1.03;
-      eHint='Zone de résistance 20 jours (vente)'; xHint='Zone de support 20 jours (rachat)';
+      eHint='Résistance (20 '+per+') — vente'; xHint='Support (20 '+per+') — rachat';
     } else {
       entry=cur; exit=sr.r1; stop=sr.s1*0.98;
       eHint='Prix actuel — signal neutre'; xHint='Résistance court terme';
     }
-  } else if (horizon==='moyen') {
+  } else if (tf==='1wk') {
     if (bull) {
       entry=mm50?Math.min(mm50,sr.s1):sr.s1;
       exit=sr.r2; stop=mm50?mm50*0.93:sr.s2*0.97;
-      eHint='MM50 ou support majeur'; xHint='Résistance 50 jours';
+      eHint='MM50 ou support majeur (hebdo)'; xHint='Résistance 50 semaines';
     } else if (bear) {
       entry=mm50?Math.max(mm50,sr.r1):sr.r1;
       exit=sr.s2; stop=mm50?mm50*1.07:sr.r1*1.05;
-      eHint='MM50 / résistance moyen terme (vente)'; xHint='Support 50 jours (objectif rachat)';
+      eHint='MM50 / résistance (vente hebdo)'; xHint='Support 50 semaines (rachat)';
     } else {
       entry=cur; exit=sr.r1; stop=sr.s1*0.97;
-      eHint='Zone neutre — attendre confirmation'; xHint='Résistance 20 jours';
+      eHint='Zone neutre — attendre confirmation'; xHint='Résistance 20 semaines';
     }
   } else {
     if (bull) {
@@ -1884,39 +1920,50 @@ function selTechByData(sym, name, u, dp) {
   loadTechAsset(sym, name, u, dp);
 }
 
-function setHorizon(h, el) {
-  techState.horizon = h;
+function setTimeframe(tf, el) {
+  techState.tf = tf;
   document.querySelectorAll('.hz-btn').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');
-  const cached = techCache[techState.sym];
+  const cacheKey = techState.sym + '_' + tf;
+  const cached = techCache[cacheKey];
   if(cached) renderTechFull(cached, techState.sym, techState.name, techState.u, techState.dp);
+  else loadTechAsset(techState.sym, techState.name, techState.u, techState.dp);
 }
 
 async function loadTechAsset(sym, name, u, dp) {
+  const tf = techState.tf || '1d';
+  const cacheKey = sym + '_' + tf;
   $('techLabel').innerHTML = name + ' <span style="color:var(--muted);font-size:9px">Chargement…</span>';
   const now = Date.now();
-  if(techCache[sym]&&now-techCache[sym].ts<300000){renderTechFull(techCache[sym],sym,name,u,dp);return;}
+  if(techCache[cacheKey]&&now-techCache[cacheKey].ts<300000){renderTechFull(techCache[cacheKey],sym,name,u,dp);return;}
   try {
-    const data = await apiFetch('/history?sym='+encodeURIComponent(sym));
+    const data = await apiFetch('/history?sym='+encodeURIComponent(sym)+'&tf='+tf);
     if(!data||!data.closes||data.closes.length<20){$('techLabel').textContent=name+' — données insuffisantes';return;}
-    techCache[sym]={...data,ts:now};
-    renderTechFull(techCache[sym],sym,name,u,dp);
+    techCache[cacheKey]={...data,ts:now};
+    renderTechFull(techCache[cacheKey],sym,name,u,dp);
   } catch(e){$('techLabel').textContent=name+' — erreur de chargement';}
 }
 
 function renderTechFull(data, sym, name, u, dp) {
   const {closes,dates} = data;
+  const tf = techState.tf || '1d';
   const ind = tAll(closes);
-  const sig = horizonSig(ind, techState.horizon, u, dp);
+  const sig = horizonSig(ind, tf, u, dp);
   const sl = sigLevel(sig.score);
   const fmt = v => v!=null ? fmtN(+v,dp)+u : '—';
-  const horizonLabels = {court:'1 – 4 semaines',moyen:'3 – 12 mois',long:'1 – 3 ans'};
+  const tfLabels = {'1h':'Horaire — 5 jours','1d':'Journalier — 6 mois','1wk':'Hebdomadaire — 2 ans','1mo':'Mensuel — 5 ans'};
 
-  $('techLabel').innerHTML = `${name} &nbsp;<span style="font-family:var(--mono);font-weight:700;color:var(--text)">${fmt(ind.cur)}</span>`;
-  $('horizonLabel').textContent = horizonLabels[techState.horizon];
+  // Prix temps réel (meta Yahoo) ou dernier close
+  const livePrice = data.price != null ? data.price : ind.cur;
+  const chgPct = data.chg != null ? data.chg : 0;
+  const chgColor = chgPct >= 0 ? '#40c880' : '#ff4444';
+  const chgSign = chgPct >= 0 ? '+' : '';
+  $('techLabel').innerHTML = `${name} &nbsp;<span style="font-family:var(--mono);font-weight:700;color:var(--text)">${fmt(livePrice)}</span>&nbsp;<span style="font-size:10px;font-weight:600;color:${chgColor}">${chgSign}${chgPct.toFixed(2)}%</span>`;
+  $('horizonLabel').textContent = tfLabels[tf] || tf;
 
-  // Chart 30j
-  const c30=closes.slice(-30),d30=dates.slice(-30);
+  // Fenêtre graphique adaptée au timeframe
+  const winSize = tf==='1h' ? closes.length : tf==='1wk' ? Math.min(closes.length,104) : tf==='1mo' ? Math.min(closes.length,60) : Math.min(closes.length,60);
+  const c30=closes.slice(-winSize),d30=dates.slice(-winSize);
   const mm20line=c30.map((_,i,a)=>i<19?null:+(a.slice(i-19,i+1).reduce((x,y)=>x+y,0)/20).toFixed(dp));
   if(techInst)techInst.destroy();
   techInst=new Chart($('techChart'),{type:'line',data:{labels:d30,datasets:[
