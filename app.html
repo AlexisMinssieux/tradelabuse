@@ -2030,9 +2030,10 @@ function renderScanResults(matched, total, sigFilter) {
 
 function selectScanAsset(sym, name, u, dp) {
   // Ferme le scanner et ouvre la vue AT sur cet actif
-  $('scanPanel').style.display = 'none';
-  $('techMainView').style.display = '';
+  $('scanPanel').style.display      = 'none';
+  $('techMainView').style.display   = '';
   $('techChartsView').style.display = '';
+  $('techCatRow').style.display     = '';
   $('scanToggleBtn').classList.remove('on');
   // Sync le timeframe AT sur le timeframe du scanner
   techState.tf = scanTf;
