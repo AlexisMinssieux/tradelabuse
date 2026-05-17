@@ -198,6 +198,24 @@
     .pm-card-text{font-size:12px;color:#ccc;line-height:1.5}
     .pm-btn{display:block;width:100%;margin-top:18px;padding:12px;border-radius:8px;background:#cc1a1a;color:#fff;font-weight:700;font-size:13px;text-align:center;text-decoration:none;letter-spacing:.5px;box-sizing:border-box}
     .pm-btn:hover{background:#e02020}
+    /* ── Intro AT ── */
+    .at-intro{background:linear-gradient(135deg,rgba(180,20,20,.07),rgba(196,160,80,.05));border:1px solid rgba(180,20,20,.2);border-radius:12px;padding:20px 22px;margin-bottom:14px;position:relative}
+    .at-intro-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .at-intro-title{font-family:var(--serif);font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+    .at-intro-toggle{background:none;border:1px solid rgba(255,255,255,.12);color:var(--muted);font-size:10px;padding:3px 10px;border-radius:20px;cursor:pointer;font-family:var(--body);letter-spacing:.3px}
+    .at-intro-toggle:hover{color:var(--text);border-color:rgba(255,255,255,.25)}
+    .at-intro-body{}
+    .at-intro-lead{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:16px;max-width:780px}
+    .at-intro-lead strong{color:var(--text)}
+    .at-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:16px}
+    .at-kpi{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:10px 12px}
+    .at-kpi-name{font-size:10px;font-weight:700;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+    .at-kpi-desc{font-size:10px;color:var(--muted);line-height:1.5}
+    .at-kpi-range{font-size:9px;font-family:var(--mono);color:var(--gold);margin-top:3px}
+    .at-signals{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+    .at-sig-chip{font-size:10px;font-weight:700;padding:4px 12px;border-radius:20px;white-space:nowrap}
+    .at-how{font-size:11px;color:var(--muted);line-height:1.7;border-top:1px solid rgba(255,255,255,.06);padding-top:12px}
+    .at-how strong{color:var(--text)}
     /* ── Analyse actifs ── */
     .an-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
     .an-card{background:var(--card);border:1px solid var(--bord);border-radius:10px;padding:14px;transition:border-color .2s,transform .15s;cursor:default}
@@ -463,6 +481,66 @@
 
 <!-- ANALYSE AT -->
 <section class="pg" id="pg-tech">
+  <!-- Intro AT -->
+  <div class="at-intro" id="atIntroCard">
+    <div class="at-intro-header">
+      <span class="at-intro-title">📊 Qu'est-ce que l'Analyse Technique ?</span>
+      <button class="at-intro-toggle" onclick="toggleATIntro()">Masquer</button>
+    </div>
+    <div class="at-intro-body" id="atIntroBody">
+      <p class="at-intro-lead">
+        L'<strong>Analyse Technique (AT)</strong> est une méthode qui étudie les <strong>graphiques de prix</strong> et les <strong>indicateurs statistiques</strong> pour anticiper les mouvements futurs d'un actif.
+        Contrairement à l'analyse fondamentale (bilans, résultats), l'AT s'appuie uniquement sur le comportement passé des cours.
+        Elle permet d'identifier des <strong>points d'entrée précis</strong> (à quel prix acheter/vendre) et des <strong>niveaux de sortie</strong> (objectif de gain + stop-loss pour limiter les pertes).
+      </p>
+      <div class="at-kpis">
+        <div class="at-kpi">
+          <div class="at-kpi-name">📈 RSI</div>
+          <div class="at-kpi-desc">Mesure la force d'un mouvement. Indique si un actif est suracheté ou survendu.</div>
+          <div class="at-kpi-range">Survendu &lt; 30 · Suracheté &gt; 70</div>
+        </div>
+        <div class="at-kpi">
+          <div class="at-kpi-name">⚡ MACD</div>
+          <div class="at-kpi-desc">Croisement de moyennes mobiles. Détecte les changements de tendance haussière / baissière.</div>
+          <div class="at-kpi-range">Croisement haussier → signal d'achat</div>
+        </div>
+        <div class="at-kpi">
+          <div class="at-kpi-name">🎲 Stochastique</div>
+          <div class="at-kpi-desc">Compare le prix de clôture à sa fourchette récente. Utile pour les marchés sans tendance.</div>
+          <div class="at-kpi-range">Survendu &lt; 20 · Suracheté &gt; 80</div>
+        </div>
+        <div class="at-kpi">
+          <div class="at-kpi-name">🎯 Bollinger</div>
+          <div class="at-kpi-desc">Enveloppe de volatilité autour d'une MM20. Un rebond sur la bande inférieure = opportunité haussière.</div>
+          <div class="at-kpi-range">Rebond bande basse → achat potentiel</div>
+        </div>
+        <div class="at-kpi">
+          <div class="at-kpi-name">📐 MM 20/50/200</div>
+          <div class="at-kpi-desc">Moyennes mobiles : le prix au-dessus = tendance haussière. Le "golden cross" (MM50 &gt; MM200) est très haussier.</div>
+          <div class="at-kpi-range">Prix &gt; MM200 = tendance longue terme bull</div>
+        </div>
+        <div class="at-kpi">
+          <div class="at-kpi-name">🔊 Volume</div>
+          <div class="at-kpi-desc">Un mouvement de prix accompagné d'un fort volume est plus fiable qu'un mouvement à faible volume.</div>
+          <div class="at-kpi-range">Vol. élevé = conviction du mouvement</div>
+        </div>
+      </div>
+      <div class="at-signals">
+        <span class="at-sig-chip" style="background:rgba(34,197,94,.18);color:#4ade80;border:1px solid rgba(34,197,94,.3)">ACHAT FORT ↑↑</span>
+        <span class="at-sig-chip" style="background:rgba(34,197,94,.10);color:#86efac;border:1px solid rgba(34,197,94,.2)">ACHAT ↑</span>
+        <span class="at-sig-chip" style="background:rgba(255,255,255,.07);color:var(--muted);border:1px solid rgba(255,255,255,.1)">NEUTRE →</span>
+        <span class="at-sig-chip" style="background:rgba(239,68,68,.10);color:#fca5a5;border:1px solid rgba(239,68,68,.2)">VENTE ↓</span>
+        <span class="at-sig-chip" style="background:rgba(239,68,68,.18);color:#f87171;border:1px solid rgba(239,68,68,.3)">VENTE FORTE ↓↓</span>
+      </div>
+      <div class="at-how">
+        <strong>Comment utiliser les signaux ?</strong><br>
+        • <strong>ACHAT FORT / ACHAT</strong> — La majorité des indicateurs sont haussiers. Envisager un achat <em>près du support</em> avec un objectif sur la résistance.<br>
+        • <strong>NEUTRE</strong> — Pas de consensus. Attendre une confirmation avant d'agir.<br>
+        • <strong>VENTE / VENTE FORTE</strong> — Pression baissière dominante. Si vous détenez l'actif, envisager de sécuriser les gains. Si vous êtes en dehors, patienter.<br>
+        • <strong>Stop-loss</strong> — Niveau de prix qui invalide la thèse : toujours le définir avant d'entrer en position pour limiter les pertes.
+      </div>
+    </div>
+  </div>
   <!-- Catégorie -->
   <div class="tc-row" id="techCatRow">
     <button class="tc-btn on" onclick="selTechCat('indices',this)">🌍 Indices</button>
@@ -1739,6 +1817,23 @@ function sigLevel(score){
   if(score>=-4) return{txt:'VENTE',icon:'↓',color:'#e07828',bg:'rgba(220,120,40,.10)'};
   return{txt:'VENTE FORTE',icon:'↓↓',color:'#dc1c1c',bg:'rgba(220,28,28,.12)'};
 }
+
+function toggleATIntro(){
+  const body = document.getElementById('atIntroBody');
+  const btn  = document.querySelector('.at-intro-toggle');
+  const hidden = body.style.display === 'none';
+  body.style.display = hidden ? '' : 'none';
+  btn.textContent = hidden ? 'Masquer' : 'Afficher';
+  localStorage.setItem('atIntroHidden', hidden ? '0' : '1');
+}
+(function(){
+  if(localStorage.getItem('atIntroHidden')==='1'){
+    const body=document.getElementById('atIntroBody');
+    const btn=document.querySelector('.at-intro-toggle');
+    if(body){body.style.display='none';}
+    if(btn){btn.textContent='Afficher';}
+  }
+})();
 
 function selTechCat(cat, el) {
   techState.cat = cat;
