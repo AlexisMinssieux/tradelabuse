@@ -1655,6 +1655,7 @@ function horizonSig(ind, horizon, u, dp) {
   const fmt = v => v!=null ? fmtN(+v.toFixed(dp),dp)+u : '—';
   let entry,exit,stop,eHint,xHint;
 
+  // ── Score ──
   if (horizon==='court') {
     if(rsi<30){score+=3;reasons.push('RSI en survente forte ('+rsi+')');}
     else if(rsi<40){score+=2;reasons.push('RSI en zone de survente ('+rsi+')');}
@@ -1667,8 +1668,6 @@ function horizonSig(ind, horizon, u, dp) {
     else if(macd.bull)score+=1; else score-=1;
     if(boll<15){score+=2;reasons.push('Prix en borne basse Bollinger');}
     else if(boll>85){score-=2;reasons.push('Prix en borne haute Bollinger');}
-    entry=sr.s1; exit=sr.r1; stop=sr.s1*0.97;
-    eHint='Zone de support 20 jours'; xHint='Zone de résistance 20 jours';
   } else if (horizon==='moyen') {
     if(mm50&&cur>mm50*1.01){score+=2;reasons.push('Prix au-dessus de la MM50');}
     else if(mm50&&cur<mm50*0.99){score-=2;reasons.push('Prix sous la MM50 — tendance baissière');}
@@ -1678,9 +1677,6 @@ function horizonSig(ind, horizon, u, dp) {
     else if(rsi>45&&rsi<65){score+=1;reasons.push('Momentum RSI sain');}
     if(macd.bull){score+=1;reasons.push('MACD positif — momentum haussier');}
     else{score-=1;reasons.push('MACD négatif — pression baissière');}
-    entry=mm50?Math.min(mm50,sr.s1):sr.s1;
-    exit=sr.r2; stop=mm50?mm50*0.93:sr.s2*0.97;
-    eHint='MM50 ou support majeur'; xHint='Résistance 50 jours';
   } else {
     if(mm200){
       if(cur>mm200*1.02){score+=3;reasons.push('Tendance long terme haussière (> MM200)');}
@@ -1690,11 +1686,50 @@ function horizonSig(ind, horizon, u, dp) {
     } else if(mm50){if(cur>mm50)score+=2;else score-=2;}
     if(rsi<50){score+=1;reasons.push('RSI < 50 — marge de progression');}
     if(rsi<40){score++;reasons.push('Zone d\'accumulation potentielle');}
-    entry=mm200?mm200*1.01:sr.s2;
-    exit=cur*1.35; stop=mm200?mm200*0.90:sr.s2*0.93;
-    eHint='Zone MM200 (tendance long terme)'; xHint='+35 % objectif indicatif';
   }
-  return {score,entry:fmt(entry),exit:fmt(exit),stop:fmt(stop),eHint,xHint,reasons};
+
+  // ── Entry / Exit / Stop selon la DIRECTION du signal ──
+  const bull = score>=2, bear = score<=-2;
+
+  if (horizon==='court') {
+    if (bull) {
+      entry=sr.s1; exit=sr.r1; stop=sr.s1*0.97;
+      eHint='Zone de support 20 jours'; xHint='Zone de résistance 20 jours';
+    } else if (bear) {
+      entry=sr.r1; exit=sr.s1; stop=sr.r1*1.03;
+      eHint='Zone de résistance 20 jours (vente)'; xHint='Zone de support 20 jours (rachat)';
+    } else {
+      entry=cur; exit=sr.r1; stop=sr.s1*0.98;
+      eHint='Prix actuel — signal neutre'; xHint='Résistance court terme';
+    }
+  } else if (horizon==='moyen') {
+    if (bull) {
+      entry=mm50?Math.min(mm50,sr.s1):sr.s1;
+      exit=sr.r2; stop=mm50?mm50*0.93:sr.s2*0.97;
+      eHint='MM50 ou support majeur'; xHint='Résistance 50 jours';
+    } else if (bear) {
+      entry=mm50?Math.max(mm50,sr.r1):sr.r1;
+      exit=sr.s2; stop=mm50?mm50*1.07:sr.r1*1.05;
+      eHint='MM50 / résistance moyen terme (vente)'; xHint='Support 50 jours (objectif rachat)';
+    } else {
+      entry=cur; exit=sr.r1; stop=sr.s1*0.97;
+      eHint='Zone neutre — attendre confirmation'; xHint='Résistance 20 jours';
+    }
+  } else {
+    if (bull) {
+      entry=mm200?mm200*1.01:sr.s2;
+      exit=cur*1.35; stop=mm200?mm200*0.90:sr.s2*0.93;
+      eHint='Zone MM200 (tendance long terme)'; xHint='+35 % objectif indicatif';
+    } else if (bear) {
+      entry=mm200?mm200*0.99:sr.r2;
+      exit=cur*0.65; stop=mm200?mm200*1.10:sr.r2*1.07;
+      eHint='Sous la MM200 — zone de vente'; xHint='-35 % objectif indicatif';
+    } else {
+      entry=cur; exit=mm200?mm200*1.05:cur*1.10; stop=cur*0.93;
+      eHint='Zone neutre — pas de signal fort'; xHint='MM200 + 5 %';
+    }
+  }
+  return {score,entry:fmt(entry),exit:fmt(exit),stop:fmt(stop),eHint,xHint,reasons,bear};
 }
 
 function sigLevel(score){
@@ -1801,21 +1836,25 @@ function renderTechFull(data, sym, name, u, dp) {
   </div>`;
 
   // Entrée / Sortie / Stop
+  const lblEntry = sig.bear ? '📤 Zone de vente' : '📥 Point d\'entrée';
+  const lblExit  = sig.bear ? '🎯 Objectif de rachat' : '📤 Objectif de sortie';
+  const lblStop  = sig.bear ? '🛑 Stop-loss (invalidation haussière)' : '🛑 Stop-loss';
+  const hintStop = sig.bear ? 'Si le prix repasse au-dessus → couper' : 'Invalidation de la thèse';
   $('entryExit').innerHTML=`
-    <div class="ee-card buy">
-      <div class="ee-lbl">📥 Point d'entrée</div>
+    <div class="ee-card ${sig.bear?'stop':'buy'}">
+      <div class="ee-lbl">${lblEntry}</div>
       <div class="ee-price">${sig.entry}</div>
       <div class="ee-hint">${sig.eHint}</div>
     </div>
-    <div class="ee-card sell">
-      <div class="ee-lbl">📤 Objectif de sortie</div>
+    <div class="ee-card ${sig.bear?'buy':'sell'}">
+      <div class="ee-lbl">${lblExit}</div>
       <div class="ee-price">${sig.exit}</div>
       <div class="ee-hint">${sig.xHint}</div>
     </div>
     <div class="ee-card stop">
-      <div class="ee-lbl">🛑 Stop-loss</div>
+      <div class="ee-lbl">${lblStop}</div>
       <div class="ee-price">${sig.stop}</div>
-      <div class="ee-hint">Invalidation de la thèse</div>
+      <div class="ee-hint">${hintStop}</div>
     </div>`;
 
   // Raisons
