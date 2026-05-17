@@ -1940,9 +1940,10 @@ let scanTf = '1d';
 
 function toggleScanMode() {
   const isOpen = $('scanPanel').style.display !== 'none';
-  $('scanPanel').style.display   = isOpen ? 'none' : '';
-  $('techMainView').style.display = isOpen ? '' : 'none';
+  $('scanPanel').style.display      = isOpen ? 'none' : '';
+  $('techMainView').style.display   = isOpen ? '' : 'none';
   $('techChartsView').style.display = isOpen ? '' : 'none';
+  $('techCatRow').style.display     = isOpen ? '' : 'none';
   $('scanToggleBtn').classList.toggle('on', !isOpen);
   if (!isOpen) $('scanResults').innerHTML = '<div class="scan-loading">Sélectionne un signal pour lancer l\'analyse.</div>';
 }
