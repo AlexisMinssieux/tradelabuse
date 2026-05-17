@@ -166,6 +166,28 @@ export default {
         return new Response(JSON.stringify(data), { headers: CORS });
       }
 
+      if (path === '/analysis') {
+        const assets = [
+          {sym:'^FCHI',  name:'CAC 40',         flag:'🇫🇷', type:'Indice'},
+          {sym:'^GSPC',  name:'S&P 500',         flag:'🇺🇸', type:'Indice'},
+          {sym:'^IXIC',  name:'NASDAQ',          flag:'🇺🇸', type:'Indice'},
+          {sym:'^GDAXI', name:'DAX',             flag:'🇩🇪', type:'Indice'},
+          {sym:'NVDA',   name:'Nvidia',          flag:'🇺🇸', type:'Tech'},
+          {sym:'AAPL',   name:'Apple',           flag:'🇺🇸', type:'Tech'},
+          {sym:'MC.PA',  name:'LVMH',            flag:'🇫🇷', type:'Luxe'},
+          {sym:'TTE.PA', name:'TotalEnergies',   flag:'🇫🇷', type:'Énergie'},
+          {sym:'BTC-USD',name:'Bitcoin',         flag:'₿',   type:'Crypto'},
+          {sym:'ETH-USD',name:'Ethereum',        flag:'Ξ',   type:'Crypto'},
+          {sym:'GC=F',   name:'Or',              flag:'🥇',  type:'Matière 1ère'},
+          {sym:'CL=F',   name:'Pétrole WTI',     flag:'🛢️',  type:'Matière 1ère'},
+        ];
+        const quotes = await Promise.all(assets.map(async a => {
+          const q = await yahooV8(a.sym);
+          return { ...a, price: q?.price || 0, chg: q?.changesPercentage || 0 };
+        }));
+        return new Response(JSON.stringify(quotes), { headers: CORS });
+      }
+
       if (path === '/feargreed') {
         const r = await fetch('https://api.alternative.me/fng/?limit=1');
         const data = await r.json();

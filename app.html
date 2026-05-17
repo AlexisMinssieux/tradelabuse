@@ -198,6 +198,24 @@
     .pm-card-text{font-size:12px;color:#ccc;line-height:1.5}
     .pm-btn{display:block;width:100%;margin-top:18px;padding:12px;border-radius:8px;background:#cc1a1a;color:#fff;font-weight:700;font-size:13px;text-align:center;text-decoration:none;letter-spacing:.5px;box-sizing:border-box}
     .pm-btn:hover{background:#e02020}
+    /* ── Analyse actifs ── */
+    .an-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+    .an-card{background:var(--card);border:1px solid var(--bord);border-radius:10px;padding:14px;transition:border-color .2s,transform .15s;cursor:default}
+    .an-card:hover{border-color:rgba(180,20,20,.4);transform:translateY(-1px)}
+    .an-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+    .an-id{display:flex;align-items:center;gap:7px}
+    .an-flag{font-size:18px;line-height:1}
+    .an-name{font-size:12px;font-weight:700;color:var(--text);line-height:1.2}
+    .an-type{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
+    .an-signal{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:20px;white-space:nowrap}
+    .an-price{font-size:20px;font-weight:700;font-family:var(--mono);color:var(--text);line-height:1}
+    .an-chg{font-size:12px;font-weight:700;margin:3px 0 10px}
+    .an-bar{height:3px;border-radius:2px;background:rgba(255,255,255,.07);margin-bottom:10px;overflow:hidden}
+    .an-bar-fill{height:100%;border-radius:2px;transition:width .6s}
+    .an-comment{font-size:10px;color:var(--muted);line-height:1.55}
+    .an-loading{color:var(--muted);font-size:11px;padding:20px;text-align:center}
+    .an-resume{background:rgba(180,20,20,.05);border:1px solid var(--bord2);border-radius:10px;padding:14px}
+    .an-resume-title{font-size:9px;color:var(--red2);font-weight:700;letter-spacing:1px;margin-bottom:8px;text-transform:uppercase}
   </style>
 </head>
 <body>
@@ -259,7 +277,7 @@
   <button class="tab" onclick="goPage('matieres',this)">🏅 Matières 1ères</button>
   <button class="tab" onclick="goPage('placements',this)">🏦 Placements</button>
   <button class="tab" onclick="goPage('tech',this)">📊 Analyse AT</button>
-  <button class="tab" onclick="goPage('news',this)">📰 Actualités</button>
+  <button class="tab" onclick="goPage('news',this)">📊 Analyse</button>
   <button class="tab" onclick="goPage('screener',this)">🔍 Screener</button>
 </nav>
 <div class="nav-search-wrap" id="navSearchWrap">
@@ -495,24 +513,24 @@
 <section class="pg" id="pg-news">
   <div class="g2x">
     <div>
-      <div class="stitle">Actualités économiques FR <button class="rbtn" onclick="loadNews()">↺</button></div>
-      <div id="newsFeed">
-        <div class="newsc"><div class="ndot" style="background:var(--muted)"></div><div><div class="ntit" style="color:var(--muted)">Chargement des actualités…</div></div></div>
+      <div class="stitle">Analyse des actifs <button class="rbtn" onclick="loadAnalysis()">↺</button></div>
+      <div id="analysisFeed" class="an-grid">
+        <div class="an-loading">Chargement des analyses…</div>
       </div>
     </div>
     <div>
-      <div class="stitle">Calendrier économique</div>
-      <div class="card"><table class="mtbl"><thead><tr><th>Heure</th><th>Événement</th><th>Pays</th><th>Impact</th></tr></thead><tbody>
-        <tr><td style="font-family:var(--mono);font-size:10px">14:30</td><td><div style="font-size:10px;font-weight:600">NFP Non-Farm Payrolls</div><div class="msub">Prévu: +185K</div></td><td>🇺🇸</td><td><span style="color:var(--red2);font-size:9px;font-weight:700">●●● FORT</span></td></tr>
-        <tr><td style="font-family:var(--mono);font-size:10px">16:00</td><td><div style="font-size:10px;font-weight:600">ISM Manufacturing PMI</div><div class="msub">Prévu: 49.8</div></td><td>🇺🇸</td><td><span style="color:var(--gold);font-size:9px;font-weight:700">●● MOYEN</span></td></tr>
-        <tr><td style="font-family:var(--mono);font-size:10px">Demain 10:00</td><td><div style="font-size:10px;font-weight:600">CPI Zone Euro</div><div class="msub">Prévu: +2.2%</div></td><td>🇪🇺</td><td><span style="color:var(--red2);font-size:9px;font-weight:700">●●● FORT</span></td></tr>
-        <tr><td style="font-family:var(--mono);font-size:10px">Mer. 08:00</td><td><div style="font-size:10px;font-weight:600">Décision taux BCE</div><div class="msub">Actuel: 2.5%</div></td><td>🇪🇺</td><td><span style="color:var(--red2);font-size:9px;font-weight:700">●●● FORT</span></td></tr>
-      </tbody></table></div>
-      <div class="stitle" style="margin-top:10px">Résumé IA Tradelabuse</div>
-      <div class="card" style="background:rgba(180,20,20,.05);border-color:var(--bord2)">
-        <div style="font-size:9px;color:var(--red2);font-weight:600;letter-spacing:1px;margin-bottom:6px">⚡ ANALYSE DU JOUR — 1 mai 2026</div>
-        <p style="font-size:11px;color:var(--muted);line-height:1.8">Or en ATH à $3 318, Bitcoin au-dessus de $94 000. La Fed maintient ses taux, la BCE anticipe une baisse en juin. Divergence nette entre actifs refuge (or, BTC) et actions de luxe (LVMH -1.4%). <strong style="color:var(--text)">Vigilance :</strong> NFP US cet après-midi.</p>
+      <div class="stitle">Résumé du marché</div>
+      <div id="analysisResume" class="an-resume">
+        <div class="an-resume-title">⚡ En attente des données…</div>
+        <p style="font-size:11px;color:var(--muted);line-height:1.7"></p>
       </div>
+      <div class="stitle" style="margin-top:14px">Calendrier économique</div>
+      <div class="card"><table class="mtbl"><thead><tr><th>Heure</th><th>Événement</th><th>Pays</th><th>Impact</th></tr></thead><tbody>
+        <tr><td style="font-family:var(--mono);font-size:10px">14:30</td><td><div style="font-size:10px;font-weight:600">NFP Non-Farm Payrolls</div><div class="msub">Actuel: 177K (avril 2026)</div></td><td>🇺🇸</td><td><span style="color:var(--red2);font-size:9px;font-weight:700">●●● FORT</span></td></tr>
+        <tr><td style="font-family:var(--mono);font-size:10px">16:00</td><td><div style="font-size:10px;font-weight:600">ISM Manufacturing PMI</div><div class="msub">Prévu: 48.7</div></td><td>🇺🇸</td><td><span style="color:var(--gold);font-size:9px;font-weight:700">●● MOYEN</span></td></tr>
+        <tr><td style="font-family:var(--mono);font-size:10px">Jeu. 13:45</td><td><div style="font-size:10px;font-weight:600">Décision taux BCE</div><div class="msub">Attendu: -0,25% → 2,25%</div></td><td>🇪🇺</td><td><span style="color:var(--red2);font-size:9px;font-weight:700">●●● FORT</span></td></tr>
+        <tr><td style="font-family:var(--mono);font-size:10px">Ven. 08:00</td><td><div style="font-size:10px;font-weight:600">CPI Allemagne (flash)</div><div class="msub">Prévu: +2.1% sur an</div></td><td>🇩🇪</td><td><span style="color:var(--gold);font-size:9px;font-weight:700">●● MOYEN</span></td></tr>
+      </tbody></table></div>
     </div>
   </div>
 </section>
@@ -639,7 +657,7 @@ function goPage(id,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   $('pg-'+id).classList.add('on');el.classList.add('on');
   if(id==='screener' && Object.keys(scState.prices).length===0) loadScreenerPrices();
-  if(id==='news' && Date.now()-_newsLastLoad > 900000){ _newsLastLoad=Date.now(); loadNews(); }
+  if(id==='news' && Date.now()-_newsLastLoad > 300000){ _newsLastLoad=Date.now(); loadAnalysis(); }
 }
 
 // ════════════════════════════════════
@@ -889,43 +907,72 @@ function relTime(dateStr){
     return`Il y a ${Math.floor(diff/1440)}j`;
   }catch{return'';}
 }
-function newsColor(title){
-  const t=title.toLowerCase();
-  if(/\b(fall|drop|decline|crash|loss|down|slump|tariff|war|sanction|recession|inflation)\b/.test(t))return'var(--red2)';
-  if(/\b(rise|gain|surge|record|high|up|growth|rally|profit|beat)\b/.test(t))return'var(--green)';
-  return'var(--gold)';
-}
-function newsTag(title){
-  const t=title.toLowerCase();
-  if(/bitcoin|crypto|ethereum|btc/.test(t))return{l:'Crypto',cls:'p'};
-  if(/fed|powell|rate|fomc|interest/.test(t))return{l:'Fed',cls:'u'};
-  if(/ecb|bce|lagarde|euro/.test(t))return{l:'BCE',cls:'u'};
-  if(/oil|opec|energy|brent|wti/.test(t))return{l:'Énergie',cls:'n'};
-  if(/gold|silver|metal/.test(t))return{l:'Métal',cls:'p'};
-  if(/nvidia|apple|microsoft|amazon|meta|alphabet|tesla/.test(t))return{l:'Tech',cls:'p'};
-  if(/cac|lvmh|airbus|safran|totalenergies/.test(t))return{l:'CAC40',cls:'u'};
-  if(/china|tariff|trade/.test(t))return{l:'Géopol.',cls:'n'};
-  return{l:'Marchés',cls:'u'};
+function anSignal(chg){
+  if(chg>=2)  return{txt:'Forte hausse', color:'#2ab870', bg:'rgba(42,184,112,.15)'};
+  if(chg>=0.4)return{txt:'Haussier',    color:'#2ab870', bg:'rgba(42,184,112,.10)'};
+  if(chg>-0.4)return{txt:'Neutre',      color:'#c4a050', bg:'rgba(196,160,80,.12)'};
+  if(chg>-2)  return{txt:'Baissier',    color:'#cc3030', bg:'rgba(180,20,20,.12)'};
+  return       {txt:'Fort repli',       color:'#cc3030', bg:'rgba(180,20,20,.18)'};
 }
 
-async function loadNews(){
-  const items = await fetchNewsAPI();
-  if(!items?.length){ console.warn('News API KO'); return; }
-  const feed=$('newsFeed');
+function anComment(name, chg, type){
+  const a=Math.abs(chg).toFixed(2), s=chg>=0?'+':'';
+  if(chg>=2)  return`${name} affiche un fort momentum haussier (${s}${a}%). Les acheteurs dominent la séance.`;
+  if(chg>=0.4)return`${name} progresse de ${a}% en séance. Tendance constructive, flux acheteurs présents.`;
+  if(chg>0)   return`${name} termine en légère hausse (${s}${a}%). Marché attentiste, volumes modérés.`;
+  if(chg>-0.4)return`${name} évolue à l'équilibre (${s}${a}%). Consolidation sans direction marquée.`;
+  if(chg>-2)  return`${name} cède ${a}% en séance. Prise de bénéfices, surveiller le support.`;
+  return`${name} subit un fort repli (-${a}%). Pression vendeuse marquée — les niveaux clés sont testés.`;
+}
+
+function anFmtPrice(p, type){
+  if(!p) return '—';
+  if(type==='Crypto') return '$'+p.toLocaleString('fr-FR',{maximumFractionDigits:0});
+  if(p>1000) return p.toLocaleString('fr-FR',{maximumFractionDigits:0});
+  if(p>10)   return p.toLocaleString('fr-FR',{maximumFractionDigits:2});
+  return p.toFixed(4);
+}
+
+async function loadAnalysis(){
+  const feed=$('analysisFeed');
   if(!feed)return;
-  feed.innerHTML=items.slice(0,10).map(item=>{
-    const col=newsColor(item.title);
-    const tag=newsTag(item.title);
-    const t=relTime(item.pubDate);
-    return`<div class="newsc">
-      <div class="ndot" style="background:${col};flex-shrink:0;margin-top:4px"></div>
-      <div style="flex:1">
-        <div class="ntit"><a href="${item.link}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${item.title}</a></div>
-        ${item.desc?`<div style="font-size:10px;color:var(--muted);margin:2px 0;line-height:1.4">${item.desc}...</div>`:''}
-        <div class="nmet"><span class="ntag ${tag.cls}">${tag.l}</span>${item.source}${t?' · '+t:''}</div>
+  feed.innerHTML='<div class="an-loading">Chargement des analyses…</div>';
+  const data = await apiFetch('/analysis');
+  if(!data?.length){ feed.innerHTML='<div class="an-loading">Données indisponibles.</div>'; return; }
+
+  feed.innerHTML = data.map(a=>{
+    const sig = anSignal(a.chg);
+    const chgStr = (a.chg>=0?'+':'')+a.chg.toFixed(2)+'%';
+    const barW = Math.min(Math.abs(a.chg)/4*100, 100);
+    return`<div class="an-card">
+      <div class="an-head">
+        <div class="an-id">
+          <span class="an-flag">${a.flag}</span>
+          <div><div class="an-name">${a.name}</div><div class="an-type">${a.type}</div></div>
+        </div>
+        <span class="an-signal" style="color:${sig.color};background:${sig.bg}">${sig.txt}</span>
       </div>
+      <div class="an-price">${anFmtPrice(a.price, a.type)}</div>
+      <div class="an-chg" style="color:${a.chg>=0?'var(--green)':'var(--red2)'}">${chgStr}</div>
+      <div class="an-bar"><div class="an-bar-fill" style="width:${barW}%;background:${sig.color}"></div></div>
+      <div class="an-comment">${anComment(a.name, a.chg, a.type)}</div>
     </div>`;
   }).join('');
+
+  // Résumé auto-généré
+  const bull = data.filter(a=>a.chg>=0.4).length;
+  const bear = data.filter(a=>a.chg<=-0.4).length;
+  const top  = data.reduce((m,a)=>a.chg>m.chg?a:m, data[0]);
+  const bot  = data.reduce((m,a)=>a.chg<m.chg?a:m, data[0]);
+  const mood = bull>bear ? (bull>=8?'très haussière':'majoritairement haussière') : bear>bull ? (bear>=8?'très baissière':'sous pression') : 'mitigée';
+  const resume=$('analysisResume');
+  if(resume) resume.innerHTML=`
+    <div class="an-resume-title">⚡ SYNTHÈSE — ${new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long'})}</div>
+    <p style="font-size:11px;color:var(--muted);line-height:1.8;margin:0">
+      Ambiance <strong style="color:var(--text)">${mood}</strong> sur les marchés : ${bull} actifs en hausse, ${bear} en baisse sur les 12 suivis.
+      <br>Meilleure perf : <strong style="color:var(--green)">${top.name} ${top.chg>=0?'+':''}${top.chg.toFixed(2)}%</strong> —
+      Plus fort repli : <strong style="color:var(--red2)">${bot.name} ${bot.chg.toFixed(2)}%</strong>.
+    </p>`;
 }
 
 
