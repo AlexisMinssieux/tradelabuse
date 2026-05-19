@@ -657,13 +657,10 @@
         <div class="an-resume-title">⚡ En attente des données…</div>
         <p style="font-size:11px;color:var(--muted);line-height:1.7"></p>
       </div>
-      <div class="stitle" style="margin-top:14px">Calendrier économique</div>
-      <div class="card"><table class="mtbl"><thead><tr><th>Heure</th><th>Événement</th><th>Pays</th><th>Impact</th></tr></thead><tbody>
-        <tr><td style="font-family:var(--mono);font-size:10px">14:30</td><td><div style="font-size:10px;font-weight:600">NFP Non-Farm Payrolls</div><div class="msub">Actuel: 177K (avril 2026)</div></td><td>🇺🇸</td><td><span style="color:var(--red2);font-size:9px;font-weight:700">●●● FORT</span></td></tr>
-        <tr><td style="font-family:var(--mono);font-size:10px">16:00</td><td><div style="font-size:10px;font-weight:600">ISM Manufacturing PMI</div><div class="msub">Prévu: 48.7</div></td><td>🇺🇸</td><td><span style="color:var(--gold);font-size:9px;font-weight:700">●● MOYEN</span></td></tr>
-        <tr><td style="font-family:var(--mono);font-size:10px">Jeu. 13:45</td><td><div style="font-size:10px;font-weight:600">Décision taux BCE</div><div class="msub">Attendu: -0,25% → 2,25%</div></td><td>🇪🇺</td><td><span style="color:var(--red2);font-size:9px;font-weight:700">●●● FORT</span></td></tr>
-        <tr><td style="font-family:var(--mono);font-size:10px">Ven. 08:00</td><td><div style="font-size:10px;font-weight:600">CPI Allemagne (flash)</div><div class="msub">Prévu: +2.1% sur an</div></td><td>🇩🇪</td><td><span style="color:var(--gold);font-size:9px;font-weight:700">●● MOYEN</span></td></tr>
-      </tbody></table></div>
+      <div class="stitle" style="margin-top:14px">Calendrier économique <button class="rbtn" onclick="loadCalendar()">↺</button></div>
+      <div class="card" style="padding:0;overflow:hidden" id="calendarCard">
+        <div class="an-loading" id="calendarLoading">Chargement…</div>
+      </div>
     </div>
   </div>
 </section>
@@ -790,7 +787,7 @@ function goPage(id,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   $('pg-'+id).classList.add('on');el.classList.add('on');
   if(id==='screener' && Object.keys(scState.prices).length===0) loadScreenerPrices();
-  if(id==='news' && Date.now()-_newsLastLoad > 300000){ _newsLastLoad=Date.now(); loadAnalysis(); }
+  if(id==='news' && Date.now()-_newsLastLoad > 300000){ _newsLastLoad=Date.now(); loadAnalysis(); loadCalendar(); }
 }
 
 // ════════════════════════════════════
@@ -1108,6 +1105,62 @@ async function loadAnalysis(){
     </p>`;
 }
 
+
+const CAL_FLAGS = {USD:'🇺🇸',EUR:'🇪🇺',GBP:'🇬🇧',JPY:'🇯🇵',CAD:'🇨🇦',AUD:'🇦🇺',CHF:'🇨🇭',CNY:'🇨🇳',NZD:'🇳🇿',MXN:'🇲🇽',BRL:'🇧🇷',INR:'🇮🇳',KRW:'🇰🇷',SEK:'🇸🇪',NOK:'🇳🇴',SGD:'🇸🇬'};
+
+async function loadCalendar(){
+  const card = $('calendarCard');
+  if(!card) return;
+  card.innerHTML = '<div class="an-loading">Chargement du calendrier…</div>';
+  try {
+    const events = await apiFetch('/calendar');
+    if(!events?.length){ card.innerHTML='<div class="an-loading">Aucun événement cette semaine.</div>'; return; }
+
+    // Filtrer High+Medium, trier par date/heure
+    const filtered = events
+      .filter(e => e.impact === 'High' || e.impact === 'Medium')
+      .sort((a,b) => new Date(a.date+' '+a.time) - new Date(b.date+' '+b.time));
+
+    const today = new Date().toISOString().slice(0,10);
+    const days = {en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+                  fr:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam']};
+
+    const fmtDate = dateStr => {
+      const d = new Date(dateStr+'T12:00:00');
+      const dow = days.fr[d.getDay()];
+      return dateStr === today ? `<span style="color:var(--red2);font-weight:700">Aujourd'hui</span>` : dow+' '+d.getDate()+'/'+String(d.getMonth()+1).padStart(2,'0');
+    };
+
+    const fmtTime = t => t ? t.replace('am',' AM').replace('pm',' PM') : 'TBD';
+
+    const impactHtml = impact => impact === 'High'
+      ? `<span style="color:var(--red2);font-size:9px;font-weight:700">●●● FORT</span>`
+      : `<span style="color:var(--gold);font-size:9px;font-weight:700">●● MOYEN</span>`;
+
+    let lastDate = '';
+    const rows = filtered.map(e => {
+      let dateSep = '';
+      if(e.date !== lastDate){
+        lastDate = e.date;
+        dateSep = `<tr style="background:rgba(180,20,20,.04)"><td colspan="4" style="padding:5px 8px;font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase">${fmtDate(e.date)}</td></tr>`;
+      }
+      const flag = CAL_FLAGS[e.country] || '🌐';
+      const prev = e.previous ? `<span style="color:var(--muted)">Préc: ${e.previous}</span>` : '';
+      const fore = e.forecast ? `<span style="color:var(--text)">Prévu: ${e.forecast}</span>` : '';
+      const sub  = [fore, prev].filter(Boolean).join(' &nbsp;·&nbsp; ');
+      return dateSep + `<tr>
+        <td style="font-family:var(--mono);font-size:9px;color:var(--muted);white-space:nowrap">${fmtTime(e.time)}</td>
+        <td><div style="font-size:10px;font-weight:600;color:var(--text)">${e.title}</div>${sub?`<div class="msub" style="font-size:9px;margin-top:1px">${sub}</div>`:''}</td>
+        <td style="text-align:center">${flag}</td>
+        <td style="white-space:nowrap">${impactHtml(e.impact)}</td>
+      </tr>`;
+    }).join('');
+
+    card.innerHTML = `<table class="mtbl" style="width:100%"><thead><tr><th>Heure</th><th>Événement</th><th>Pays</th><th>Impact</th></tr></thead><tbody>${rows}</tbody></table>`;
+  } catch(e) {
+    card.innerHTML = `<div class="an-loading">Erreur : ${e.message}</div>`;
+  }
+}
 
 // ════════════════════════════════════
 // ACTIONS TAB SWITCH

@@ -226,6 +226,15 @@ export default {
         return new Response(JSON.stringify(results.slice(0, 14)), { headers: CORS });
       }
 
+      if (path === '/calendar') {
+        const r = await fetch('https://nfs.faireconomy.media/ff_calendar_thisweek.json', {
+          headers: {'User-Agent':'Mozilla/5.0','Accept':'application/json'}
+        });
+        if (!r.ok) return new Response(JSON.stringify({error:'Calendar '+r.status}),{status:502,headers:CORS});
+        const events = await r.json();
+        return new Response(JSON.stringify(events), {headers: CORS});
+      }
+
       if (path === '/scan') {
         const tf  = url.searchParams.get('tf') || '1d';
         const symsParam = url.searchParams.get('syms');
