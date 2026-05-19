@@ -1106,7 +1106,8 @@ async function loadAnalysis(){
 }
 
 
-const CAL_FLAGS = {USD:'🇺🇸',EUR:'🇪🇺',GBP:'🇬🇧',JPY:'🇯🇵',CAD:'🇨🇦',AUD:'🇦🇺',CHF:'🇨🇭',CNY:'🇨🇳',NZD:'🇳🇿',MXN:'🇲🇽',BRL:'🇧🇷',INR:'🇮🇳',KRW:'🇰🇷',SEK:'🇸🇪',NOK:'🇳🇴',SGD:'🇸🇬'};
+const CAL_FLAGS = {USD:'🇺🇸',EUR:'🇪🇺',GBP:'🇬🇧',JPY:'🇯🇵',CAD:'🇨🇦',AUD:'🇦🇺',CHF:'🇨🇭',CNY:'🇨🇳',NZD:'🇳🇿',MXN:'🇲🇽',BRL:'🇧🇷',INR:'🇮🇳',KRW:'🇰🇷',SEK:'🇸🇪',NOK:'🇳🇴',SGD:'🇸🇬',All:'🌐'};
+const CAL_DAYS = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
 
 async function loadCalendar(){
   const card = $('calendarCard');
@@ -1116,47 +1117,49 @@ async function loadCalendar(){
     const events = await apiFetch('/calendar');
     if(!events?.length){ card.innerHTML='<div class="an-loading">Aucun événement cette semaine.</div>'; return; }
 
-    // Filtrer High+Medium, trier par date/heure
+    // date field = ISO datetime "2026-05-19T08:30:00-04:00"
     const filtered = events
       .filter(e => e.impact === 'High' || e.impact === 'Medium')
-      .sort((a,b) => new Date(a.date+' '+a.time) - new Date(b.date+' '+b.time));
+      .sort((a,b) => new Date(a.date) - new Date(b.date));
 
-    const today = new Date().toISOString().slice(0,10);
-    const days = {en:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-                  fr:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam']};
+    if(!filtered.length){ card.innerHTML='<div class="an-loading">Aucun événement Fort/Moyen cette semaine.</div>'; return; }
 
-    const fmtDate = dateStr => {
-      const d = new Date(dateStr+'T12:00:00');
-      const dow = days.fr[d.getDay()];
-      return dateStr === today ? `<span style="color:var(--red2);font-weight:700">Aujourd'hui</span>` : dow+' '+d.getDate()+'/'+String(d.getMonth()+1).padStart(2,'0');
+    const todayStr = new Date().toLocaleDateString('sv'); // YYYY-MM-DD local
+
+    const fmtDay = isoDate => {
+      const d = new Date(isoDate);
+      const dayStr = d.toLocaleDateString('sv'); // YYYY-MM-DD
+      if(dayStr === todayStr) return `<span style="color:var(--red2);font-weight:700">Aujourd'hui</span>`;
+      return CAL_DAYS[d.getDay()]+' '+d.getDate()+'/'+String(d.getMonth()+1).padStart(2,'0');
     };
 
-    const fmtTime = t => t ? t.replace('am',' AM').replace('pm',' PM') : 'TBD';
+    const fmtTime = isoDate => new Date(isoDate).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
 
     const impactHtml = impact => impact === 'High'
       ? `<span style="color:var(--red2);font-size:9px;font-weight:700">●●● FORT</span>`
       : `<span style="color:var(--gold);font-size:9px;font-weight:700">●● MOYEN</span>`;
 
-    let lastDate = '';
+    let lastDay = '';
     const rows = filtered.map(e => {
+      const dayStr = new Date(e.date).toLocaleDateString('sv');
       let dateSep = '';
-      if(e.date !== lastDate){
-        lastDate = e.date;
-        dateSep = `<tr style="background:rgba(180,20,20,.04)"><td colspan="4" style="padding:5px 8px;font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase">${fmtDate(e.date)}</td></tr>`;
+      if(dayStr !== lastDay){
+        lastDay = dayStr;
+        dateSep = `<tr style="background:rgba(180,20,20,.05)"><td colspan="4" style="padding:5px 8px;font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase">${fmtDay(e.date)}</td></tr>`;
       }
       const flag = CAL_FLAGS[e.country] || '🌐';
-      const prev = e.previous ? `<span style="color:var(--muted)">Préc: ${e.previous}</span>` : '';
       const fore = e.forecast ? `<span style="color:var(--text)">Prévu: ${e.forecast}</span>` : '';
+      const prev = e.previous ? `<span style="color:var(--muted)">Préc: ${e.previous}</span>` : '';
       const sub  = [fore, prev].filter(Boolean).join(' &nbsp;·&nbsp; ');
       return dateSep + `<tr>
-        <td style="font-family:var(--mono);font-size:9px;color:var(--muted);white-space:nowrap">${fmtTime(e.time)}</td>
+        <td style="font-family:var(--mono);font-size:9px;color:var(--muted);white-space:nowrap">${fmtTime(e.date)}</td>
         <td><div style="font-size:10px;font-weight:600;color:var(--text)">${e.title}</div>${sub?`<div class="msub" style="font-size:9px;margin-top:1px">${sub}</div>`:''}</td>
         <td style="text-align:center">${flag}</td>
         <td style="white-space:nowrap">${impactHtml(e.impact)}</td>
       </tr>`;
     }).join('');
 
-    card.innerHTML = `<table class="mtbl" style="width:100%"><thead><tr><th>Heure</th><th>Événement</th><th>Pays</th><th>Impact</th></tr></thead><tbody>${rows}</tbody></table>`;
+    card.innerHTML = `<table class="mtbl" style="width:100%"><thead><tr><th>Heure</th><th>Événement</th><th>Zone</th><th>Impact</th></tr></thead><tbody>${rows}</tbody></table>`;
   } catch(e) {
     card.innerHTML = `<div class="an-loading">Erreur : ${e.message}</div>`;
   }
